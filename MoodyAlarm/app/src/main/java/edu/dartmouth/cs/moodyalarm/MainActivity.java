@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -54,10 +56,7 @@ public class MainActivity extends AppCompatActivity
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
     private static final int REQUEST_CODE = 1337;
-
-    // list view
-    private String[] lv_arr = {};
-
+    public static String accessToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,12 +93,13 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = this.getFragmentManager();
         AlarmsFragment alarmFrag = new AlarmsFragment();
-        fragmentManager.beginTransaction().add(R.id.fragment_container, alarmFrag).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, alarmFrag).commit();
     }
 
     @Override
@@ -138,21 +139,28 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.editAlarm) {
+            this.setTitle("Alarm Settings");
+            fragment = new AlarmSettings();
+        } else if (id == R.id.editSpotify) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            fragment = new SpotifySettings();
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.editSnooze) {
+            fragment = new SnoozeSettings();
         }
+//        else if (id == R.id.addAlarms) {
+//            fragment = new AlarmsFragment();
+//        }
 
+        //replacing the fragment
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, fragment);
+            ft.commit();
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -167,6 +175,8 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                Log.d("onActivityResult: ", "access token is: " + response.getAccessToken());
+                accessToken = response.getAccessToken();
                 Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
@@ -216,7 +226,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("MainActivity", "User logged in");
 
         // This is the line that plays a song.
-        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+        mPlayer.playUri(null, "spotify:track:4rzfv0JLZfVhOhbSQ8o5jZ", 0, 0);
     }
 
     @Override
@@ -238,6 +248,5 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
     }
-
 
 }

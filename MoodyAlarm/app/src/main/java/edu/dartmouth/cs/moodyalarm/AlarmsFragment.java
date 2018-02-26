@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -103,6 +105,7 @@ public class AlarmsFragment extends Fragment {
             TextView Row0;
             TextView Row1;
             TextView Row2;
+            //Switch OnOff;
         }
 
         public AlarmsAdapter(Activity context, ArrayList<AlarmEntry> entries) {
@@ -112,7 +115,7 @@ public class AlarmsFragment extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
 
             if (convertView == null) {
@@ -124,12 +127,23 @@ public class AlarmsFragment extends Fragment {
                 holder.Row1 = (TextView) convertView.findViewById(R.id.row1);
                 holder.Row1.setTypeface(null, Typeface.BOLD);
                 holder.Row2 = (TextView) convertView.findViewById(R.id.row2);
+                //holder.OnOff = (Switch) convertView.findViewById(R.id.switchForActionBar);
 
                 convertView.setTag(holder);
 
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+
+//            holder.OnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                @Override
+//                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                    if (isChecked)
+//                        entries.get(position).setOnOff(1);
+//                    else
+//                        entries.get(position).setOnOff(0);
+//                }
+//            });
 
             holder.Row1.setText(Integer.toString(entries.get(position).getHour()) + ":" + Integer.toString(entries.get(position).getMinute()));
             String days = "";

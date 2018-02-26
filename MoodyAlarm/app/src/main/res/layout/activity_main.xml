@@ -8,19 +8,15 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <LinearLayout
+    <include
+        layout="@layout/app_bar_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <include
-            layout="@layout/app_bar_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+        android:layout_height="match_parent"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:id="@+id/fragment_container"
-        android:layout_marginTop="?attr/actionBarSize"
+        android:paddingTop="?attr/actionBarSize"
         android:layout_height="wrap_content"
         android:layout_weight="1"/>
 
