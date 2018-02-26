@@ -5,4 +5,38 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
+    <string-array name="activity_type_array">
+        <item>Activity One</item>
+        <item>Activity Two</item>
+        <item>Activity Three</item>
+    </string-array>
+
+    <string-array name="time_array">
+        <item>1 min</item>
+        <item>2 min</item>
+        <item>3 min</item>
+        <item>4 min</item>
+        <item>5 min</item>
+        <item>6 min</item>
+        <item>7 min</item>
+        <item>8 min</item>
+        <item>9 min</item>
+        <item>10 min</item>
+        <item>11 min</item>
+        <item>12 min</item>
+        <item>13 min</item>
+        <item>14 min</item>
+        <item>15 min</item>
+        <item>16 min</item>
+        <item>17 min</item>
+        <item>18 min</item>
+        <item>19 min</item>
+        <item>20 min</item>
+    </string-array>
+
+
+
+
 </resources>

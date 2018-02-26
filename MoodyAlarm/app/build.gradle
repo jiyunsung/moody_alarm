@@ -36,4 +36,7 @@ dependencies {
 
     compile 'com.spotify.android:auth:1.0.0-alpha'
     compile 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'be.billington.calendar.recurrencepicker:library:1.1.1'
 }
