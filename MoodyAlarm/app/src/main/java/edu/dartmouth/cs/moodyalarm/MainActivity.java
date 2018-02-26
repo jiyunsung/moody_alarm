@@ -1,8 +1,13 @@
 package edu.dartmouth.cs.moodyalarm;
 
+import android.app.FragmentManager;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +22,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -28,6 +37,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
@@ -44,19 +55,24 @@ public class MainActivity extends AppCompatActivity
     // Can be any integer
     private static final int REQUEST_CODE = 1337;
 
+    // list view
+    private String[] lv_arr = {};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // The only thing that's different is we added the 5 lines below.
+        // Spotify Login code
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
+
+        // set toolbar instead of app bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -64,8 +80,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
+                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
+                startActivity(setAlarm);
             }
         });
 
@@ -77,6 +95,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentManager fragmentManager = this.getFragmentManager();
+        AlarmsFragment alarmFrag = new AlarmsFragment();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, alarmFrag).commit();
     }
 
     @Override
@@ -216,4 +238,6 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
     }
+
+
 }
