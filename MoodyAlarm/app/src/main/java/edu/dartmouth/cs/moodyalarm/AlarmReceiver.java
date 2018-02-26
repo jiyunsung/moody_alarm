@@ -22,4 +22,6 @@ public class AlarmReceiver extends BroadcastReceiver
         Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
         ringtone.play();
     }
+
 }
+

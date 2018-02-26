@@ -49,4 +49,5 @@ public class AlarmEntry implements Serializable {
     public void setRepeat(int repeat) { this.repeat = repeat; }
     public void setDaysofweek(ArrayList<Boolean> daysofweek) { this.daysofweek = daysofweek; }
 
+
 }
