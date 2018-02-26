@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
 
         FragmentManager fragmentManager = this.getFragmentManager();
         AlarmsFragment alarmFrag = new AlarmsFragment();
-        fragmentManager.beginTransaction().add(R.id.fragment_container, alarmFrag).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, alarmFrag).commit();
     }
 
     @Override
