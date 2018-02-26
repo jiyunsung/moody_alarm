@@ -8,7 +8,12 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.text.format.Time;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -38,6 +43,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     public AlarmEntry alarmEntry = new AlarmEntry();
     private TextView recurrence;
     private String recurrenceRule;
+    private Boolean[] daysList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,7 +51,6 @@ public class SetAlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_alarm);
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
-        alarmTimePicker.setIs24HourView(true);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = getIntent();
         isNew = intent.getBooleanExtra(AlarmsFragment.NEWALARM, true);
@@ -53,6 +58,8 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
+        } else {
+            alarmEntry.setOnOff(1);
         }
 
         recurrence = (TextView) findViewById(R.id.recurrence);
@@ -74,14 +81,38 @@ public class SetAlarmActivity extends AppCompatActivity {
                     public void onRecurrenceSet(String rrule) {
                         recurrenceRule = rrule;
 
+                        daysList = new Boolean[]{false, false, false, false, false, false, false};
                         if (recurrenceRule != null && recurrenceRule.length() > 0) {
                             EventRecurrence recurrenceEvent = new EventRecurrence();
                             recurrenceEvent.setStartDate(new Time("" + new Date().getTime()));
                             recurrenceEvent.parse(rrule);
+                            Log.d("TAG", recurrenceEvent.toString());
+                            Log.d("TAG", rrule.toString());
                             String srt = EventRecurrenceFormatter.getRepeatString(SetAlarmActivity.this, getResources(), recurrenceEvent, true);
                             recurrence.setText(srt);
+
+                            String[] separated = recurrenceEvent.toString().split(";");
+                            String byDay = separated[separated.length - 1].split("=")[1];
+
+                            if (byDay.contains("SU"))
+                                daysList[0] = true;
+                            if (byDay.contains("MO"))
+                                daysList[1] = true;
+                            if (byDay.contains("TU"))
+                                daysList[2] = true;
+                            if (byDay.contains("WE"))
+                                daysList[3] = true;
+                            if (byDay.contains("TH"))
+                                daysList[4] = true;
+                            if (byDay.contains("FR"))
+                                daysList[5] = true;
+                            if (byDay.contains("SA"))
+                                daysList[6] = true;
+
+                            alarmEntry.setRepeat(1);
                         } else {
                             recurrence.setText("No recurrence");
+                            alarmEntry.setRepeat(0);
                         }
                     }
                 });
@@ -90,52 +121,49 @@ public class SetAlarmActivity extends AppCompatActivity {
         });
     }
 
-    public void OnToggleClicked(View view)
-    {
-        long time;
-        if (isNew) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
-            calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-            Intent intent = new Intent(this, AlarmReceiver.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+    // create the options menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.switch_menu, menu);
+        return true;
+    }
 
-            time=(calendar.getTimeInMillis()-(calendar.getTimeInMillis()%60000));
-            if(System.currentTimeMillis()>time)
-            {
-                if (calendar.AM_PM == 0)
-                    time = time + (1000*60*60*12);
-                else
-                    time = time + (1000*60*60*24);
+    // delete button
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.switchOnOff) {
+
+            Switch s = (Switch) findViewById(R.id.switchOnOff);
+
+            if (s.isChecked()) {
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
+                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
+                Intent intent = new Intent(this, AlarmReceiver.class);
+                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+                long time = (calendar.getTimeInMillis() - (calendar.getTimeInMillis() % 60000));
+                if (System.currentTimeMillis() > time) {
+                    if (calendar.AM_PM == 0)
+                        time = time + (1000 * 60 * 60 * 12);
+                    else
+                        time = time + (1000 * 60 * 60 * 24);
+                }
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
+            } else {
+                alarmManager.cancel(pendingIntent);
             }
-        } else {
 
+            return true;
         }
-
-        if (((ToggleButton) view).isChecked())
-        {
-            Toast.makeText(SetAlarmActivity.this, "ALARM ON", Toast.LENGTH_SHORT).show();
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
-            calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-            Intent intent = new Intent(this, AlarmReceiver.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-            time=(calendar.getTimeInMillis()-(calendar.getTimeInMillis()%60000));
-            if(System.currentTimeMillis()>time)
-            {
-                if (calendar.AM_PM == 0)
-                    time = time + (1000*60*60*12);
-                else
-                    time = time + (1000*60*60*24);
-            }
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
-        }
-        else
-        {
-            alarmManager.cancel(pendingIntent);
-            Toast.makeText(SetAlarmActivity.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void saveButtonClicked(View view){
@@ -203,9 +231,14 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
-            alarmEntry.setOnOff(1);
-            alarmEntry.setRepeat(1);
-            alarmEntry.setDaysofweek(new ArrayList<>(Arrays.asList(false, false, false, false, true, true, true)));
+
+            if (daysList != null) {
+                ArrayList<Boolean> daysOfWeek = new ArrayList<>();
+                for (boolean day : daysList) {
+                    daysOfWeek.add(day);
+                }
+                alarmEntry.setDaysofweek(daysOfWeek);
+            }
 
             dataStorage= new AlarmEntryDbHelper(getApplicationContext());
             dataStorage.open();
