@@ -18,28 +18,35 @@ import java.util.ArrayList;
  * SQLite helper to communicate with the database
  */
 
-public class AlarmEntryDbHelper extends SQLiteOpenHelper {
+public class EntryDbHelper extends SQLiteOpenHelper {
 
     // Database fields
     public final static String DATABASE_NAME = "database";
     private static final Integer DATABASE_VERSION = 1;
     private SQLiteDatabase database;
-    private String[] allColumns = { KEY_ROWID, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK};
+    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK};
 
-    public final static String TABLE_ENTRIES = "AlarmsTable";
-    public final static String KEY_ROWID = "_id";
+    public final static String TABLE_ENTRIES_ALARM = "AlarmsTable";
+    public final static String KEY_ROWID_ALARM = "_id";
     public final static String KEY_ONOFF = "mOnOff";
     public final static String KEY_HOUR = "mHour";
     public final static String KEY_MINUTE = "mMinute";
     public final static String KEY_REPEAT = "mRepeat";
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
 
+
+    private String[] allSpotifyColumns = { KEY_ROWID_ALARM, KEY_IMAGEURL};
+
+    public final static String TABLE_ENTRIES_SPOTIFY = "SpotifyTable";
+    public final static String KEY_ROWID_SPOTIFY = "_id";
+    public final static String KEY_IMAGEURL = "mImageUrl";
+
     // SQL query to create the table for the first time
     // Data types are defined below
-    public static final String CREATE_TABLE_ENTRIES = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_ENTRIES
+    public static final String CREATE_TABLE_ENTRIES_ALARM = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ENTRIES_ALARM
             + " ("
-            + KEY_ROWID
+            + KEY_ROWID_ALARM
             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_ONOFF
             + " INTEGER NOT NULL, "
@@ -52,9 +59,17 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
             + KEY_DAYSOFWEEK
             + " BLOB" + ");";
 
+    public static final String CREATE_TABLE_ENTRIES_SPOTIFY = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ENTRIES_SPOTIFY
+            + " ("
+            + KEY_ROWID_SPOTIFY
+            + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_IMAGEURL
+            + " STRING "
+            + ");";
 
     // Constructor
-    public AlarmEntryDbHelper(Context context) {
+    public EntryDbHelper(Context context) {
 
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -68,7 +83,8 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
     // Create table schema if not exists
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_ENTRIES);
+        db.execSQL(CREATE_TABLE_ENTRIES_ALARM);
+        db.execSQL(CREATE_TABLE_ENTRIES_SPOTIFY);
     }
 
     @Override
@@ -76,12 +92,13 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
         Log.w(AlarmsFragment.class.getName(), "Upgrading database from version "
                 + oldVersion + " to " + newVersion
                 + ", which will destroy all old data");
-        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES + "'");
+        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_ALARM + "'");
+        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_SPOTIFY + "'");
         onCreate(database);
     }
 
     // Insert a item given each column value
-    public AlarmEntry insertEntry(AlarmEntry entry) {
+    public AlarmEntry insertAlarmEntry(AlarmEntry entry) {
         ContentValues values = new ContentValues();
         values.put(KEY_ONOFF, entry.getOnOff());
         values.put(KEY_HOUR, entry.getHour());
@@ -93,14 +110,34 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_DAYSOFWEEK, gson.toJson(daysOfWeek).getBytes());
 
         database = getWritableDatabase();
-        long insertId = database.insert(TABLE_ENTRIES, null, values);
-        Cursor cursor = database.query(TABLE_ENTRIES,
-                allColumns,
-                KEY_ROWID + " = " + insertId,
+        long insertId = database.insert(TABLE_ENTRIES_ALARM, null, values);
+        Cursor cursor = database.query(TABLE_ENTRIES_ALARM,
+                allAlarmColumns,
+                KEY_ROWID_ALARM + " = " + insertId,
                 null,null, null, null);
 
         cursor.moveToLast();
-        AlarmEntry newEntry = cursorToEntry(cursor);
+        AlarmEntry newEntry = cursorToEntryAlarm(cursor);
+        cursor.close();
+        return newEntry;
+    }
+
+    // Insert a item given each column value
+    public SpotifyEntry insertSpotifyEntry(SpotifyEntry entry) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_IMAGEURL, entry.getImageUrl());
+
+
+        database = getWritableDatabase();
+        long insertId = database.insert(TABLE_ENTRIES_SPOTIFY, null, values);
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY,
+                allSpotifyColumns,
+                KEY_ROWID_SPOTIFY + " = " + insertId,
+                null,null, null, null);
+
+        cursor.moveToLast();
+        SpotifyEntry newEntry = cursorToEntrySpotify(cursor);
+        Log.d("insertEntry", "new entry url is "+ newEntry.getImageUrl());
         cursor.close();
         return newEntry;
     }
@@ -116,34 +153,34 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
         Gson gson = new Gson();
         values.put(KEY_DAYSOFWEEK, gson.toJson(daysOfWeek).getBytes());
 
-        database.update(TABLE_ENTRIES, values, "_id="+entry.getId(), null);
+        database.update(TABLE_ENTRIES_ALARM, values, "_id="+entry.getId(), null);
     }
 
     // Remove an entry by giving its index
     public void removeEntry(long rowIndex) {
-        database.delete(TABLE_ENTRIES, KEY_ROWID	+ " = " + rowIndex, null);
+        database.delete(TABLE_ENTRIES_ALARM, KEY_ROWID_ALARM	+ " = " + rowIndex, null);
     }
 
     // Query a specific entry by its index.
     public AlarmEntry fetchEntryByIndex(long rowId) {
-        Cursor cursor = database.query(TABLE_ENTRIES,
-                allColumns,
-                KEY_ROWID + " = " + rowId,
+        Cursor cursor = database.query(TABLE_ENTRIES_ALARM,
+                allAlarmColumns,
+                KEY_ROWID_ALARM + " = " + rowId,
                 null,null, null, null);
-        AlarmEntry entry = cursorToEntry(cursor);
+        AlarmEntry entry = cursorToEntryAlarm(cursor);
         cursor.close();
         return entry;
     }
 
     // Query the entire table, return all rows
-    public ArrayList<AlarmEntry> fetchEntries() {
+    public ArrayList<AlarmEntry> fetchAlarmEntries() {
 
         ArrayList<AlarmEntry> entries = new ArrayList<>();
-        Cursor cursor = database.query(TABLE_ENTRIES, allColumns, null,
+        Cursor cursor = database.query(TABLE_ENTRIES_ALARM, allAlarmColumns, null,
                 null,null, null, null);
         cursor.moveToFirst(); //Move the cursor to the first row.
         while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
-            AlarmEntry entry = cursorToEntry(cursor);
+            AlarmEntry entry = cursorToEntryAlarm(cursor);
             entries.add(entry);
             cursor.moveToNext();
         }
@@ -152,7 +189,7 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
         return entries;
     }
 
-    private AlarmEntry cursorToEntry(Cursor cursor) {
+    private AlarmEntry cursorToEntryAlarm(Cursor cursor) {
 
         AlarmEntry entry = new AlarmEntry();
         entry.setId(cursor.getLong(0));//Returns the value of the requested column as a long.
@@ -171,6 +208,36 @@ public class AlarmEntryDbHelper extends SQLiteOpenHelper {
             entry.setDaysofweek(daysOfWeek);
 
         }
+        return entry;
+    }
+
+
+    // Query the entire table, return all rows
+    public ArrayList<SpotifyEntry> fetchSpotifyEntries() {
+        Log.d("fetchEntries", "in fetch entries in db helper");
+        ArrayList<SpotifyEntry> entries = new ArrayList<>();
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY, allSpotifyColumns, null,
+                null,null, null, null);
+        cursor.moveToFirst(); //Move the cursor to the first row.
+        while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
+            SpotifyEntry entry = cursorToEntrySpotify(cursor);
+            entries.add(entry);
+            cursor.moveToNext();
+        }
+        // Make sure to close the cursor
+        cursor.close();
+        return entries;
+    }
+
+    private SpotifyEntry cursorToEntrySpotify(Cursor cursor) {
+
+        SpotifyEntry entry = new SpotifyEntry();
+
+
+        entry.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+        entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrl")));
+
+
         return entry;
     }
 

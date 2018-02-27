@@ -17,7 +17,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +37,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     TimePicker alarmTimePicker;
     PendingIntent pendingIntent;
     AlarmManager alarmManager;
-    private AlarmEntryDbHelper dataStorage;
+    private EntryDbHelper dataStorage;
     private boolean isNew;
     public AlarmEntry alarmEntry = new AlarmEntry();
     private TextView recurrence;
@@ -207,9 +206,9 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry.setRepeat(1);
             alarmEntry.setDaysofweek(new ArrayList<>(Arrays.asList(false, false, false, false, true, true, true)));
 
-            dataStorage= new AlarmEntryDbHelper(getApplicationContext());
+            dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
-            dataStorage.insertEntry(alarmEntry);
+            dataStorage.insertAlarmEntry(alarmEntry);
             return null;
         }
 
@@ -240,7 +239,7 @@ public class SetAlarmActivity extends AppCompatActivity {
                 alarmEntry.setDaysofweek(daysOfWeek);
             }
 
-            dataStorage= new AlarmEntryDbHelper(getApplicationContext());
+            dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.updateEntry(alarmEntry);
             return null;

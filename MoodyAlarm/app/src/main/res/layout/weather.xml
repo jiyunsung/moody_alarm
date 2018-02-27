@@ -17,7 +17,6 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/sunny"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -27,12 +26,16 @@
             android:text="Sunny"
             android:textSize="15sp" />
 
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/sunny"
+            android:onClick="changePlaylist"/>
+
 
     </LinearLayout>
 
@@ -41,7 +44,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/cloudy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -56,7 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/cloudy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 
@@ -65,7 +70,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/rainy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -80,7 +85,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="150dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/rainy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 
@@ -90,7 +97,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/foggy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -105,7 +112,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="200dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/foggy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 
@@ -114,7 +123,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/snowy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -129,7 +138,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="250dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/snowy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 
@@ -139,7 +150,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/stormy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -147,6 +158,7 @@
             android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:text="Stormy"
+
             android:textSize="15sp" />
 
         <Button
@@ -154,7 +166,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="300dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/stormy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 
@@ -163,7 +177,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/windy"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -178,7 +192,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="350dp"
             android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+            android:text="Change"
+            android:id="@+id/windy"
+            android:onClick="changePlaylist"/>
 
     </LinearLayout>
 

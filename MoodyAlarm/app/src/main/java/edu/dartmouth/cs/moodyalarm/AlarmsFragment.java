@@ -1,13 +1,11 @@
 package edu.dartmouth.cs.moodyalarm;
 
 import android.app.Activity;
-import android.app.Fragment;
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Range;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +13,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
+
+
+import android.support.annotation.Nullable;
+
+/**
+ * Created by vivianjiang on 2/25/18.
+ */
+
 
 /**
  * Created by jiyunsung on 2/25/18.
@@ -24,7 +31,7 @@ import java.util.ArrayList;
 
 public class AlarmsFragment extends Fragment {
 
-    private AlarmEntryDbHelper dataStorage;
+    private EntryDbHelper dataStorage;
     private ListView listView;
     private AlarmsAdapter adapter;
 
@@ -37,11 +44,11 @@ public class AlarmsFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.display_alarms, container, false);
 
-        dataStorage = new AlarmEntryDbHelper(getActivity());
+        dataStorage = new EntryDbHelper(getActivity());
         dataStorage.open();
 
         listView = (ListView) view.findViewById(R.id.list_view);
-        adapter = new AlarmsAdapter(getActivity(), dataStorage.fetchEntries());
+        adapter = new AlarmsAdapter(getActivity(), dataStorage.fetchAlarmEntries());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(updateAlarm);
 
@@ -54,7 +61,12 @@ public class AlarmsFragment extends Fragment {
         super.onResume();
         new loadSchema().execute();
     }
-
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //you can set the title for your toolbar here for different fragments different titles
+        getActivity().setTitle("Alarms");
+    }
 
     private AdapterView.OnItemClickListener updateAlarm = new AdapterView.OnItemClickListener() {
         @Override
@@ -81,7 +93,7 @@ public class AlarmsFragment extends Fragment {
         // no ui from this one
         @Override
         protected Void doInBackground(Void... arg0) {
-            entries = dataStorage.fetchEntries();
+            entries = dataStorage.fetchAlarmEntries();
             return null;
         }
 

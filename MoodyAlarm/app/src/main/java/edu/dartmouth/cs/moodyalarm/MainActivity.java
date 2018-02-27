@@ -1,20 +1,14 @@
 package edu.dartmouth.cs.moodyalarm;
 
-import android.app.FragmentManager;
 
+
+import android.app.FragmentManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.LayoutInflater;
 
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,17 +17,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+
 import android.view.MenuItem;
 
-import android.app.Activity;
+
 import android.content.Intent;
-import android.os.Bundle;
+
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -56,6 +47,8 @@ public class MainActivity extends AppCompatActivity
 
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "http://localhost:5000/api/v1/invalid";
+
+    private final int NUMBER_DEFAULT_PLAYLISTS = 9;
 
     private Player mPlayer;
 
@@ -107,10 +100,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentManager fragmentManager = this.getFragmentManager();
-        AlarmsFragment alarmFrag = new AlarmsFragment();
 
-        fragmentManager.beginTransaction().add(R.id.fragment_container, alarmFrag).commit();
+
+//        FragmentManager fragmentManager = this.getFragmentManager();
+//        AlarmsFragment alarmFrag = new AlarmsFragment();
+//
+//        fragmentManager.beginTransaction().replace(R.id.content_frame, alarmFrag).commit();
+
+        displaySelectedScreen(R.id.viewAlarms, true);
 
     }
 
@@ -130,30 +127,9 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        Fragment fragment = null;
 
-        if (id == R.id.editAlarm) {
-            this.setTitle("Alarm Settings");
-            fragment = new AlarmSettings();
-        }
-        if (id == R.id.editSpotify) {
-            // Handle the camera action
-            fragment = new SpotifySettings();
 
-        } else if (id == R.id.editSnooze) {
-            fragment = new SnoozeSettings();
-        }
-
-        //replacing the fragment
-        if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
-            ft.commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        displaySelectedScreen(item.getItemId(), false);
         return true;
     }
 
@@ -239,6 +215,44 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
     }
+
+
+
+    private void displaySelectedScreen(int itemId, boolean onCreate) {
+
+        //creating fragment object
+        Fragment fragment = null;
+        Log.d("displaySelectedScreen", Integer.toString(itemId));
+        //initializing the fragment object which is selected
+
+        switch (itemId) {
+            case R.id.viewAlarms:
+
+                fragment = new AlarmsFragment();
+                break;
+            case R.id.editAlarm:
+                fragment = new AlarmSettings();
+                break;
+//            case R.id.editSpotify:
+//                Log.d("displaySelectedScreen", "results case");
+//
+//                //fragment = new SpotifySettings();
+//                break;
+            case R.id.editSnooze:
+                fragment = new SnoozeSettings();
+        }
+
+        //replacing the fragment
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, fragment);
+            ft.commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
 
 
 }

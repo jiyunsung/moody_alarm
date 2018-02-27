@@ -4,6 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
+    <item android:title="Alarms">
+        <menu>
+            <item
+                android:id="@+id/viewAlarms"
+                android:title="View alarms" />
+        </menu>
+    </item>
+
+
     <item android:title="Alarm Settings">
         <menu>
             <item
@@ -12,13 +21,13 @@
         </menu>
     </item>
 
-    <item android:title="Spotify Settings">
-        <menu>
-            <item
-                android:id="@+id/editSpotify"
-                android:title="Edit Spotify preferences" />
-        </menu>
-    </item>
+    <!--<item android:title="Spotify Settings">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/editSpotify"-->
+                <!--android:title="Edit Spotify preferences" />-->
+        <!--</menu>-->
+    <!--</item>-->
 
     <item android:title="Snooze Disincentives">
         <menu>

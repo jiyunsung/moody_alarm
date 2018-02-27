@@ -1,6 +1,7 @@
 package edu.dartmouth.cs.moodyalarm;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -49,16 +51,24 @@ import java.util.Map;
  */
 
 
-public class SpotifySettings extends Fragment implements AdapterView.OnItemClickListener {
+public class SpotifySettings extends DialogFragment implements AdapterView.OnItemClickListener {
 
     public View view;
     public String[] DEFAULT_PLAYLISTS;
+    private final int NUMBER_DEFAULT_PLAYLISTS = 9;
+    private GridView gridview;
+    private TextView loading;
+
+    public ArrayList<SpotifyEntry> spotifyEntries;
 
     Button btn;
-    @Nullable
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.spotify_settings, container, false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        View view=inflater.inflate(R.layout.spotify_settings,null);
 
 
         super.onCreate(savedInstanceState);
@@ -78,12 +88,16 @@ public class SpotifySettings extends Fragment implements AdapterView.OnItemClick
         DEFAULT_PLAYLISTS[7] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWU0ScTcjJBdj";
         DEFAULT_PLAYLISTS[8] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3rxVfibe1L0";
 
-        final ArrayList<String> imageUrls = new ArrayList<String>();
-        final GridView gridview = (GridView) view.findViewById(R.id.gridview);
+        spotifyEntries = new ArrayList<SpotifyEntry>();
 
-        final TextView loading = (TextView) view.findViewById(R.id.loading);
+        new SpotifyAsyncTask().execute();
+        gridview = (GridView) view.findViewById(R.id.gridview);
+
+        loading = (TextView) view.findViewById(R.id.loading);
 
         loading.setText("Loading playlists...");
+
+        final ArrayList<String> imageUrls = new ArrayList<String>();
 
         for (int i = 0; i< DEFAULT_PLAYLISTS.length;i++) {
             StringRequest jsObjRequest = new StringRequest
@@ -139,22 +153,35 @@ public class SpotifySettings extends Fragment implements AdapterView.OnItemClick
                     return params;
                 }
             };
-
+//
             queue.add(jsObjRequest);
         }
 
 
+//        ArrayList<String> mImageUrls = new ArrayList<String>();
+//        if(spotifyEntries.size() >= NUMBER_DEFAULT_PLAYLISTS){
+//            Log.d("oncreate view", "fetched all entries");
+//            for (int i = 0; i < spotifyEntries.size(); i++){
+//                mImageUrls.add(spotifyEntries.get(i).getImageUrl());
+//                Log.d("for loop", "img url is "+ spotifyEntries.get(i).getImageUrl());
+//
+//            }
+//            loading.setText("");
+//            ImageAdapter adapter = new ImageAdapter(getActivity(), mImageUrls);
+//
+//            gridview.setAdapter(adapter);
+//        }
 
 
-
-        ImageAdapter adapter = new ImageAdapter(getActivity(), imageUrls);
-
-        gridview.setAdapter(adapter);
         Log.d("oncreateview", "just set image adapter");
         gridview.setOnItemClickListener(this);
 
+        builder.setView(view);
 
-        return view;
+
+        Dialog dialog = builder.create();
+        return dialog;
+
     }
 
 
@@ -176,49 +203,49 @@ public class SpotifySettings extends Fragment implements AdapterView.OnItemClick
         getActivity().setTitle("Spotify Settings");
     }
 
-    public void showEditPrefsDialog(View v) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this.getActivity());
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.edit_playlist_preferences_dialog, null);
-        dialogBuilder.setView(dialogView);
-
-        final AlertDialog b = dialogBuilder.create();
-        b.show();
-
-        CheckBox weather = dialogView.findViewById(R.id.useWeather);
-        weather.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v)
-            {
-                Log.d("onclick", "weather checkbox pressed");
-                Fragment fragment = new Weather();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-                }
-                b.cancel();
-                //showEditPrefsDialog(v);
-
-            }
-        });
-
-        CheckBox weekDay = dialogView.findViewById(R.id.useWeekday);
-        weekDay.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v)
-            {
-                Log.d("onclick", "weekDay checkbox pressed");
-                //showEditPrefsDialog(v);
-                Fragment fragment = new Day();
-                if (fragment != null) {
-                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.content_frame, fragment);
-                    ft.commit();
-                }
-                b.cancel();
-
-            }
-        });
-    }
+//    public void showEditPrefsDialog(View v) {
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this.getActivity());
+//        LayoutInflater inflater = this.getLayoutInflater();
+//        final View dialogView = inflater.inflate(R.layout.edit_playlist_preferences_dialog, null);
+//        dialogBuilder.setView(dialogView);
+//
+//        final AlertDialog b = dialogBuilder.create();
+//        b.show();
+//
+//        CheckBox weather = dialogView.findViewById(R.id.useWeather);
+//        weather.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v)
+//            {
+//                Log.d("onclick", "weather checkbox pressed");
+//                Fragment fragment = new Weather();
+//                if (fragment != null) {
+//                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//                    ft.replace(R.id.content_frame, fragment);
+//                    ft.commit();
+//                }
+//                b.cancel();
+//                //showEditPrefsDialog(v);
+//
+//            }
+//        });
+//
+//        CheckBox weekDay = dialogView.findViewById(R.id.useWeekday);
+//        weekDay.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v)
+//            {
+//                Log.d("onclick", "weekDay checkbox pressed");
+//                //showEditPrefsDialog(v);
+//                Fragment fragment = new Day();
+//                if (fragment != null) {
+//                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//                    ft.replace(R.id.content_frame, fragment);
+//                    ft.commit();
+//                }
+//                b.cancel();
+//
+//            }
+//        });
+//    }
 
 
 
@@ -295,6 +322,56 @@ public class SpotifySettings extends Fragment implements AdapterView.OnItemClick
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
+        SpotifyEntryDbHelper dataStorage;
+        // ui calling possible
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected ArrayList<String> doInBackground(Void... params) {
+
+            dataStorage= new SpotifyEntryDbHelper(getActivity().getApplicationContext());
+            dataStorage.open();
+
+            spotifyEntries = dataStorage.fetchEntries();
+
+            Log.d("doInBackground", "entries size is "+ spotifyEntries.size());
+
+            if(spotifyEntries.size() < NUMBER_DEFAULT_PLAYLISTS){
+                Log.d("spotify settings", "less than number default calling spotify controller");
+                SpotifyController spotify = new SpotifyController(getActivity());
+                spotify.fetchDefaultPlaylists(getActivity());
+            }
+
+            ArrayList<String> mImageUrls = new ArrayList<String>();
+            if(spotifyEntries.size() >= NUMBER_DEFAULT_PLAYLISTS){
+                Log.d("oncreate view", "fetched all entries");
+                for (int i = 0; i < spotifyEntries.size(); i++){
+                    mImageUrls.add(spotifyEntries.get(i).getImageUrl());
+                    Log.d("for loop", "do in background img url is "+ spotifyEntries.get(i).getImageUrl());
+
+                }
+
+            }
+
+            return mImageUrls;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> result) {
+            Log.d("onPostExecute", "result length is "+result.size());
+            loading.setText("");
+            ImageAdapter adapter = new ImageAdapter(getActivity(), result);
+
+            gridview.setAdapter(adapter);
+            dataStorage.close();
+        }
+
     }
 
 }
