@@ -17,6 +17,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,11 +59,12 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
         } else {
+            alarmEntry = new AlarmEntry();
             alarmEntry.setOnOff(1);
         }
 
         recurrence = (TextView) findViewById(R.id.recurrence);
-
+        daysList = new Boolean[]{false, false, false, false, false, false, false};
 
         recurrence.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +82,6 @@ public class SetAlarmActivity extends AppCompatActivity {
                     public void onRecurrenceSet(String rrule) {
                         recurrenceRule = rrule;
 
-                        daysList = new Boolean[]{false, false, false, false, false, false, false};
                         if (recurrenceRule != null && recurrenceRule.length() > 0) {
                             EventRecurrence recurrenceEvent = new EventRecurrence();
                             recurrenceEvent.setStartDate(new Time("" + new Date().getTime()));
@@ -124,7 +125,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.switch_menu, menu);
+        inflater.inflate(R.menu.delete_menu, menu);
         return true;
     }
 
@@ -136,32 +137,51 @@ public class SetAlarmActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.switchOnOff) {
+        if (id == R.id.action_name) {
 
-            Switch s = (Switch) findViewById(R.id.switchOnOff);
+            if (!isNew) {
 
-            if (s.isChecked()) {
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
-                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-                Intent intent = new Intent(this, AlarmReceiver.class);
-                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-                long time = (calendar.getTimeInMillis() - (calendar.getTimeInMillis() % 60000));
-                if (System.currentTimeMillis() > time) {
-                    if (calendar.AM_PM == 0)
-                        time = time + (1000 * 60 * 60 * 12);
-                    else
-                        time = time + (1000 * 60 * 60 * 24);
-                }
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
+                dataStorage = new EntryDbHelper(this);
+                dataStorage.open();
+                dataStorage.removeEntry(alarmEntry.getId());
+                finish();
+                return true;
             } else {
-                alarmManager.cancel(pendingIntent);
-            }
+                Context context = getApplicationContext();
+                CharSequence text = "Not Saved Yet";
+                int duration = Toast.LENGTH_SHORT;
 
-            return true;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
         }
+
+//        if (id == R.id.switchOnOff) {
+//
+//            Switch s = (Switch) findViewById(R.id.switchOnOff);
+//
+//            if (s.isChecked()) {
+//
+//                Calendar calendar = Calendar.getInstance();
+//                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
+//                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
+//                Intent intent = new Intent(this, AlarmReceiver.class);
+//                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//
+//                long time = (calendar.getTimeInMillis() - (calendar.getTimeInMillis() % 60000));
+//                if (System.currentTimeMillis() > time) {
+//                    if (calendar.AM_PM == 0)
+//                        time = time + (1000 * 60 * 60 * 12);
+//                    else
+//                        time = time + (1000 * 60 * 60 * 24);
+//                }
+//                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
+//            } else {
+//                alarmManager.cancel(pendingIntent);
+//            }
+//
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -204,11 +224,13 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
             alarmEntry.setOnOff(1);
             alarmEntry.setRepeat(1);
-            alarmEntry.setDaysofweek(new ArrayList<>(Arrays.asList(false, false, false, false, true, true, true)));
+            alarmEntry.setDaysofweek(new ArrayList<Boolean>(Arrays.asList(daysList)));
 
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.insertAlarmEntry(alarmEntry);
+
+            alarmEntry.setSchedule(getApplicationContext());
             return null;
         }
 
@@ -242,6 +264,8 @@ public class SetAlarmActivity extends AppCompatActivity {
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.updateAlarmEntry(alarmEntry);
+
+            alarmEntry.setSchedule(getApplicationContext());
             return null;
         }
 
@@ -250,4 +274,5 @@ public class SetAlarmActivity extends AppCompatActivity {
         }
 
     }
+
 }
