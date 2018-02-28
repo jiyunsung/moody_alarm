@@ -249,6 +249,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         return entry;
     }
 
+
     // Query a specific entry by its index.
     public SpotifyPlaylist fetchEntryByIndexSpotify(long rowId) {
         Log.d("fetchEntryByIndex", "id is " + rowId);
