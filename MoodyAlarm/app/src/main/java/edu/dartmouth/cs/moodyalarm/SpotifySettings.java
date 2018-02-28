@@ -2,17 +2,30 @@ package edu.dartmouth.cs.moodyalarm;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +64,7 @@ import java.util.Map;
  */
 
 
-public class SpotifySettings extends DialogFragment implements AdapterView.OnItemClickListener {
+public class SpotifySettings extends DialogFragment implements AdapterView.OnItemClickListener{
 
     public View view;
     public String[] DEFAULT_PLAYLISTS;
@@ -60,6 +73,10 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
     private TextView loading;
 
     public ArrayList<SpotifyEntry> spotifyEntries;
+
+
+
+
 
     Button btn;
     @Override
@@ -73,108 +90,20 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
         super.onCreate(savedInstanceState);
 
-        RequestQueue queue = Volley.newRequestQueue(this.getActivity());
 
-        //String url = "https://api.spotify.com/v1/browse/categories/mood/playlists?limit=50";
-        DEFAULT_PLAYLISTS = new String[9];
+        new SpotifyAsyncTask().execute();
 
-        DEFAULT_PLAYLISTS[0] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWSiZVO2J6WeI";
-        DEFAULT_PLAYLISTS[1] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX5Q5wA1hY6bS";
-        DEFAULT_PLAYLISTS[2] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWUNIrSzKgQbP";
-        DEFAULT_PLAYLISTS[3] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3YSRoSdA634";
-        DEFAULT_PLAYLISTS[4] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX6ALfRKlHn1t";
-        DEFAULT_PLAYLISTS[5] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DXbvABJXBIyiY";
-        DEFAULT_PLAYLISTS[6] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWVV27DiNWxkR";
-        DEFAULT_PLAYLISTS[7] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWU0ScTcjJBdj";
-        DEFAULT_PLAYLISTS[8] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3rxVfibe1L0";
 
         spotifyEntries = new ArrayList<SpotifyEntry>();
 
-        new SpotifyAsyncTask().execute();
         gridview = (GridView) view.findViewById(R.id.gridview);
 
         loading = (TextView) view.findViewById(R.id.loading);
 
         loading.setText("Loading playlists...");
 
-        final ArrayList<String> imageUrls = new ArrayList<String>();
-
-        for (int i = 0; i< DEFAULT_PLAYLISTS.length;i++) {
-            StringRequest jsObjRequest = new StringRequest
-                    (Request.Method.GET, DEFAULT_PLAYLISTS[i], new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            // response
-                            Log.d("Response", response);
-                            try {
-
-                                JSONObject jsonObject = new JSONObject(response);
-                                String images = jsonObject.getJSONArray("images").get(0).toString();
-                                String[] imageFields = images.split(",");
-                                String imageUrl = imageFields[1].split(" : ")[0].split("\":\"")[1];
-                                imageUrl = imageUrl.replace("\\", "");
-                                StringBuilder url = new StringBuilder(imageUrl);
-                                url.deleteCharAt(url.length()-1);
-                                Log.d("image url", url.toString());
-
-                                imageUrls.add(url.toString());
-                                Log.d("imageUrls size: ", "size is " + imageUrls.size());
-                                if(imageUrls.size() == DEFAULT_PLAYLISTS.length){
-                                    Log.d("oncreateview", "sizes equal");
-                                    loading.setText("");
-                                    ImageAdapter adapter = new ImageAdapter(getActivity(), imageUrls);
-
-                                    gridview.setAdapter(adapter);
-                                    adapter.notifyDataSetChanged();
-
-                                }
-
-                            } catch (JSONException e) {
-                                Log.d("json error", e.toString());
-                            }
-
-
-                        }
-                    },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    // TODO Auto-generated method stub
-                                    Log.d("ERROR", "error => " + error.toString());
-                                }
-                            }
-                    ) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("Authorization", "Bearer " + MainActivity.accessToken);
-                    params.put("Accept", "application/json");
-
-                    return params;
-                }
-            };
-//
-            queue.add(jsObjRequest);
-        }
-
-
-//        ArrayList<String> mImageUrls = new ArrayList<String>();
-//        if(spotifyEntries.size() >= NUMBER_DEFAULT_PLAYLISTS){
-//            Log.d("oncreate view", "fetched all entries");
-//            for (int i = 0; i < spotifyEntries.size(); i++){
-//                mImageUrls.add(spotifyEntries.get(i).getImageUrl());
-//                Log.d("for loop", "img url is "+ spotifyEntries.get(i).getImageUrl());
-//
-//            }
-//            loading.setText("");
-//            ImageAdapter adapter = new ImageAdapter(getActivity(), mImageUrls);
-//
-//            gridview.setAdapter(adapter);
-//        }
-
-
         Log.d("oncreateview", "just set image adapter");
-        gridview.setOnItemClickListener(this);
+
 
         builder.setView(view);
 
@@ -189,6 +118,10 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
                             int position, long id) {
         Toast.makeText(getActivity(), "" + position,
                 Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(getActivity(), PlaylistDisplay.class);
+        intent.putExtra("pos", position+1);
+        startActivity(intent);
 
 
 
@@ -324,8 +257,105 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
         }
     }
 
-    private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
-        SpotifyEntryDbHelper dataStorage;
+
+    public void fetchDefaultPlaylists(Context input){
+
+        RequestQueue queue = Volley.newRequestQueue(input);
+
+        //String url = "https://api.spotify.com/v1/browse/categories/mood/playlists?limit=50";
+
+        final String [] default_playlists = new String[9];
+
+        default_playlists[0] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWSiZVO2J6WeI";
+        default_playlists[1] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX5Q5wA1hY6bS";
+        default_playlists[2] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWUNIrSzKgQbP";
+        default_playlists[3] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3YSRoSdA634";
+        default_playlists[4] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX6ALfRKlHn1t";
+        default_playlists[5] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DXbvABJXBIyiY";
+        default_playlists[6] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWVV27DiNWxkR";
+        default_playlists[7] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWU0ScTcjJBdj";
+        default_playlists[8] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3rxVfibe1L0";
+
+
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        Log.d("Spotify service", "in fetch default playlists access token is "+ MainActivity.accessToken);
+
+
+        for (int i = 0; i< default_playlists.length;i++) {
+
+
+            StringRequest jsObjRequest = new StringRequest
+                    (Request.Method.GET, default_playlists[i], new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // response
+                            Log.d("Response", response);
+                            try {
+
+                                JSONObject jsonObject = new JSONObject(response);
+
+                                String id = jsonObject.getString("id");
+
+                                JSONArray arr = jsonObject.getJSONArray("images");
+                                for (int i = 0; i < arr.length(); i++)
+                                {
+                                    String imageUrl= arr.getJSONObject(i).getString("url");
+                                    Log.d("image url", imageUrl);
+                                    SpotifyEntry entry = new SpotifyEntry();
+                                    entry.setPlaylistId(id);
+                                    entry.setImageUrl(imageUrl);
+
+                                    spotifyEntries.add(entry);
+                                    imageUrls.add(imageUrl.toString());
+                                    Log.d("imageUrls size: ", "size is " + imageUrls.size());
+
+                                    if(spotifyEntries.size() == default_playlists.length){
+                                        Log.d("spotify service", "imageURls size equals default");
+                                        try {
+                                            new SpotifyAsyncSave().execute(imageUrls);
+                                        } catch(Exception e){
+                                            Log.d("error", e.toString());
+                                        }
+
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                Log.d("json error", e.toString());
+                            }
+
+
+                        }
+                    },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    // TODO Auto-generated method stub
+                                    Log.d("ERROR", "error => " + error.toString());
+                                }
+                            }
+                    ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                    params.put("Accept", "application/json");
+
+                    return params;
+                }
+            };
+
+            queue.add(jsObjRequest);
+        }
+
+
+
+    }
+
+
+    private class SpotifyAsyncSave extends AsyncTask<ArrayList<String>, Void, ArrayList<String>> {
+
         // ui calling possible
         protected void onPreExecute() {
 
@@ -333,31 +363,63 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
         // run threads
         @Override
+        protected ArrayList<String> doInBackground(ArrayList<String>... params) {
+            ArrayList<String> playlists = params[0];
+
+
+            EntryDbHelper dataStorage= new EntryDbHelper(getActivity().getApplicationContext());
+            dataStorage.open();
+            for (int i = 0; i < spotifyEntries.size(); i++){
+
+                dataStorage.insertSpotifyEntry(spotifyEntries.get(i));
+            }
+
+
+
+            return playlists;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> result) {
+
+            loading.setText("");
+            ImageAdapter adapter = new ImageAdapter(getActivity(), result);
+
+            gridview.setAdapter(adapter);
+            gridview.setOnItemClickListener(SpotifySettings.this);
+            adapter.notifyDataSetChanged();
+            //dataStorage.close();
+        }
+
+    }
+
+    private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
+        EntryDbHelper dataStorage;
+        // ui calling possible
+        protected void onPreExecute() {
+            Log.d("onPreExecute", "spotifyasync task");
+        }
+
+        // run threads
+        @Override
         protected ArrayList<String> doInBackground(Void... params) {
 
-            dataStorage= new SpotifyEntryDbHelper(getActivity().getApplicationContext());
+            dataStorage= new EntryDbHelper(getActivity().getApplicationContext());
             dataStorage.open();
 
-            spotifyEntries = dataStorage.fetchEntries();
+            ArrayList<SpotifyEntry> spotifyEntries = dataStorage.fetchSpotifyEntries();
 
             Log.d("doInBackground", "entries size is "+ spotifyEntries.size());
 
-            if(spotifyEntries.size() < NUMBER_DEFAULT_PLAYLISTS){
-                Log.d("spotify settings", "less than number default calling spotify controller");
-                SpotifyController spotify = new SpotifyController(getActivity());
-                spotify.fetchDefaultPlaylists(getActivity());
-            }
 
             ArrayList<String> mImageUrls = new ArrayList<String>();
-            if(spotifyEntries.size() >= NUMBER_DEFAULT_PLAYLISTS){
-                Log.d("oncreate view", "fetched all entries");
-                for (int i = 0; i < spotifyEntries.size(); i++){
-                    mImageUrls.add(spotifyEntries.get(i).getImageUrl());
-                    Log.d("for loop", "do in background img url is "+ spotifyEntries.get(i).getImageUrl());
-
-                }
+            Log.d("do in background", "fetching all entries");
+            for (int i = 0; i < spotifyEntries.size(); i++){
+                mImageUrls.add(spotifyEntries.get(i).getImageUrl());
+                Log.d("for loop", "img url is "+ spotifyEntries.get(i).getImageUrl());
 
             }
+
 
             return mImageUrls;
         }
@@ -365,11 +427,18 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
         @Override
         protected void onPostExecute(ArrayList<String> result) {
             Log.d("onPostExecute", "result length is "+result.size());
-            loading.setText("");
-            ImageAdapter adapter = new ImageAdapter(getActivity(), result);
+            if (result.size() != NUMBER_DEFAULT_PLAYLISTS){
+                fetchDefaultPlaylists(getActivity().getApplicationContext());
+            } else{
+                Log.d("results complete", "resetting adapter");
 
-            gridview.setAdapter(adapter);
-            dataStorage.close();
+                loading.setText("");
+                ImageAdapter adapter = new ImageAdapter(getActivity(), result);
+
+                gridview.setAdapter(adapter);
+                gridview.setOnItemClickListener(SpotifySettings.this);
+                adapter.notifyDataSetChanged();
+            }
         }
 
     }

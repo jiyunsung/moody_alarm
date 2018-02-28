@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.spotify.sdk.android.player.Spotify;
 
 import java.util.ArrayList;
 
@@ -35,11 +36,13 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
 
 
-    private String[] allSpotifyColumns = { KEY_ROWID_ALARM, KEY_IMAGEURL};
+    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL,KEY_TRACKINFO};
 
     public final static String TABLE_ENTRIES_SPOTIFY = "SpotifyTable";
     public final static String KEY_ROWID_SPOTIFY = "_id";
+    public final static String KEY_PLAYLISTID = "mPlaylistId";
     public final static String KEY_IMAGEURL = "mImageUrl";
+    public final static String KEY_TRACKINFO = "mTrackInfo";
 
     // SQL query to create the table for the first time
     // Data types are defined below
@@ -64,7 +67,11 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + " ("
             + KEY_ROWID_SPOTIFY
             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_PLAYLISTID
+            + " STRING, "
             + KEY_IMAGEURL
+            + " STRING, "
+            + KEY_TRACKINFO
             + " STRING "
             + ");";
 
@@ -125,6 +132,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     // Insert a item given each column value
     public SpotifyEntry insertSpotifyEntry(SpotifyEntry entry) {
         ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLISTID, entry.getPlaylistId());
         values.put(KEY_IMAGEURL, entry.getImageUrl());
 
 
@@ -142,7 +150,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         return newEntry;
     }
 
-    public void updateEntry(AlarmEntry entry) {
+    public void updateAlarmEntry(AlarmEntry entry) {
         ContentValues values = new ContentValues();
         values.put(KEY_ONOFF, entry.getOnOff());
         values.put(KEY_HOUR, entry.getHour());
@@ -156,13 +164,21 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         database.update(TABLE_ENTRIES_ALARM, values, "_id="+entry.getId(), null);
     }
 
+    public void updateSpotifyEntry(SpotifyEntry entry) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_TRACKINFO, entry.getTrackInfo());
+
+        database.update(TABLE_ENTRIES_SPOTIFY, values, "_id="+entry.getId(), null);
+    }
+
+
     // Remove an entry by giving its index
     public void removeEntry(long rowIndex) {
         database.delete(TABLE_ENTRIES_ALARM, KEY_ROWID_ALARM	+ " = " + rowIndex, null);
     }
 
     // Query a specific entry by its index.
-    public AlarmEntry fetchEntryByIndex(long rowId) {
+    public AlarmEntry fetchEntryByIndexAlarm(long rowId) {
         Cursor cursor = database.query(TABLE_ENTRIES_ALARM,
                 allAlarmColumns,
                 KEY_ROWID_ALARM + " = " + rowId,
@@ -170,6 +186,22 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         AlarmEntry entry = cursorToEntryAlarm(cursor);
         cursor.close();
         return entry;
+    }
+
+    // Query a specific entry by its index.
+    public SpotifyEntry fetchEntryByIndexSpotify(long rowId) {
+        Log.d("fetchEntryByIndex", "id is " + rowId);
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY,
+                allSpotifyColumns,
+                KEY_ROWID_SPOTIFY + " = " + rowId,
+                null,null, null, null);
+        SpotifyEntry e = new SpotifyEntry();
+        if (cursor.moveToFirst()){
+           e = cursorToEntrySpotify(cursor);
+        }
+
+        cursor.close();
+        return e;
     }
 
     // Query the entire table, return all rows
@@ -221,6 +253,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         cursor.moveToFirst(); //Move the cursor to the first row.
         while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
             SpotifyEntry entry = cursorToEntrySpotify(cursor);
+            Log.d("fetch Entries", "row id for entry is: " + entry.getId());
             entries.add(entry);
             cursor.moveToNext();
         }
@@ -233,8 +266,15 @@ public class EntryDbHelper extends SQLiteOpenHelper {
 
         SpotifyEntry entry = new SpotifyEntry();
 
-
+        if (cursor != null) {
+            Log.d("cursorToentrySpotify", "cursor not null");
+            Log.d("cursorToentrySpotify", "id column index is " + cursor.getColumnIndex("_id"));
+            //Log.d("cursorToentrySpotify", "long id is  " + cursor.getLong(1));
+        } else{
+            Log.d("cursorToentrySpotify", "cursor is null");
+        }
         entry.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+        entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistId")));
         entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrl")));
 
 

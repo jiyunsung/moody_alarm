@@ -11,6 +11,8 @@ public class SpotifyEntry implements Serializable {
 
     private Long mId;
     private String mImage_url;
+    private String mPlaylist_id;
+    private String mTrackInfo;
 
 
     public SpotifyEntry(){
@@ -38,6 +40,24 @@ public class SpotifyEntry implements Serializable {
 
     public void setImageUrl(String image_url){
         this.mImage_url = image_url;
+
+    }
+
+    public String getPlaylistId(){
+        return this.mPlaylist_id;
+    }
+
+    public void setPlaylistId(String playlist_id){
+        this.mPlaylist_id = playlist_id;
+
+    }
+
+    public String getTrackInfo(){
+        return this.mTrackInfo;
+    }
+
+    public void setTrackInfo(String trackInfo){
+        this.mTrackInfo = trackInfo;
 
     }
 }

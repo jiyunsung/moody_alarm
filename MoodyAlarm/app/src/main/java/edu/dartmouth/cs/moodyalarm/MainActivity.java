@@ -3,13 +3,22 @@ package edu.dartmouth.cs.moodyalarm;
 
 
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -40,7 +49,7 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
 
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "d7732baf6fed4aa887a95397bcd83152";
@@ -58,6 +67,10 @@ public class MainActivity extends AppCompatActivity
 
 
     public static String accessToken = "";
+    public static Boolean playlistsFetched = false;
+    public static ArrayList<String> mImageUrls;
+
+
 
 
 
@@ -109,6 +122,15 @@ public class MainActivity extends AppCompatActivity
 
         displaySelectedScreen(R.id.viewAlarms, true);
 
+
+
+        //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
+
+
+
+
+
+
     }
 
     @Override
@@ -144,6 +166,7 @@ public class MainActivity extends AppCompatActivity
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 Log.d("onActivityResult: ", "access token is: " + response.getAccessToken());
                 accessToken = response.getAccessToken();
+                //new SpotifyAsyncTask().execute();
                 Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
@@ -252,6 +275,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
+
+
+
+
+
+
+
 
 
 

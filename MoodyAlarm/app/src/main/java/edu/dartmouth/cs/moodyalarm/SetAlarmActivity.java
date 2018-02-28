@@ -241,7 +241,7 @@ public class SetAlarmActivity extends AppCompatActivity {
 
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
-            dataStorage.updateEntry(alarmEntry);
+            dataStorage.updateAlarmEntry(alarmEntry);
             return null;
         }
 
