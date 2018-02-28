@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="375dp"
+    android:layout_height="375dp">
 
     <!--<TextView-->
         <!--android:layout_width="wrap_content"-->
@@ -25,13 +25,16 @@
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:columnWidth="125dp"
         android:numColumns="3"
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp"
-        android:stretchMode="columnWidth"
+        android:listSelector="@null"
         android:layout_centerHorizontal="true"
-        android:gravity="center"
+        android:gravity="center_horizontal"
+        android:clipChildren="true"
+        android:adjustViewBounds="true"
+        android:stretchMode="columnWidth"
+        android:columnWidth="120sp"
         />
 
 

@@ -1,42 +1,56 @@
 package edu.dartmouth.cs.moodyalarm;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import java.io.Serializable;
 
 /**
- * Created by vivianjiang on 2/25/18.
+ * Created by vivianjiang on 2/27/18.
  */
 
-public class Day extends Fragment {
-
-    public View view;
-    Button btn;
-    @Nullable
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        view = inflater.inflate(R.layout.weekday, container, false);
-
-        super.onCreate(savedInstanceState);
-
-        return view;
-    }
+public class Day implements Serializable {
 
 
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Alarm Settings");
-    }
+        private Long mId;
+        private SpotifyPlaylist mPlaylist;
+        private String mName;
 
 
+        public Day() {
 
+        }
+
+        public Day(Long id, String name, SpotifyPlaylist playlist) {
+                this.mId = id;
+                this.mPlaylist = playlist;
+                this.mName = name;
+        }
+
+
+        public Long getId() {
+                return this.mId;
+        }
+
+        public void setId(Long id) {
+                this.mId = id;
+
+        }
+
+        public String getName() {
+                return this.mName;
+        }
+
+        public void setName(String name) {
+                this.mName = name;
+
+        }
+
+        public SpotifyPlaylist getSpotifyPlaylist() {
+                return this.mPlaylist;
+        }
+
+        public void setSpotifyPlaylist(SpotifyPlaylist playlist) {
+                this.mPlaylist = playlist;
+
+        }
 }
 
 

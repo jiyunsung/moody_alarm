@@ -1,37 +1,20 @@
 package edu.dartmouth.cs.moodyalarm;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-
-import com.spotify.sdk.android.authentication.LoginActivity;
-
-import java.util.ArrayList;
 
 /**
  * Created by vivianjiang on 2/25/18.
  */
 
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class AlarmSettings extends Fragment {
 
@@ -88,7 +71,7 @@ public class AlarmSettings extends Fragment {
         {
             switch (position){
                 case 0 : return new Weather();
-                case 1 : return new Day();
+                case 1 : return new DayDisplay();
             }
             return null;
         }

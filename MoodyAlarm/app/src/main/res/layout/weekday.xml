@@ -1,187 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context = ".AlarmSettings">
-
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
+        android:id="@+id/day"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:text="Customize alarm music by day:"
-        android:textSize="15sp" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/monday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Monday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/tuesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="100dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Tuesday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/wednesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="150dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Wednesday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
-
-    </LinearLayout>
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:textSize="40dp"
+        android:text="Monday"
+        android:textColor="@android:color/black" />
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/thursday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="200dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Thursday"
-            android:textSize="15sp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="250dp">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+        <ImageView
+            android:id="@+id/playlist_img"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_dialog_info" />
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/friday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="250dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Friday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="250dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
+        <!--<Button-->
+            <!--android:id="@+id/button_day"-->
+            <!--android:layout_width="90dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/song_name"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="Change"-->
+            <!--android:textSize="12dp"-->
+            <!--android:textColor="@android:color/black" />-->
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/saturday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="300dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Saturday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="300dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/sunday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_marginTop="350dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="1"
-            android:text="Sunday"
-            android:textSize="15sp" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="350dp"
-            android:layout_marginRight="25dp"
-            android:text="Set playlist"/>
-
-    </LinearLayout>
 
 </RelativeLayout>
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--tools:context = ".AlarmSettings">-->
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/textView2"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:gravity="center_horizontal"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="Customize alarm music by day:"-->
+        <!--android:textSize="15sp" />-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="50dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Monday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/monday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="50dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="100dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Tuesday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/tuesday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="100dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="150dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Wednesday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/wednesday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="150dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="200dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Thursday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/thursday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="200dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="250dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Friday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/friday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="250dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="300dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Saturday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/saturday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="300dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
+        <!--<TextView-->
+
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="left"-->
+            <!--android:layout_marginTop="350dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Sunday"-->
+            <!--android:textSize="15sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/sunday"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="350dp"-->
+            <!--android:layout_marginRight="25dp"-->
+            <!--android:text="Set playlist"/>-->
+
+    <!--</LinearLayout>-->
+
+<!--</RelativeLayout>-->

@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Created by vivianjiang on 2/26/18.
  */
 
-public class SpotifyEntry implements Serializable {
+public class SpotifyPlaylist implements Serializable {
 
     private Long mId;
     private String mImage_url;
@@ -15,13 +15,17 @@ public class SpotifyEntry implements Serializable {
     private String mTrackInfo;
 
 
-    public SpotifyEntry(){
+
+    public SpotifyPlaylist(){
 
     }
 
-    public SpotifyEntry(long id, String image_url){
+    public SpotifyPlaylist(long id, String image_url, String playlist_id, String trackInfo){
         this.mImage_url = image_url;
         this.mId = id;
+        this.mPlaylist_id = playlist_id;
+        this.mTrackInfo = trackInfo;
+
     }
 
 
@@ -60,4 +64,6 @@ public class SpotifyEntry implements Serializable {
         this.mTrackInfo = trackInfo;
 
     }
+
+
 }

@@ -32,6 +32,7 @@
         <activity android:name=".SetAlarmActivity"></activity>
         <activity android:name=".PlaylistDisplay"></activity>
 
+
         <receiver android:name=".AlarmReceiver" />
     </application>
 

@@ -72,22 +72,26 @@ public class Weather extends Fragment implements View.OnClickListener {
             case R.id.sunny:
                 showPlaylistDialog(v, R.id.sunny);
                 // do something
-
                 break;
             case R.id.rainy:
                 // do something else
+                showPlaylistDialog(v, R.id.rainy);
                 break;
             case R.id.cloudy:
                 // i'm lazy, do nothing
+                showPlaylistDialog(v, R.id.cloudy);
                 break;
             case R.id.snowy:
                 // i'm lazy, do nothing
+                showPlaylistDialog(v, R.id.snowy);
                 break;
             case R.id.windy:
                 // i'm lazy, do nothing
+                showPlaylistDialog(v, R.id.windy);
                 break;
             case R.id.foggy:
                 // i'm lazy, do nothing
+                showPlaylistDialog(v, R.id.foggy);
                 break;
         }
     }

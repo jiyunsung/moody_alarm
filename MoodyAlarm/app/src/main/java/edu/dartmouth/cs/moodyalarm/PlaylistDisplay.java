@@ -1,54 +1,33 @@
 package edu.dartmouth.cs.moodyalarm;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -58,9 +37,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,18 +53,21 @@ public class PlaylistDisplay extends AppCompatActivity{
     private GridView gridview;
     private TextView loading;
 
-    private SpotifyEntry entry;
+    private SpotifyPlaylist entry;
+    private Day day;
     private int position;
     private ArrayList<SpotifySong> songs;
     private ListView listView;
+    private EntryDbHelper database;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist_display);
         position = getIntent().getIntExtra("pos", 0);
-        EntryDbHelper database = new EntryDbHelper(getApplicationContext());
+        database = new EntryDbHelper(getApplicationContext());
         database.open();
         entry = database.fetchEntryByIndexSpotify(Long.valueOf(position));
+        day = database.fetchEntryByIndexDay(DayDisplay.dayId);
         listView = findViewById(R.id.songs_list);
         songs = new ArrayList<SpotifySong>();
 
@@ -97,8 +77,31 @@ public class PlaylistDisplay extends AppCompatActivity{
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
 
-    Button btn;
+    // delete button
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.select:
+                day.setSpotifyPlaylist(entry);
+                database.updateDayEntry(day);
+                //DayDisplay.adapter.notifyDataSetChanged();
+                finish();
+
+                return true;
+            case R.id.delete:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
@@ -183,9 +186,10 @@ public class PlaylistDisplay extends AppCompatActivity{
 
             TextView songName = (TextView) convertView.findViewById(R.id.song_name);
             TextView songArtist = (TextView) convertView.findViewById(R.id.song_artist);
+            ImageView albumPhoto = convertView.findViewById(R.id.album_photo);
+            new DownloadImageTask(albumPhoto)
+                .execute(e.getImageUrl());
 
-           
-            
 
             songName.setText(e.getSongName());
             songArtist.setText(e.getSongArtist());
@@ -206,14 +210,9 @@ public class PlaylistDisplay extends AppCompatActivity{
         // run threads
         @Override
         protected Void doInBackground(Void... params) {
-
-
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.updateSpotifyEntry(entry);
-
-
-
             return null;
         }
 
@@ -244,7 +243,7 @@ public class PlaylistDisplay extends AppCompatActivity{
                     String imageUrl = image.getString("url");
                     Log.d("image url is ", imageUrl);
                     
-                    SpotifySong song = new SpotifySong(songName, artistName,"");
+                    SpotifySong song = new SpotifySong(songName, artistName,imageUrl);
                     songs.add(song);
 
 
@@ -274,17 +273,33 @@ public class PlaylistDisplay extends AppCompatActivity{
 
                 }
             });
-            //dataStorage.close();
-
-//            loading.setText("");
-//            ImageAdapter adapter = new ImageAdapter(getActivity(), result);
-//
-//            gridview.setAdapter(adapter);
-//            gridview.setOnItemClickListener(SpotifySettings.this);
-//            adapter.notifyDataSetChanged();
-            //dataStorage.close();
         }
 
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 
 

@@ -1,24 +1,15 @@
 package edu.dartmouth.cs.moodyalarm;
 
 
-
-import android.app.FragmentManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
-import android.support.v4.content.LocalBroadcastManager;
+
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,6 +26,14 @@ import android.content.Intent;
 import android.util.Log;
 
 
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -46,7 +45,14 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
@@ -67,8 +73,11 @@ public class MainActivity extends AppCompatActivity
 
 
     public static String accessToken = "";
-    public static Boolean playlistsFetched = false;
+    public Boolean finishedDataRetrieval= false;
+    public EntryDbHelper dataStorage;
     public static ArrayList<String> mImageUrls;
+    public String uri = "";
+
 
 
 
@@ -124,6 +133,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
         //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
 
 
@@ -166,8 +176,7 @@ public class MainActivity extends AppCompatActivity
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 Log.d("onActivityResult: ", "access token is: " + response.getAccessToken());
                 accessToken = response.getAccessToken();
-                //new SpotifyAsyncTask().execute();
-                Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
+                Config playerConfig = new Config(this, accessToken, CLIENT_ID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
                     public void onInitialized(SpotifyPlayer spotifyPlayer) {
@@ -181,6 +190,24 @@ public class MainActivity extends AppCompatActivity
                         Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                     }
                 });
+                new RetrieveDataAsyncTask().execute();
+                //new SpotifyAsyncTask().execute();
+
+//                Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
+//                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+//                    @Override
+//                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+//                        mPlayer = spotifyPlayer;
+//                        mPlayer.addConnectionStateCallback(MainActivity.this);
+//                        mPlayer.addNotificationCallback(MainActivity.this);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable throwable) {
+//                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+//                    }
+//                });
+                //new RetrieveDataAsyncTask().execute();
             }
         }
     }
@@ -215,8 +242,15 @@ public class MainActivity extends AppCompatActivity
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
 
+
+
+
+
         // This is the line that plays a song.
-        mPlayer.playUri(null, "spotify:track:4rzfv0JLZfVhOhbSQ8o5jZ", 0, 0);
+        if(finishedDataRetrieval) {
+            mPlayer.playUri(null, uri, 0, 0);
+        }
+
     }
 
     @Override
@@ -278,11 +312,398 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    private class PlayPlaylistAsyncTask extends AsyncTask<Long, Void, Void> {
+        EntryDbHelper dataStorage;
+        // ui calling possible
+        protected void onPreExecute() {
+            Log.d("onPreExecute", "retreivedataasync task");
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Long... params) {
+            Long dayId = params[0];
+
+            dataStorage= new EntryDbHelper(getApplicationContext());
+            dataStorage.open();
+            Day day = dataStorage.fetchEntryByIndexDay(dayId);
+
+
+            SpotifyPlaylist playlist = day.getSpotifyPlaylist();
+            String spotifySongs = playlist.getTrackInfo();
+            Log.d("PlayPlaylistAsyncTask", "do in background spotifytrack is: " + spotifySongs);
+
+
+
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.d("onPostExecute", "playPlaylistAsyncTask");
+
+
+
+        }
+    }
+
+    private class RetrieveDataAsyncTask extends AsyncTask<Void, Void, Void> {
+        EntryDbHelper dataStorage;
+        ArrayList<SpotifyPlaylist> playlists;
+        // ui calling possible
+        protected void onPreExecute() {
+            Log.d("onPreExecute", "retreivedataasync task");
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            dataStorage= new EntryDbHelper(getApplicationContext());
+            dataStorage.open();
+
+            playlists = dataStorage.fetchSpotifyEntries();
+
+
+            if (playlists.size() < NUMBER_DEFAULT_PLAYLISTS){
+                 finishedDataRetrieval = false;
+            } else{
+                finishedDataRetrieval = true;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.d("onPostExecute", "main activity playlists length is "+playlists.size());
+
+
+            //dataStorage.close();
+            if(!finishedDataRetrieval){
+                Log.d("retrieve data asynctask", "did not all data");
+                fetchDefaultPlaylists(getApplicationContext());
+            } else {
+                Log.d("retrieve data asynctask", "got all data");
+                finishedDataRetrieval = true;
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+                switch (day) {
+                    case Calendar.MONDAY:
+                        // Current day is Sunday
+
+                    case Calendar.TUESDAY:
+                        // Current day is Monday
+
+                    case Calendar.WEDNESDAY:
+                        Log.d("retrieve data asynctask", "day is wednesday");
+                        Day today = dataStorage.fetchEntryByIndexDay(3);
+                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
+                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
+                        String tracks = todayPlaylist.getTrackInfo();
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(tracks);
+
+
+                            JSONArray arr = jsonObject.getJSONArray("items");
+
+                            JSONObject item = arr.getJSONObject(0);
+                            JSONObject track = item.getJSONObject("track");
+                            JSONObject album = track.getJSONObject("album");
+                            String songName = album.getString("name");
+                            Log.d("song name is ", songName);
+                            uri = album.getString("uri");
+                            Log.d("track uri is ", uri);
+
+                        } catch(JSONException e){Log.d("error", e.toString());}
+
+                        // etc.
+                }
+
+
+
+            }
+        }
+    }
 
 
 
 
 
 
+    public void fetchDefaultPlaylists(Context input){
+
+        RequestQueue queue = Volley.newRequestQueue(input);
+
+        //String url = "https://api.spotify.com/v1/browse/categories/mood/playlists?limit=50";
+
+        final String [] default_playlists = new String[9];
+
+        default_playlists[0] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWSiZVO2J6WeI";
+        default_playlists[1] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX5Q5wA1hY6bS";
+        default_playlists[2] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWUNIrSzKgQbP";
+        default_playlists[3] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3YSRoSdA634";
+        default_playlists[4] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX6ALfRKlHn1t";
+        default_playlists[5] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DXbvABJXBIyiY";
+        default_playlists[6] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWVV27DiNWxkR";
+        default_playlists[7] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DWU0ScTcjJBdj";
+        default_playlists[8] = "https://api.spotify.com/v1/users/spotify/playlists/37i9dQZF1DX3rxVfibe1L0";
+
+
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        final ArrayList<SpotifyPlaylist> playlists = new ArrayList<>();
+        Log.d("days display", "in fetch default playlists access token is "+ MainActivity.accessToken);
+
+
+        for (int i = 0; i< default_playlists.length;i++) {
+
+
+            StringRequest jsObjRequest = new StringRequest
+                    (Request.Method.GET, default_playlists[i], new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // response
+                            Log.d("fetch default playlists Response", response);
+                            try {
+
+                                JSONObject jsonObject = new JSONObject(response);
+                                String id = jsonObject.getString("id");
+
+                                JSONArray arr = jsonObject.getJSONArray("images");
+                                for (int i = 0; i < arr.length(); i++)
+                                {
+                                    String imageUrl= arr.getJSONObject(i).getString("url");
+                                    Log.d("image url", imageUrl);
+                                    SpotifyPlaylist entry = new SpotifyPlaylist();
+                                    entry.setPlaylistId(id);
+                                    entry.setImageUrl(imageUrl);
+
+                                    playlists.add(entry);
+                                    imageUrls.add(imageUrl.toString());
+                                    Log.d("imageUrls size: ", "size is " + imageUrls.size());
+
+                                    if(playlists.size() == default_playlists.length){
+                                        Log.d("fetch default playlists", "imageURls size equals default");
+                                        try {
+                                            new SpotifyAsyncSave().execute(playlists);
+                                        } catch(Exception e){
+                                            Log.d("error", e.toString());
+                                        }
+
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                Log.d("json error", e.toString());
+                            }
+
+
+                        }
+                    },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    // TODO Auto-generated method stub
+                                    Log.d("ERROR", "error => " + error.toString());
+                                }
+                            }
+                    ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                    params.put("Accept", "application/json");
+
+                    return params;
+                }
+            };
+
+            queue.add(jsObjRequest);
+        }
+
+
+
+    }
+
+
+    public void fetchPlaylistTracks(String id, final SpotifyPlaylist playlist, final Day day){
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken);
+
+        StringRequest jsObjRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("fetchPlaylisttracks Response", response);
+                        playlist.setTrackInfo(response);
+                        new SaveSongsAsyncTask(playlist, day).execute();
+
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                params.put("Accept", "application/json");
+
+                return params;
+            }
+        };
+        queue.add(jsObjRequest);
+    }
+
+
+
+    private class SpotifyAsyncSave extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
+
+        String [] dayArr = {"Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        EntryDbHelper dataStorage;
+        // ui calling possible
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected ArrayList<SpotifyPlaylist> doInBackground(ArrayList<SpotifyPlaylist>... params) {
+            ArrayList<SpotifyPlaylist> playlists = params[0];
+
+
+            dataStorage= new EntryDbHelper(getApplicationContext());
+            dataStorage.open();
+
+
+            for (int i = 0; i < playlists.size(); i++){
+                Log.d("Spotifyasyncsave", "do in background, playlist id is " + playlists.get(i).getPlaylistId());
+                playlists.get(i).setId(dataStorage.insertSpotifyEntry(playlists.get(i)).getId());
+
+
+            }
+
+
+            return playlists;
+
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SpotifyPlaylist> result) {
+            Day day = null;
+            for (int i = 0; i < result.size(); i++){
+                if(i < dayArr.length){
+                    day = new Day();
+                    day.setName(dayArr[i]);
+                    day.setId(dataStorage.insertDayEntry(day).getId());
+                } else{
+                    day = null;
+                }
+
+                fetchPlaylistTracks(result.get(i).getPlaylistId(), result.get(i), day);
+            }
+        }
+
+    }
+
+
+    private class SaveSongsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        // ui calling possible
+        EntryDbHelper dataStorage;
+
+        SpotifyPlaylist playlist;
+        Day day;
+
+        public SaveSongsAsyncTask(SpotifyPlaylist p,Day d){
+            this.playlist = p;
+            this.day = d;
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Void... params) {
+            dataStorage= new EntryDbHelper(getApplicationContext());
+            dataStorage.open();
+            dataStorage.updateSpotifyEntry(this.playlist);
+
+            if(this.day != null) {
+                Log.d("savesongsasynctask", "playlist set for day: " + this.day.getName());
+                this.day.setSpotifyPlaylist(this.playlist);
+                dataStorage.updateDayEntry(this.day);
+            } else{
+                finishedDataRetrieval = true;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            Log.d("savesongsasynctask", "onpostexecute ");
+
+            if (finishedDataRetrieval){
+                Log.d("savesong async task", "finisehd data retrieval, playing song");
+
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+                switch (day) {
+                    case Calendar.MONDAY:
+                        // Current day is Sunday
+
+                    case Calendar.TUESDAY:
+                        // Current day is Monday
+
+                    case Calendar.WEDNESDAY:
+                        Log.d("savesong asynctask", "day is wednesday");
+                        Day today = dataStorage.fetchEntryByIndexDay(3);
+                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
+                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
+                        String tracks = todayPlaylist.getTrackInfo();
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(tracks);
+
+
+                            JSONArray arr = jsonObject.getJSONArray("items");
+
+                                JSONObject item = arr.getJSONObject(0);
+                                JSONObject track = item.getJSONObject("track");
+                                JSONObject album = track.getJSONObject("album");
+                                String songName = album.getString("name");
+                                Log.d("song name is ", songName);
+                                uri = album.getString("uri");
+                                Log.d("track uri is ", uri);
+
+                        } catch(JSONException e){Log.d("error", e.toString());}
+
+                        // etc.
+                }
+
+                mPlayer.playUri(null, uri, 0, 0);
+            }
+
+        }
+
+    }
 
 }
