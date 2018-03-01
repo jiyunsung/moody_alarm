@@ -36,7 +36,6 @@ import java.util.Date;
 public class SetAlarmActivity extends AppCompatActivity {
 
     TimePicker alarmTimePicker;
-    PendingIntent pendingIntent;
     AlarmManager alarmManager;
     private EntryDbHelper dataStorage;
     private boolean isNew;
@@ -44,6 +43,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     private TextView recurrence;
     private String recurrenceRule;
     private Boolean[] daysList;
+    private boolean saved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,18 +54,21 @@ public class SetAlarmActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = getIntent();
         isNew = intent.getBooleanExtra(AlarmsFragment.NEWALARM, true);
+        saved = false;
         if (!isNew) {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
+            daysList = null;
         } else {
             alarmEntry = new AlarmEntry();
             alarmEntry.setOnOff(1);
+            alarmEntry.setRepeat(0);
+            daysList = new Boolean[]{false, false, false, false, false, false, false};
+
         }
 
         recurrence = (TextView) findViewById(R.id.recurrence);
-        daysList = new Boolean[]{false, false, false, false, false, false, false};
-
         recurrence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,54 +159,32 @@ public class SetAlarmActivity extends AppCompatActivity {
             }
         }
 
-//        if (id == R.id.switchOnOff) {
-//
-//            Switch s = (Switch) findViewById(R.id.switchOnOff);
-//
-//            if (s.isChecked()) {
-//
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
-//                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-//                Intent intent = new Intent(this, AlarmReceiver.class);
-//                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-//
-//                long time = (calendar.getTimeInMillis() - (calendar.getTimeInMillis() % 60000));
-//                if (System.currentTimeMillis() > time) {
-//                    if (calendar.AM_PM == 0)
-//                        time = time + (1000 * 60 * 60 * 12);
-//                    else
-//                        time = time + (1000 * 60 * 60 * 24);
-//                }
-//                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
-//            } else {
-//                alarmManager.cancel(pendingIntent);
-//            }
-//
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 
     public void saveButtonClicked(View view){
 
-        if (isNew) {
+        if (!saved) {
+            saved = true; // no double clicking!
 
-            new writeSchema().execute();
+            if (isNew) {
 
-            Context context = getApplicationContext();
-            CharSequence text = "Saved";
-            int duration = Toast.LENGTH_SHORT;
+                new writeSchema().execute();
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-        } else {
+                Context context = getApplicationContext();
+                CharSequence text = "Saved";
+                int duration = Toast.LENGTH_SHORT;
 
-            new updateSchema().execute();
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            } else {
 
+                new updateSchema().execute();
+
+            }
         }
-
         finish();
+
 
     }
     public void cancelButtonClicked(View view){
@@ -222,8 +203,6 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
-            alarmEntry.setOnOff(1);
-            alarmEntry.setRepeat(1);
             alarmEntry.setDaysofweek(new ArrayList<Boolean>(Arrays.asList(daysList)));
 
             dataStorage= new EntryDbHelper(getApplicationContext());

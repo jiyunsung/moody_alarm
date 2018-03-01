@@ -3,7 +3,14 @@
     package="edu.dartmouth.cs.moodyalarm">
 
     <uses-permission android:name="android.permission.INTERNET" />
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+=======
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+>>>>>>> 33f24a9c8d35772fef65dabf3d4c7366239da6ed
 
     <application
         android:allowBackup="true"
@@ -23,7 +30,15 @@
             </intent-filter>
         </activity>
 
-
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="true"
+            android:enabled="true"
+            android:process=":background">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
 
         <activity
@@ -32,9 +47,12 @@
 
         <activity android:name=".SetAlarmActivity"></activity>
         <activity android:name=".PlaylistDisplay"></activity>
+        <activity android:name=".PopupActivity"></activity>
+
 
         <service android:name=".LocationService"></service>
         <receiver android:name=".AlarmReceiver" />
+
     </application>
 
 </manifest>

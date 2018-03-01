@@ -1,47 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TimePicker
-        android:id="@+id/timePicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"/>
-
-    <Button
-        android:id="@+id/recurrence"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Set Recurrence"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="18sp" />
-
-    <LinearLayout
+    android:layout_width="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="190dp"
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SAVE"
-            android:layout_weight="1"
-            android:onClick="saveButtonClicked"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"/>
 
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="190dp"
+        <TextView
+            android:id="@+id/recurrence"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CANCEL"
-            android:layout_weight="1"
-            android:onClick="cancelButtonClicked"/>
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Set Recurrence"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CANCEL"
+                android:layout_weight="1"
+                android:onClick="cancelButtonClicked"/>
+
+            <TextView
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAVE"
+                android:layout_weight="1"
+                android:onClick="saveButtonClicked"/>
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

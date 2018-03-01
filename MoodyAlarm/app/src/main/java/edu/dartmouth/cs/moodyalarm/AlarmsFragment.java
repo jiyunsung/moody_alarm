@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
@@ -19,11 +22,6 @@ import java.util.ArrayList;
 
 
 import android.support.annotation.Nullable;
-
-/**
- * Created by vivianjiang on 2/25/18.
- */
-
 
 /**
  * Created by jiyunsung on 2/25/18.
@@ -102,6 +100,7 @@ public class AlarmsFragment extends Fragment {
             // apply to list adapter
             adapter = new AlarmsAdapter(getActivity(), entries);
             listView.setAdapter(adapter);
+            listView.setOnItemClickListener(updateAlarm);
         }
 
     }
@@ -113,63 +112,85 @@ public class AlarmsFragment extends Fragment {
 
         public class ViewHolder {
             TextView Row0;
-            TextView Row1;
+            TextView Label;
             TextView Row2;
-            //Switch OnOff;
+            Switch OnOff;
         }
 
         public AlarmsAdapter(Activity context, ArrayList<AlarmEntry> entries) {
-            super(context, R.layout.display_alarms, R.id.row_id, entries);
+            super(context, R.layout.row_switch_layout, R.id.row_id, entries);
             this._context = context;
             this.entries = entries;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+            View view = null;
 
             if (convertView == null) {
                 LayoutInflater inflater = _context.getLayoutInflater();
-                convertView = inflater.inflate(R.layout.display_alarms, parent, false);
+                view = inflater.inflate(R.layout.row_switch_layout, parent, false);
 
-                holder = new ViewHolder();
-                holder.Row0 = (TextView) convertView.findViewById(R.id.row0);
-                holder.Row1 = (TextView) convertView.findViewById(R.id.row1);
-                holder.Row1.setTypeface(null, Typeface.BOLD);
-                holder.Row2 = (TextView) convertView.findViewById(R.id.row2);
-                //holder.OnOff = (Switch) convertView.findViewById(R.id.switchForActionBar);
+                final  ViewHolder holder = new ViewHolder();
 
-                convertView.setTag(holder);
+                holder.Row0 = (TextView) view.findViewById(R.id.row0);
+                holder.Label = (TextView) view.findViewById(R.id.label);
+                holder.Label.setTypeface(null, Typeface.BOLD);
+                holder.Row2 = (TextView) view.findViewById(R.id.row2);
+                holder.OnOff = (Switch) view.findViewById(R.id.switchOnOff);
+
+                holder.OnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        AlarmEntry element = (AlarmEntry) holder.OnOff.getTag();
+
+                        if (buttonView.isChecked()) {
+                            element.setOnOff(1);
+                            element.setSchedule(getActivity());
+                            Log.d("TAG", "Set ON!!!");
+                        }
+                        else {
+                            element.setOnOff(0);
+                            element.cancelSchedule(getActivity());
+                        }
+                    }
+                });
+                view.setTag(holder);
+                holder.OnOff.setTag(entries.get(position));
 
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                view = convertView;
+                ((ViewHolder) view.getTag()).OnOff.setTag(entries.get(position));
             }
 
-//            holder.OnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                @Override
-//                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                    if (isChecked)
-//                        entries.get(position).setOnOff(1);
-//                    else
-//                        entries.get(position).setOnOff(0);
-//                }
-//            });
 
-            holder.Row1.setText(Integer.toString(entries.get(position).getHour()) + ":" + Integer.toString(entries.get(position).getMinute()));
-            String days = "";
-            int i = 0;
-            for (boolean day: entries.get(position).getDaysofweek()) {
-                if (day) {
-                    if (days.equals(""))
-                        days += DAYS[i];
-                    else
-                        days += ", " + DAYS[i];
+
+            ViewHolder holder = (ViewHolder) view.getTag();
+            holder.Label.setText(Integer.toString(entries.get(position).getHour()) + ":" + Integer.toString(entries.get(position).getMinute()));
+
+            if (entries.get(position).getOnOff() == 1)
+                holder.OnOff.setChecked(true);
+            else
+                holder.OnOff.setChecked(false);
+
+            if (entries.get(position).getRepeated() == 1) {
+                String days = "";
+                int i = 0;
+                for (boolean day : entries.get(position).getDaysofweek()) {
+                    if (day) {
+                        if (days.equals(""))
+                            days += DAYS[i];
+                        else
+                            days += ", " + DAYS[i];
+                    }
+                    i++;
                 }
-                i++;
+                holder.Row2.setText(days);
+            } else if (entries.get(position).getRepeated() == 0) {
+                holder.Row2.setText("No Recurrence");
             }
-            holder.Row2.setText(days);
 
-            return convertView;
+            return view;
         }
 
         public ArrayList<AlarmEntry> getEntries() {

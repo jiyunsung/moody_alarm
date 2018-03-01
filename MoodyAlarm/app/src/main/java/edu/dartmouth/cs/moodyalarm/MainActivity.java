@@ -265,9 +265,7 @@ public class MainActivity extends AppCompatActivity
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
         // This is the line that plays a song.
-        if(finishedDataRetrieval) {
-            //mPlayer.playUri(null, uri, 0, 0);
-        }
+
     }
 
     @Override
