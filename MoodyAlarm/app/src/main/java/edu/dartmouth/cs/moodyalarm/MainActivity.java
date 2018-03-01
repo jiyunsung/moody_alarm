@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity
         Log.d("MainActivity", "User logged in");
 
         // This is the line that plays a song.
-        mPlayer.playUri(null, "spotify:track:4rzfv0JLZfVhOhbSQ8o5jZ", 0, 0);
+        //mPlayer.playUri(null, "spotify:track:4rzfv0JLZfVhOhbSQ8o5jZ", 0, 0);
     }
 
     @Override

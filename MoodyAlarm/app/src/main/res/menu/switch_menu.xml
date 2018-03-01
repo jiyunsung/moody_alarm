@@ -6,6 +6,6 @@
         android:id="@+id/switchOnOff"
         android:title=""
         app:showAsAction="always"
-        android:actionLayout="@layout/switch_layout"
+        android:actionLayout="@layout/row_switch_layout"
         />
 </menu>
