@@ -35,7 +35,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
 
 
-    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL,KEY_IMAGEBITMAP, KEY_TRACKINFO};
+    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL, KEY_IMAGEBITMAP, KEY_TRACKINFO};
 
     public final static String TABLE_ENTRIES_SPOTIFY = "SpotifyTable";
     public final static String KEY_ROWID_SPOTIFY = "_id";
@@ -127,7 +127,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         database = getWritableDatabase();
     }
 
-    public void close() {close();}
+    public void close() { close();}
 
     public boolean isOpen(){
         return isOpen();
