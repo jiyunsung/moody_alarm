@@ -41,4 +41,5 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'be.billington.calendar.recurrencepicker:library:1.1.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

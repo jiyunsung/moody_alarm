@@ -29,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,8 +135,8 @@ public class DayDisplay extends Fragment {
 
                     SpotifyPlaylist playlist = d.getSpotifyPlaylist();
 
-                    new DownloadImageTask(playlistImg)
-                            .execute(playlist.getImageUrl());
+                Picasso.with(getActivity().getApplicationContext()).
+                        load(playlist.getImageUrl()).into(playlistImg);
 
             } else {
                 playlistImg.setImageResource(R.drawable.spotify_logo);
@@ -145,14 +146,6 @@ public class DayDisplay extends Fragment {
             if(d.getName().equals("Wednesday")){
                 dayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40f);
             }
-//            select.setOnClickListener(new View.OnClickListener(){
-//                public void onClick(View v){
-//                    showPlaylistDialog(v, d.getId());
-//                    dayId = d.getId();
-//                }
-//            });
-
-            // Return the completed view to render on screen
             return convertView;
         }
 
@@ -166,7 +159,7 @@ public class DayDisplay extends Fragment {
 
         // ui calling possible
 
-        private EntryDbHelper database;
+
         boolean initiallyEmpty;
         protected void onPreExecute() {
 
@@ -175,20 +168,16 @@ public class DayDisplay extends Fragment {
         // run threads
         @Override
         protected Void doInBackground(Void... params) {
-            database = new EntryDbHelper(getActivity().getApplicationContext());
-            database.open();
 
 
-            days = database.fetchDayEntries();
+
+            days = MainActivity.dataStorage.fetchDayEntries();
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-
-
-
             adapter= new CustomAdapter(getActivity().getApplicationContext(), days);
 
             //adapter.addAll(days);
@@ -222,34 +211,6 @@ public class DayDisplay extends Fragment {
         }
 
     }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-
-
 
 
 

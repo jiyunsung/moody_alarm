@@ -29,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,8 +164,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
             }
             Log.d("imageadapter url: ", mUrls.get(position));
 
-            new DownloadImageTask(imageView)
-                    .execute(mUrls.get(position));
+            Picasso.with(getActivity().getApplicationContext()).
+                    load(mUrls.get(position)).into(imageView);
+
 
             return imageView;
         }
@@ -173,36 +175,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-
-
 
     private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
-        EntryDbHelper dataStorage;
+
         // ui calling possible
         protected void onPreExecute() {
             Log.d("onPreExecute", "spotifyasync task");
@@ -212,10 +187,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
         @Override
         protected ArrayList<String> doInBackground(Void... params) {
 
-            dataStorage= new EntryDbHelper(getActivity().getApplicationContext());
-            dataStorage.open();
 
-            ArrayList<SpotifyPlaylist> spotifyEntries = dataStorage.fetchSpotifyEntries();
+
+            ArrayList<SpotifyPlaylist> spotifyEntries = MainActivity.dataStorage.fetchSpotifyEntries();
 
             Log.d("doInBackground", "entries size is "+ spotifyEntries.size());
 

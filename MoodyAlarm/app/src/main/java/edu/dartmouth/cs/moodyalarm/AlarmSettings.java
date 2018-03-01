@@ -21,6 +21,7 @@ public class AlarmSettings extends Fragment {
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
     public static int int_items = 2;
+    public static int position;
 
     @Nullable
     @Override
@@ -67,13 +68,19 @@ public class AlarmSettings extends Fragment {
 
         //return the fragment with respect to page position.
         @Override
-        public Fragment getItem(int position)
+        public Fragment getItem(int pos)
         {
-            switch (position){
-                case 0 : return new WeatherDisplay();
-                case 1 : return new DayDisplay();
-            }
-            return null;
+
+                if(pos == 0) {
+                    position = 0;
+                    return new WeatherDisplay();
+
+                } else{
+                    position = 1;
+                return new DayDisplay();
+
+                }
+
         }
 
         @Override
