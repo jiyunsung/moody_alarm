@@ -34,12 +34,8 @@
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
-<<<<<<< HEAD
             android:exported="true"
             android:process=":background">
-=======
-            >
->>>>>>> 019aece534d12d7757097de2b1996a1712a79ace
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
