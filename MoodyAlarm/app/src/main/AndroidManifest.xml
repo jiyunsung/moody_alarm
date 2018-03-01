@@ -4,10 +4,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -29,26 +32,26 @@
 
         <receiver
             android:name=".AlarmReceiver"
-            android:exported="true"
             android:enabled="true"
+            android:exported="true"
             android:process=":background">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name=".SetAlarmActivity" />
+        <activity android:name=".PlaylistDisplay" />
+        <activity
+            android:name=".PopupActivity"
+            android:launchMode="singleInstance" />
 
-        <activity android:name=".SetAlarmActivity"></activity>
-        <activity android:name=".PlaylistDisplay"></activity>
-        <activity android:name=".PopupActivity"
-            android:launchMode="singleInstance">
-        </activity>
-        <service android:name=".LocationService"></service>
+        <service android:name=".LocationService" />
 
+        <activity android:name=".VoiceRecognitionActivity"></activity>
     </application>
 
 </manifest>
