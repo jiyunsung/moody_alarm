@@ -28,8 +28,8 @@ public class Alarmhandler {
 
 
     public void start_alert(Context context, String uri){
-//        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
-//        mediaPlayer.start();
+        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
+        mediaPlayer.start();
 
 
 
@@ -42,9 +42,9 @@ public class Alarmhandler {
 
 
     public void stop_alert(Context context){
-//        if (mediaPlayer != null){
-//            mediaPlayer.release();
-//        }
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+        }
 
         //Spotify.destroyPlayer(MainActivity.class);
         MainActivity.mPlayer.pause(null);

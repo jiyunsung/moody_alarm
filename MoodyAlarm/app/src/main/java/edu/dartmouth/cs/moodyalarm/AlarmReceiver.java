@@ -16,7 +16,6 @@ public class AlarmReceiver extends BroadcastReceiver
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-        Log.d("received??", "TT");
         intent.getAction();
 
         startPopup(context);

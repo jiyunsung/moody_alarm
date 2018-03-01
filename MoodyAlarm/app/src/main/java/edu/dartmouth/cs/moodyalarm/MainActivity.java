@@ -103,13 +103,10 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "vj";
     private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
 
-
+    private FloatingActionButton fab;
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-
-    // list view
-    private String[] lv_arr = {};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,17 +298,22 @@ public class MainActivity extends AppCompatActivity
             case R.id.viewAlarms:
 
                 fragment = new AlarmsFragment();
+                fab.setVisibility(View.VISIBLE);
                 break;
             case R.id.editAlarm:
                 fragment = new AlarmSettings();
+                fab.setVisibility(View.INVISIBLE);
+
                 break;
 //            case R.id.editSpotify:
+            // fab.setVisibility(View.INVISIBLE);
 //                Log.d("displaySelectedScreen", "results case");
 //
 //                //fragment = new SpotifySettings();
 //                break;
             case R.id.editSnooze:
                 fragment = new SnoozeSettings();
+                fab.setVisibility(View.INVISIBLE);
         }
 
         //replacing the fragment

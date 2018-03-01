@@ -45,9 +45,9 @@
 
         <activity android:name=".SetAlarmActivity"></activity>
         <activity android:name=".PlaylistDisplay"></activity>
-        <activity android:name=".PopupActivity"></activity>
-
-
+        <activity android:name=".PopupActivity"
+            android:launchMode="singleInstance">
+        </activity>
         <service android:name=".LocationService"></service>
 
 
