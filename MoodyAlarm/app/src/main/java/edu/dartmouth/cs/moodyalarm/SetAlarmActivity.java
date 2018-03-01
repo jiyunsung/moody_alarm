@@ -58,15 +58,16 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
+            daysList = null;
         } else {
             alarmEntry = new AlarmEntry();
             alarmEntry.setOnOff(1);
             alarmEntry.setRepeat(0);
+            daysList = new Boolean[]{false, false, false, false, false, false, false};
+
         }
 
         recurrence = (TextView) findViewById(R.id.recurrence);
-        daysList = new Boolean[]{false, false, false, false, false, false, false};
-
         recurrence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

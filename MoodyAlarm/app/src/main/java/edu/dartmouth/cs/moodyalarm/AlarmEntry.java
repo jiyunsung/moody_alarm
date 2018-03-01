@@ -144,7 +144,7 @@ public class AlarmEntry implements Serializable {
 
                         Calendar date = Calendar.getInstance();
                         int diff = dow - date.get(Calendar.DAY_OF_WEEK);
-                        if (diff <= 0) {
+                        if (diff < 0) {
                             diff += 7;
                         }
                         date.add(Calendar.DAY_OF_MONTH, diff);
