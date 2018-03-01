@@ -36,7 +36,6 @@ import java.util.Date;
 public class SetAlarmActivity extends AppCompatActivity {
 
     TimePicker alarmTimePicker;
-    PendingIntent pendingIntent;
     AlarmManager alarmManager;
     private EntryDbHelper dataStorage;
     private boolean isNew;
@@ -44,6 +43,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     private TextView recurrence;
     private String recurrenceRule;
     private Boolean[] daysList;
+    private boolean saved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,6 +54,7 @@ public class SetAlarmActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = getIntent();
         isNew = intent.getBooleanExtra(AlarmsFragment.NEWALARM, true);
+        saved = false;
         if (!isNew) {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
@@ -163,23 +164,27 @@ public class SetAlarmActivity extends AppCompatActivity {
 
     public void saveButtonClicked(View view){
 
-        if (isNew) {
+        if (!saved) {
+            saved = true; // no double clicking!
 
-            new writeSchema().execute();
+            if (isNew) {
 
-            Context context = getApplicationContext();
-            CharSequence text = "Saved";
-            int duration = Toast.LENGTH_SHORT;
+                new writeSchema().execute();
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-        } else {
+                Context context = getApplicationContext();
+                CharSequence text = "Saved";
+                int duration = Toast.LENGTH_SHORT;
 
-            new updateSchema().execute();
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            } else {
 
+                new updateSchema().execute();
+
+            }
         }
-
         finish();
+
 
     }
     public void cancelButtonClicked(View view){

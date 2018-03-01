@@ -4,6 +4,9 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.view.MenuItem;
+
+import com.spotify.sdk.android.player.Player;
 
 /**
  * Created by jiyunsung on 2/28/18.

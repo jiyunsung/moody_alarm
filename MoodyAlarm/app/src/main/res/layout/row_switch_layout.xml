@@ -21,8 +21,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:checked="true">
+        android:focusableInTouchMode="false">
     </Switch>
 
     <TextView

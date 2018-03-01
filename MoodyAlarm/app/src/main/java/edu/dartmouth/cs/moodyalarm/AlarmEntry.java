@@ -130,7 +130,6 @@ public class AlarmEntry implements Serializable {
                         AlarmManager.INTERVAL_DAY, pi);
 
             } else if (this.repeat == 1) { // weekly
-                Log.d("okay weekly repeat", "for now");
 
                 int i = 0;
                 int dow; // day of week integer
@@ -151,7 +150,6 @@ public class AlarmEntry implements Serializable {
 
                         // the request code distinguish different stress meter schedule instances
                         int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
-                        Log.d("RequestCode", Integer.toString(requestCode));
 
                         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
                                 PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.

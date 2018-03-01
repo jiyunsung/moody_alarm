@@ -24,11 +24,6 @@ import java.util.ArrayList;
 import android.support.annotation.Nullable;
 
 /**
- * Created by vivianjiang on 2/25/18.
- */
-
-
-/**
  * Created by jiyunsung on 2/25/18.
  */
 
@@ -168,8 +163,15 @@ public class AlarmsFragment extends Fragment {
                 ((ViewHolder) view.getTag()).OnOff.setTag(entries.get(position));
             }
 
+
+
             ViewHolder holder = (ViewHolder) view.getTag();
             holder.Label.setText(Integer.toString(entries.get(position).getHour()) + ":" + Integer.toString(entries.get(position).getMinute()));
+
+            if (entries.get(position).getOnOff() == 1)
+                holder.OnOff.setChecked(true);
+            else
+                holder.OnOff.setChecked(false);
 
             if (entries.get(position).getRepeated() == 1) {
                 String days = "";
