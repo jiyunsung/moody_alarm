@@ -13,6 +13,7 @@ public class SpotifyPlaylist implements Serializable {
     private String mImage_url;
     private String mPlaylist_id;
     private String mTrackInfo;
+    private byte[] mImageBitmap;
 
 
 
@@ -20,11 +21,12 @@ public class SpotifyPlaylist implements Serializable {
 
     }
 
-    public SpotifyPlaylist(long id, String image_url, String playlist_id, String trackInfo){
+    public SpotifyPlaylist(long id, String image_url, byte[] bitmap, String playlist_id, String trackInfo){
         this.mImage_url = image_url;
         this.mId = id;
         this.mPlaylist_id = playlist_id;
         this.mTrackInfo = trackInfo;
+        this.mImageBitmap = bitmap;
 
     }
 
@@ -62,6 +64,15 @@ public class SpotifyPlaylist implements Serializable {
 
     public void setTrackInfo(String trackInfo){
         this.mTrackInfo = trackInfo;
+
+    }
+
+    public byte[] getImageBitmap(){
+        return this.mImageBitmap;
+    }
+
+    public void setImageBitmap(byte[] imageBitmap){
+        this.mImageBitmap = imageBitmap;
 
     }
 

@@ -35,12 +35,13 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
 
 
-    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL,KEY_TRACKINFO};
+    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL,KEY_IMAGEBITMAP, KEY_TRACKINFO};
 
     public final static String TABLE_ENTRIES_SPOTIFY = "SpotifyTable";
     public final static String KEY_ROWID_SPOTIFY = "_id";
     public final static String KEY_PLAYLISTID = "mPlaylistId";
     public final static String KEY_IMAGEURL = "mImageUrl";
+    public final static String KEY_IMAGEBITMAP = "mImageBitmap";
     public final static String KEY_TRACKINFO = "mTrackInfo";
 
 
@@ -88,6 +89,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + " STRING, "
             + KEY_IMAGEURL
             + " STRING, "
+            + KEY_IMAGEBITMAP
+            + " BLOB, "
             + KEY_TRACKINFO
             + " STRING "
             + ");";
@@ -181,6 +184,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_PLAYLISTID, entry.getPlaylistId());
         values.put(KEY_IMAGEURL, entry.getImageUrl());
+        values.put(KEY_IMAGEBITMAP, entry.getImageBitmap());
 
         long insertId = database.insert(TABLE_ENTRIES_SPOTIFY, null, values);
         Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY,
@@ -263,6 +267,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public void updateSpotifyEntry(SpotifyPlaylist entry) {
         ContentValues values = new ContentValues();
         values.put(KEY_TRACKINFO, entry.getTrackInfo());
+        values.put(KEY_IMAGEBITMAP, entry.getImageBitmap());
 
 
         database.update(TABLE_ENTRIES_SPOTIFY, values, "_id="+entry.getId(), null);
@@ -424,6 +429,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistId")));
         entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrl")));
         entry.setTrackInfo(cursor.getString(cursor.getColumnIndex("mTrackInfo")));
+        entry.setImageBitmap(cursor.getBlob(cursor.getColumnIndex("mImageBitmap")));
 
 
 

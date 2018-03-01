@@ -17,6 +17,7 @@ public class AlarmReceiver extends BroadcastReceiver
 
         Log.d("received??", "TT");
         intent.getAction();
+        Log.d("Alarm receiver", "received intent");
 
         startPopup(context);
 //        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
@@ -32,9 +33,11 @@ public class AlarmReceiver extends BroadcastReceiver
     // start the Alarm Popup
     private void startPopup(Context context) {
 
-        Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
+        //Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
         //Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
-        emaIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //Log.d("Alarm receiver", "received intent");
+        Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
+        emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(emaIntent);
     }
 }

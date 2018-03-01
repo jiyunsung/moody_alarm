@@ -71,7 +71,7 @@ import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback,ServiceConnection {
+        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
 
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "d7732baf6fed4aa887a95397bcd83152";
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
 
-    private Player mPlayer;
+    public static Player mPlayer;
 
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
@@ -92,16 +92,16 @@ public class MainActivity extends AppCompatActivity
 
     public static String accessToken = "";
     public Boolean finishedDataRetrieval= false;
-    public EntryDbHelper dataStorage;
+    public static EntryDbHelper dataStorage;
     public static ArrayList<String> mImageUrls;
     public String uri = "";
 
 
     boolean mIsBound;
-    private ServiceConnection mConnection = this;
+    //private ServiceConnection mConnection = this;
     private Messenger mServiceMessenger = null;
     private static final String TAG = "vj";
-    private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
+    //private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
 
     private FloatingActionButton fab;
 
@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dataStorage = new EntryDbHelper(this);
+        dataStorage.open();
 
         // Spotify Login code
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
@@ -145,26 +147,16 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-//        FragmentManager fragmentManager = this.getFragmentManager();
-//        AlarmsFragment alarmFrag = new AlarmsFragment();
-//
-//        fragmentManager.beginTransaction().replace(R.id.content_frame, alarmFrag).commit();
-
         displaySelectedScreen(R.id.viewAlarms, true);
 
 
         //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
 
-        mIsBound = false; // by default set this to unbound
-        automaticBind();
+//        mIsBound = false; // by default set this to unbound
+//        automaticBind();
         if (!checkPermission()){
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
-        } else {
-            doBindService();
-            startService(new Intent(MainActivity.this, LocationService.class));
         }
-
     }
 
 
@@ -197,6 +189,7 @@ public class MainActivity extends AppCompatActivity
 
         // Check if result comes from the correct activity
         // The next 19 lines of the code are what you need to copy & paste! :)
+        Log.d("onActivityResult", "in on activity result");
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
@@ -230,12 +223,12 @@ public class MainActivity extends AppCompatActivity
         Spotify.destroyPlayer(this);
         super.onDestroy();
         Log.d(TAG, "C:onDestroy()");
-        try {
-            doUnbindService();
-            stopService(new Intent(MainActivity.this, LocationService.class));
-        } catch (Throwable t) {
-            Log.e(TAG, "Failed to unbind from the service", t);
-        }
+//        try {
+//            doUnbindService();
+//            stopService(new Intent(MainActivity.this, LocationService.class));
+//        } catch (Throwable t) {
+//            Log.e(TAG, "Failed to unbind from the service", t);
+//        }
     }
 
     @Override
@@ -305,12 +298,6 @@ public class MainActivity extends AppCompatActivity
                 fab.setVisibility(View.INVISIBLE);
 
                 break;
-//            case R.id.editSpotify:
-            // fab.setVisibility(View.INVISIBLE);
-//                Log.d("displaySelectedScreen", "results case");
-//
-//                //fragment = new SpotifySettings();
-//                break;
             case R.id.editSnooze:
                 fragment = new SnoozeSettings();
                 fab.setVisibility(View.INVISIBLE);
@@ -330,7 +317,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private class RetrieveDataAsyncTask extends AsyncTask<Void, Void, Void> {
-        EntryDbHelper dataStorage;
+
         ArrayList<SpotifyPlaylist> playlists;
         // ui calling possible
         protected void onPreExecute() {
@@ -341,12 +328,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
 
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
-
             playlists = dataStorage.fetchSpotifyEntries();
-
-
             if (playlists.size() < NUMBER_DEFAULT_PLAYLISTS){
                  finishedDataRetrieval = false;
             } else{
@@ -368,50 +350,10 @@ public class MainActivity extends AppCompatActivity
             } else {
                 Log.d("retrieve data asynctask", "got all data");
                 finishedDataRetrieval = true;
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
 
-                switch (day) {
-                    case Calendar.MONDAY:
-                        // Current day is Sunday
-
-                    case Calendar.TUESDAY:
-                        // Current day is Monday
-
-                    case Calendar.WEDNESDAY:
-                        Log.d("retrieve data asynctask", "day is wednesday");
-                        Day today = dataStorage.fetchEntryByIndexDay(3);
-                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
-                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
-                        String tracks = todayPlaylist.getTrackInfo();
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(tracks);
-
-
-                            JSONArray arr = jsonObject.getJSONArray("items");
-
-                            JSONObject item = arr.getJSONObject(0);
-                            JSONObject track = item.getJSONObject("track");
-                            JSONObject album = track.getJSONObject("album");
-                            String songName = album.getString("name");
-                            Log.d("song name is ", songName);
-                            uri = album.getString("uri");
-                            Log.d("track uri is ", uri);
-
-                        } catch(JSONException e){Log.d("error", e.toString());}
-
-                        // etc.
                 }
-
-
-
             }
         }
-    }
-
-
-
 
 
 
@@ -552,9 +494,9 @@ public class MainActivity extends AppCompatActivity
 
     private class SpotifyAsyncSave extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
 
-        String [] dayArr = {"Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        String [] dayArr = { "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"};
         String [] weatherArr = {"Clear", "Rainy","Stormy", "Snowy", "Cloudy", "Foggy", "Windy"};
-        EntryDbHelper dataStorage;
+
         // ui calling possible
         protected void onPreExecute() {
 
@@ -565,19 +507,10 @@ public class MainActivity extends AppCompatActivity
         protected ArrayList<SpotifyPlaylist> doInBackground(ArrayList<SpotifyPlaylist>... params) {
             ArrayList<SpotifyPlaylist> playlists = params[0];
 
-
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
-
-
             for (int i = 0; i < playlists.size(); i++){
                 Log.d("Spotifyasyncsave", "do in background, playlist id is " + playlists.get(i).getPlaylistId());
                 playlists.get(i).setId(dataStorage.insertSpotifyEntry(playlists.get(i)).getId());
-
-
             }
-
-
             return playlists;
 
         }
@@ -608,9 +541,6 @@ public class MainActivity extends AppCompatActivity
 
     private class SaveSongsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        // ui calling possible
-        EntryDbHelper dataStorage;
-
         SpotifyPlaylist playlist;
         Day day;
         Weather weather;
@@ -628,8 +558,7 @@ public class MainActivity extends AppCompatActivity
         // run threads
         @Override
         protected Void doInBackground(Void... params) {
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
+
             dataStorage.updateSpotifyEntry(this.playlist);
 
             if(this.day != null) {
@@ -653,45 +582,9 @@ public class MainActivity extends AppCompatActivity
             Log.d("savesongsasynctask", "onpostexecute ");
 
             if (finishedDataRetrieval){
-                Log.d("savesong async task", "finisehd data retrieval, playing song");
-
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-                switch (day) {
-                    case Calendar.MONDAY:
-                        // Current day is Sunday
-
-                    case Calendar.TUESDAY:
-                        // Current day is Monday
-
-                    case Calendar.WEDNESDAY:
-                        Log.d("savesong asynctask", "day is wednesday");
-                        Day today = dataStorage.fetchEntryByIndexDay(3);
-                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
-                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
-                        String tracks = todayPlaylist.getTrackInfo();
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(tracks);
-
-
-                            JSONArray arr = jsonObject.getJSONArray("items");
-
-                                JSONObject item = arr.getJSONObject(0);
-                                JSONObject track = item.getJSONObject("track");
-                                JSONObject album = track.getJSONObject("album");
-                                String songName = album.getString("name");
-                                Log.d("song name is ", songName);
-                                uri = album.getString("uri");
-                                Log.d("track uri is ", uri);
-
-                        } catch(JSONException e){Log.d("error", e.toString());}
-
-                        // etc.
-                }
-
-                mPlayer.playUri(null, uri, 0, 0);
+                Log.d("savesong async task", "finished data retrieval, playing song");
+//
+//
             }
 
         }
@@ -709,129 +602,129 @@ public class MainActivity extends AppCompatActivity
         else
             return false;
     }
-
-
-
-    private class IncomingMessageHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case LocationService.MSG_LOCATION:
-                    Log.d(TAG, "received MSG_EXERCISE_ENTRY");
-                    Location l  = msg.getData().getParcelable("location");
-                    if(l!= null) {
-                        if(mIsBound){
-                            try {
-                                doUnbindService();
-                                stopService(new Intent(MainActivity.this, LocationService.class));
-                            } catch (Throwable t) {
-                                Log.e(TAG, "Failed to unbind from the service", t);
-                            }
-
-                        }
-                        Log.d(TAG, "location lat is " + l.getLatitude() + "and long is " + l.getLongitude());
-                        //updateMap(entry);
-                        fetchWeather(l);
-                    }
-
-                    break;
-
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    }
-
-    private void automaticBind() {
-        if (LocationService.isRunning()) {
-            Log.d(TAG, "C:MyService.isRunning: doBindService()");
-            doBindService();
-        }
-    }
-
-    private void doBindService() {
-
-
-        //http://stackoverflow.com/questions/1916253/bind-service-to-activity-in-android
-
-        Log.d(TAG, "MainActivity in doBindService");
-        bindService(new Intent(this, LocationService.class), mConnection,Context.BIND_AUTO_CREATE);//http://stackoverflow.com/questions/14746245/use-0-or-bind-auto-create-for-bindservices-flag
-        mIsBound = true;
-
-    }
-
-    private void doUnbindService() {
-        Log.d(TAG, "C:doUnBindService()");
-        if (mIsBound) {
-            // If we have received the service, and hence registered with it,
-            // then now is the time to unregister.
-            if (mServiceMessenger != null) {
-                try {
-                    Message msg = Message.obtain(null,LocationService.MSG_UNREGISTER_CLIENT);
-                    Log.d(TAG, "C: TX MSG_UNREGISTER_CLIENT");
-                    msg.replyTo = mMessenger;
-                    mServiceMessenger.send(msg);
-                } catch (RemoteException e) {
-                    // There is nothing special we need to do if the service has
-                    // crashed.
-                }
-            }
-            // Detach our existing connection.
-            unbindService(mConnection);
-            mIsBound = false;
-
-        }
-    }
-
-
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(TAG, "C:onServiceConnected()");
-        mServiceMessenger = new Messenger(service);
-
-        try {
-            Message msg = Message.obtain(null, LocationService.MSG_REGISTER_CLIENT);
-            msg.replyTo = mMessenger; //u tell the server the return Messenger: by sending through this Messenger the msg will get to this client.
-
-            mServiceMessenger.send(msg);
-        } catch (RemoteException e) {
-            // In this case the service has crashed before we could even do
-            // anything with it
-        }
-    }
-
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        //Log.d(TAG, "C:onServiceDisconnected()");
-        // This is called when the connection with the service has been
-        // unexpectedly disconnected - process crashed.
-        mServiceMessenger = null;
-
-    }
-
-    public void fetchWeather (Location loc){
-        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + loc.getLatitude() + "&lon=" + loc.getLongitude()+"&"+ WEATHER_API_KEY;
-        //String url = "http://api.openweathermap.org/data/2.5/weather?q=London&"+WEATHER_API_KEY;
-        StringRequest jsObjRequest = new StringRequest
-                (Request.Method.GET, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // response
-                        Log.d("fetchWeather Response", response);
-
-                    }
-                },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // TODO Auto-generated method stub
-                                Log.d("ERROR", "error => " + error.toString());
-                            }
-                        }
-                );
-        queue.add(jsObjRequest);
-    }
+//
+//
+//
+//    private class IncomingMessageHandler extends Handler {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switch (msg.what) {
+//                case LocationService.MSG_LOCATION:
+//                    Log.d(TAG, "received MSG_EXERCISE_ENTRY");
+//                    Location l  = msg.getData().getParcelable("location");
+//                    if(l!= null) {
+//                        if(mIsBound){
+//                            try {
+//                                doUnbindService();
+//                                stopService(new Intent(MainActivity.this, LocationService.class));
+//                            } catch (Throwable t) {
+//                                Log.e(TAG, "Failed to unbind from the service", t);
+//                            }
+//
+//                        }
+//                        Log.d(TAG, "location lat is " + l.getLatitude() + "and long is " + l.getLongitude());
+//                        //updateMap(entry);
+//                        fetchWeather(l);
+//                    }
+//
+//                    break;
+//
+//                default:
+//                    super.handleMessage(msg);
+//            }
+//        }
+//    }
+//
+//    private void automaticBind() {
+//        if (LocationService.isRunning()) {
+//            Log.d(TAG, "C:MyService.isRunning: doBindService()");
+//            doBindService();
+//        }
+//    }
+//
+//    private void doBindService() {
+//
+//
+//        //http://stackoverflow.com/questions/1916253/bind-service-to-activity-in-android
+//
+//        Log.d(TAG, "MainActivity in doBindService");
+//        bindService(new Intent(this, LocationService.class), mConnection,Context.BIND_AUTO_CREATE);//http://stackoverflow.com/questions/14746245/use-0-or-bind-auto-create-for-bindservices-flag
+//        mIsBound = true;
+//
+//    }
+//
+//    private void doUnbindService() {
+//        Log.d(TAG, "C:doUnBindService()");
+//        if (mIsBound) {
+//            // If we have received the service, and hence registered with it,
+//            // then now is the time to unregister.
+//            if (mServiceMessenger != null) {
+//                try {
+//                    Message msg = Message.obtain(null,LocationService.MSG_UNREGISTER_CLIENT);
+//                    Log.d(TAG, "C: TX MSG_UNREGISTER_CLIENT");
+//                    msg.replyTo = mMessenger;
+//                    mServiceMessenger.send(msg);
+//                } catch (RemoteException e) {
+//                    // There is nothing special we need to do if the service has
+//                    // crashed.
+//                }
+//            }
+//            // Detach our existing connection.
+//            unbindService(mConnection);
+//            mIsBound = false;
+//
+//        }
+//    }
+//
+//
+//    public void onServiceConnected(ComponentName name, IBinder service) {
+//        Log.d(TAG, "C:onServiceConnected()");
+//        mServiceMessenger = new Messenger(service);
+//
+//        try {
+//            Message msg = Message.obtain(null, LocationService.MSG_REGISTER_CLIENT);
+//            msg.replyTo = mMessenger; //u tell the server the return Messenger: by sending through this Messenger the msg will get to this client.
+//
+//            mServiceMessenger.send(msg);
+//        } catch (RemoteException e) {
+//            // In this case the service has crashed before we could even do
+//            // anything with it
+//        }
+//    }
+//
+//
+//    @Override
+//    public void onServiceDisconnected(ComponentName name) {
+//        //Log.d(TAG, "C:onServiceDisconnected()");
+//        // This is called when the connection with the service has been
+//        // unexpectedly disconnected - process crashed.
+//        mServiceMessenger = null;
+//
+//    }
+//
+//    public void fetchWeather (Location loc){
+//        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+//        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + loc.getLatitude() + "&lon=" + loc.getLongitude()+"&"+ WEATHER_API_KEY;
+//        //String url = "http://api.openweathermap.org/data/2.5/weather?q=London&"+WEATHER_API_KEY;
+//        StringRequest jsObjRequest = new StringRequest
+//                (Request.Method.GET, url, new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        // response
+//                        Log.d("fetchWeather Response", response);
+//
+//                    }
+//                },
+//                        new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//                                // TODO Auto-generated method stub
+//                                Log.d("ERROR", "error => " + error.toString());
+//                            }
+//                        }
+//                );
+//        queue.add(jsObjRequest);
+//    }
 
 
 

@@ -49,6 +49,7 @@ public class SetAlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.d("oncreate", "in set alarm activity");
         setContentView(R.layout.activity_set_alarm);
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -172,6 +173,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             saved = true; // no double clicking!
 
             if (isNew) {
+                Log.d("save button clicked", "new alarm");
 
                 new writeSchema().execute();
 
@@ -182,7 +184,7 @@ public class SetAlarmActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
             } else {
-
+                Log.d("save button clicked", "not new alarm");
                 new updateSchema().execute();
 
             }
@@ -219,6 +221,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.insertAlarmEntry(alarmEntry);
+            Log.d("writeSchema", "do in background");
 
             alarmEntry.setSchedule(getApplicationContext());
             return null;
@@ -243,6 +246,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
 
+
             if (daysList != null) {
                 ArrayList<Boolean> daysOfWeek = new ArrayList<>();
                 for (boolean day : daysList) {
@@ -254,6 +258,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.updateAlarmEntry(alarmEntry);
+            Log.d("updateSchema", "do in background");
 
             alarmEntry.setSchedule(getApplicationContext());
             return null;

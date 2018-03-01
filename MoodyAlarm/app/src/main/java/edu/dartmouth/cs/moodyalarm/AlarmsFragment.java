@@ -143,19 +143,20 @@ public class AlarmsFragment extends Fragment {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         AlarmEntry element = (AlarmEntry) holder.OnOff.getTag();
+                        if(buttonView.isPressed()) {
+                            Log.d("alarmsfragment", "onoff checked changed");
+                            if (isChecked) {
+                                element.setOnOff(1);
+                                element.setSchedule(getActivity());
+                                Log.d("TAG", "Set ON!!!");
+                            } else {
+                                element.setOnOff(0);
+                                element.cancelSchedule(getActivity());
+                                Log.d("TAG", "SET OFF!");
+                            }
 
-                        if (isChecked) {
-                            element.setOnOff(1);
-                            element.setSchedule(getActivity());
-                            Log.d("TAG", "Set ON!!!");
+                            dataStorage.updateAlarmEntry(element);
                         }
-                        else {
-                            element.setOnOff(0);
-                            element.cancelSchedule(getActivity());
-                            Log.d("TAG", "SET OFF!");
-                        }
-
-                        dataStorage.updateAlarmEntry(element);
                     }
                 });
                 view.setTag(holder);
