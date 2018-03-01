@@ -4,9 +4,17 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.Spotify;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
 
 /**
  * Created by jiyunsung on 2/28/18.
@@ -19,9 +27,13 @@ public class Alarmhandler {
     private Vibrator vibrator;
 
 
-    public void start_alert(Context context){
-        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
-        mediaPlayer.start();
+    public void start_alert(Context context, String uri){
+//        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
+//        mediaPlayer.start();
+
+
+
+        MainActivity.mPlayer.playUri(null, uri, 0, 0);
 
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -30,12 +42,17 @@ public class Alarmhandler {
 
 
     public void stop_alert(Context context){
-        if (mediaPlayer != null){
-            mediaPlayer.release();
-        }
+//        if (mediaPlayer != null){
+//            mediaPlayer.release();
+//        }
+
+        //Spotify.destroyPlayer(MainActivity.class);
+        MainActivity.mPlayer.pause(null);
         if (vibrator.hasVibrator()) {
             vibrator.cancel();
         }
     }
+
+
 
 }

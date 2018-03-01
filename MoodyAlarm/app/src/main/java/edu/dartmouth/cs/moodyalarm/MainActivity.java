@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
 
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
 
-    private Player mPlayer;
+    public static Player mPlayer;
 
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         displaySelectedScreen(R.id.viewAlarms, true);
 
 
-        this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
+        //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
 
         mIsBound = false; // by default set this to unbound
         automaticBind();
@@ -366,38 +366,38 @@ public class MainActivity extends AppCompatActivity
             } else {
                 Log.d("retrieve data asynctask", "got all data");
                 finishedDataRetrieval = true;
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-                switch (day) {
-                    case Calendar.MONDAY:
-                        // Current day is Sunday
-
-                    case Calendar.TUESDAY:
-                        // Current day is Monday
-
-                    case Calendar.WEDNESDAY:
-                        Log.d("retrieve data asynctask", "day is wednesday");
-                        Day today = dataStorage.fetchEntryByIndexDay(3);
-                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
-                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
-                        String tracks = todayPlaylist.getTrackInfo();
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(tracks);
-
-
-                            JSONArray arr = jsonObject.getJSONArray("items");
-
-                            JSONObject item = arr.getJSONObject(0);
-                            JSONObject track = item.getJSONObject("track");
-                            JSONObject album = track.getJSONObject("album");
-                            String songName = album.getString("name");
-                            Log.d("song name is ", songName);
-                            uri = album.getString("uri");
-                            Log.d("track uri is ", uri);
-
-                        } catch(JSONException e){Log.d("error", e.toString());}
+//                Calendar calendar = Calendar.getInstance();
+//                int day = calendar.get(Calendar.DAY_OF_WEEK);
+//
+//                switch (day) {
+//                    case Calendar.MONDAY:
+//                        // Current day is Sunday
+//
+//                    case Calendar.TUESDAY:
+//                        // Current day is Monday
+//
+//                    case Calendar.WEDNESDAY:
+//                        Log.d("retrieve data asynctask", "day is wednesday");
+//                        Day today = dataStorage.fetchEntryByIndexDay(3);
+//                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
+//                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
+//                        String tracks = todayPlaylist.getTrackInfo();
+//                        try {
+//
+//                            JSONObject jsonObject = new JSONObject(tracks);
+//
+//
+//                            JSONArray arr = jsonObject.getJSONArray("items");
+//
+//                            JSONObject item = arr.getJSONObject(0);
+//                            JSONObject track = item.getJSONObject("track");
+//                            JSONObject album = track.getJSONObject("album");
+//                            String songName = album.getString("name");
+//                            Log.d("song name is ", songName);
+//                            uri = album.getString("uri");
+//                            Log.d("track uri is ", uri);
+//
+//                        } catch(JSONException e){Log.d("error", e.toString());}
 
                         // etc.
                 }
@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
-    }
+
 
 
 
@@ -651,45 +651,45 @@ public class MainActivity extends AppCompatActivity
             Log.d("savesongsasynctask", "onpostexecute ");
 
             if (finishedDataRetrieval){
-                Log.d("savesong async task", "finisehd data retrieval, playing song");
-
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-                switch (day) {
-                    case Calendar.MONDAY:
-                        // Current day is Sunday
-
-                    case Calendar.TUESDAY:
-                        // Current day is Monday
-
-                    case Calendar.WEDNESDAY:
-                        Log.d("savesong asynctask", "day is wednesday");
-                        Day today = dataStorage.fetchEntryByIndexDay(3);
-                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
-                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
-                        String tracks = todayPlaylist.getTrackInfo();
-                        try {
-
-                            JSONObject jsonObject = new JSONObject(tracks);
-
-
-                            JSONArray arr = jsonObject.getJSONArray("items");
-
-                                JSONObject item = arr.getJSONObject(0);
-                                JSONObject track = item.getJSONObject("track");
-                                JSONObject album = track.getJSONObject("album");
-                                String songName = album.getString("name");
-                                Log.d("song name is ", songName);
-                                uri = album.getString("uri");
-                                Log.d("track uri is ", uri);
-
-                        } catch(JSONException e){Log.d("error", e.toString());}
-
-                        // etc.
-                }
-
-                mPlayer.playUri(null, uri, 0, 0);
+                Log.d("savesong async task", "finished data retrieval, playing song");
+//
+//                Calendar calendar = Calendar.getInstance();
+//                int day = calendar.get(Calendar.DAY_OF_WEEK);
+//
+//                switch (day) {
+//                    case Calendar.MONDAY:
+//                        // Current day is Sunday
+//
+//                    case Calendar.TUESDAY:
+//                        // Current day is Monday
+//
+//                    case Calendar.WEDNESDAY:
+//                        Log.d("savesong asynctask", "day is wednesday");
+//                        Day today = dataStorage.fetchEntryByIndexDay(3);
+//                        SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
+//                        Log.d("playlist id is ", todayPlaylist.getPlaylistId());
+//                        String tracks = todayPlaylist.getTrackInfo();
+//                        try {
+//
+//                            JSONObject jsonObject = new JSONObject(tracks);
+//
+//
+//                            JSONArray arr = jsonObject.getJSONArray("items");
+//
+//                                JSONObject item = arr.getJSONObject(0);
+//                                JSONObject track = item.getJSONObject("track");
+//                                JSONObject album = track.getJSONObject("album");
+//                                String songName = album.getString("name");
+//                                Log.d("song name is ", songName);
+//                                uri = album.getString("uri");
+//                                Log.d("track uri is ", uri);
+//
+//                        } catch(JSONException e){Log.d("error", e.toString());}
+//
+//                        // etc.
+//                }
+//
+//                mPlayer.playUri(null, uri, 0, 0);
             }
 
         }
