@@ -1,15 +1,29 @@
 package edu.dartmouth.cs.moodyalarm;
 
 
+import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,14 +68,18 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
+        implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback,ServiceConnection {
 
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "d7732baf6fed4aa887a95397bcd83152";
 
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "http://localhost:5000/api/v1/invalid";
+
+    public static final String WEATHER_API_KEY = "APPID=d5233bd27811890e0b347bc47782312c";
 
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
 
@@ -79,8 +97,15 @@ public class MainActivity extends AppCompatActivity
     public String uri = "";
 
 
+    boolean mIsBound;
+    private ServiceConnection mConnection = this;
+    private Messenger mServiceMessenger = null;
+    private static final String TAG = "vj";
+    private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
 
 
+
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
 
     // list view
@@ -124,7 +149,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
 //        FragmentManager fragmentManager = this.getFragmentManager();
 //        AlarmsFragment alarmFrag = new AlarmsFragment();
 //
@@ -133,16 +157,20 @@ public class MainActivity extends AppCompatActivity
         displaySelectedScreen(R.id.viewAlarms, true);
 
 
+        this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
 
-
-        //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
-
-
-
-
-
+        mIsBound = false; // by default set this to unbound
+        automaticBind();
+        if (!checkPermission()){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+        } else {
+            doBindService();
+            startService(new Intent(MainActivity.this, LocationService.class));
+        }
 
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -192,31 +220,25 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 new RetrieveDataAsyncTask().execute();
-                //new SpotifyAsyncTask().execute();
 
-//                Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
-//                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
-//                    @Override
-//                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
-//                        mPlayer = spotifyPlayer;
-//                        mPlayer.addConnectionStateCallback(MainActivity.this);
-//                        mPlayer.addNotificationCallback(MainActivity.this);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable throwable) {
-//                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-//                    }
-//                });
-                //new RetrieveDataAsyncTask().execute();
             }
         }
     }
+
+
+
 
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         super.onDestroy();
+        Log.d(TAG, "C:onDestroy()");
+        try {
+            doUnbindService();
+            stopService(new Intent(MainActivity.this, LocationService.class));
+        } catch (Throwable t) {
+            Log.e(TAG, "Failed to unbind from the service", t);
+        }
     }
 
     @Override
@@ -242,16 +264,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
-
-
-
-
-
         // This is the line that plays a song.
         if(finishedDataRetrieval) {
-            mPlayer.playUri(null, uri, 0, 0);
+            //mPlayer.playUri(null, uri, 0, 0);
         }
-
     }
 
     @Override
@@ -312,43 +328,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    private class PlayPlaylistAsyncTask extends AsyncTask<Long, Void, Void> {
-        EntryDbHelper dataStorage;
-        // ui calling possible
-        protected void onPreExecute() {
-            Log.d("onPreExecute", "retreivedataasync task");
-        }
-
-        // run threads
-        @Override
-        protected Void doInBackground(Long... params) {
-            Long dayId = params[0];
-
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
-            Day day = dataStorage.fetchEntryByIndexDay(dayId);
-
-
-            SpotifyPlaylist playlist = day.getSpotifyPlaylist();
-            String spotifySongs = playlist.getTrackInfo();
-            Log.d("PlayPlaylistAsyncTask", "do in background spotifytrack is: " + spotifySongs);
-
-
-
-
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            Log.d("onPostExecute", "playPlaylistAsyncTask");
-
-
-
-        }
-    }
 
     private class RetrieveDataAsyncTask extends AsyncTask<Void, Void, Void> {
         EntryDbHelper dataStorage;
@@ -457,7 +436,7 @@ public class MainActivity extends AppCompatActivity
 
         final ArrayList<String> imageUrls = new ArrayList<String>();
         final ArrayList<SpotifyPlaylist> playlists = new ArrayList<>();
-        Log.d("days display", "in fetch default playlists access token is "+ MainActivity.accessToken);
+        Log.d("main activity", "in fetch default playlists access token is "+ MainActivity.accessToken);
 
 
         for (int i = 0; i< default_playlists.length;i++) {
@@ -532,7 +511,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void fetchPlaylistTracks(String id, final SpotifyPlaylist playlist, final Day day){
+    public void fetchPlaylistTracks(String id, final SpotifyPlaylist playlist, final Day day, final Weather weather){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
         String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
@@ -545,7 +524,7 @@ public class MainActivity extends AppCompatActivity
                         // response
                         Log.d("fetchPlaylisttracks Response", response);
                         playlist.setTrackInfo(response);
-                        new SaveSongsAsyncTask(playlist, day).execute();
+                        new SaveSongsAsyncTask(playlist, day, weather).execute();
 
                     }
                 },
@@ -574,6 +553,7 @@ public class MainActivity extends AppCompatActivity
     private class SpotifyAsyncSave extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
 
         String [] dayArr = {"Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        String [] weatherArr = {"Clear", "Rainy","Stormy", "Snowy", "Cloudy", "Foggy", "Windy"};
         EntryDbHelper dataStorage;
         // ui calling possible
         protected void onPreExecute() {
@@ -605,16 +585,21 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<SpotifyPlaylist> result) {
             Day day = null;
+            Weather weather = null;
             for (int i = 0; i < result.size(); i++){
                 if(i < dayArr.length){
                     day = new Day();
+                    weather = new Weather();
                     day.setName(dayArr[i]);
+                    weather.setName(weatherArr[i]);
                     day.setId(dataStorage.insertDayEntry(day).getId());
+                    weather.setId(dataStorage.insertWeatherEntry(weather).getId());
                 } else{
                     day = null;
+                    weather = null;
                 }
 
-                fetchPlaylistTracks(result.get(i).getPlaylistId(), result.get(i), day);
+                fetchPlaylistTracks(result.get(i).getPlaylistId(), result.get(i), day, weather);
             }
         }
 
@@ -628,10 +613,12 @@ public class MainActivity extends AppCompatActivity
 
         SpotifyPlaylist playlist;
         Day day;
+        Weather weather;
 
-        public SaveSongsAsyncTask(SpotifyPlaylist p,Day d){
+        public SaveSongsAsyncTask(SpotifyPlaylist p,Day d, Weather w){
             this.playlist = p;
             this.day = d;
+            this.weather= w;
         }
 
         protected void onPreExecute() {
@@ -649,6 +636,10 @@ public class MainActivity extends AppCompatActivity
                 Log.d("savesongsasynctask", "playlist set for day: " + this.day.getName());
                 this.day.setSpotifyPlaylist(this.playlist);
                 dataStorage.updateDayEntry(this.day);
+
+                Log.d("savesongsasynctask", "playlist set for weather: " + this.weather.getName());
+                this.weather.setSpotifyPlaylist(this.playlist);
+                dataStorage.updateWeatherEntry(this.weather);
             } else{
                 finishedDataRetrieval = true;
             }
@@ -706,5 +697,142 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+
+
+
+    //******** Check run time permission for locationManager. This is for v23+  ********
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (result == PackageManager.PERMISSION_GRANTED)
+            return true;
+        else
+            return false;
+    }
+
+
+
+    private class IncomingMessageHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case LocationService.MSG_LOCATION:
+                    Log.d(TAG, "received MSG_EXERCISE_ENTRY");
+                    Location l  = msg.getData().getParcelable("location");
+                    if(l!= null) {
+                        if(mIsBound){
+                            try {
+                                doUnbindService();
+                                stopService(new Intent(MainActivity.this, LocationService.class));
+                            } catch (Throwable t) {
+                                Log.e(TAG, "Failed to unbind from the service", t);
+                            }
+
+                        }
+                        Log.d(TAG, "location lat is " + l.getLatitude() + "and long is " + l.getLongitude());
+                        //updateMap(entry);
+                        fetchWeather(l);
+                    }
+
+                    break;
+
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    private void automaticBind() {
+        if (LocationService.isRunning()) {
+            Log.d(TAG, "C:MyService.isRunning: doBindService()");
+            doBindService();
+        }
+    }
+
+    private void doBindService() {
+
+
+        //http://stackoverflow.com/questions/1916253/bind-service-to-activity-in-android
+
+        Log.d(TAG, "MainActivity in doBindService");
+        bindService(new Intent(this, LocationService.class), mConnection,Context.BIND_AUTO_CREATE);//http://stackoverflow.com/questions/14746245/use-0-or-bind-auto-create-for-bindservices-flag
+        mIsBound = true;
+
+    }
+
+    private void doUnbindService() {
+        Log.d(TAG, "C:doUnBindService()");
+        if (mIsBound) {
+            // If we have received the service, and hence registered with it,
+            // then now is the time to unregister.
+            if (mServiceMessenger != null) {
+                try {
+                    Message msg = Message.obtain(null,LocationService.MSG_UNREGISTER_CLIENT);
+                    Log.d(TAG, "C: TX MSG_UNREGISTER_CLIENT");
+                    msg.replyTo = mMessenger;
+                    mServiceMessenger.send(msg);
+                } catch (RemoteException e) {
+                    // There is nothing special we need to do if the service has
+                    // crashed.
+                }
+            }
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mIsBound = false;
+
+        }
+    }
+
+
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.d(TAG, "C:onServiceConnected()");
+        mServiceMessenger = new Messenger(service);
+
+        try {
+            Message msg = Message.obtain(null, LocationService.MSG_REGISTER_CLIENT);
+            msg.replyTo = mMessenger; //u tell the server the return Messenger: by sending through this Messenger the msg will get to this client.
+
+            mServiceMessenger.send(msg);
+        } catch (RemoteException e) {
+            // In this case the service has crashed before we could even do
+            // anything with it
+        }
+    }
+
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        //Log.d(TAG, "C:onServiceDisconnected()");
+        // This is called when the connection with the service has been
+        // unexpectedly disconnected - process crashed.
+        mServiceMessenger = null;
+
+    }
+
+    public void fetchWeather (Location loc){
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + loc.getLatitude() + "&lon=" + loc.getLongitude()+"&"+ WEATHER_API_KEY;
+        //String url = "http://api.openweathermap.org/data/2.5/weather?q=London&"+WEATHER_API_KEY;
+        StringRequest jsObjRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("fetchWeather Response", response);
+
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => " + error.toString());
+                            }
+                        }
+                );
+        queue.add(jsObjRequest);
+    }
+
+
 
 }

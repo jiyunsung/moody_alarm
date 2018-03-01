@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -74,6 +75,8 @@ public class AlarmEntry implements Serializable {
 
         // check if alarm is on
         if (this.onOff == 1) { // alarm on
+
+            Log.d("alarmEntry set schedule", "alarm is on");
 
             if (this.repeat == 0) { // alarm is on but does not repeat
                 Calendar calendar = Calendar.getInstance();

@@ -55,6 +55,7 @@ public class PlaylistDisplay extends AppCompatActivity{
 
     private SpotifyPlaylist entry;
     private Day day;
+    private Weather weather;
     private int position;
     private ArrayList<SpotifySong> songs;
     private ListView listView;

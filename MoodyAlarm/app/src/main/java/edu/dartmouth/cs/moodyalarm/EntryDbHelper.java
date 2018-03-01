@@ -44,13 +44,21 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_TRACKINFO = "mTrackInfo";
 
 
-    private String[] allDayColumns = { KEY_ROWID_DAY, KEY_DAYNAME, KEY_SPOTIFYPLAYLIST};
+    private String[] allDayColumns = { KEY_ROWID_DAY, KEY_DAYNAME, KEY_DAYPLAYLIST};
 
 
     public final static String TABLE_ENTRIES_DAYS = "DaysTable";
     public final static String KEY_ROWID_DAY = "_id";
     public final static String KEY_DAYNAME = "mDayName";
-    public final static String KEY_SPOTIFYPLAYLIST = "mSpotifyPlaylist";
+    public final static String KEY_DAYPLAYLIST = "mDayPlaylist";
+
+
+    private String[] allWeatherColumns = { KEY_ROWID_WEATHER, KEY_WEATHERNAME, KEY_WEATHERPLAYLIST};
+
+    public final static String TABLE_ENTRIES_WEATHER = "WeatherTable";
+    public final static String KEY_ROWID_WEATHER = "_id";
+    public final static String KEY_WEATHERNAME = "mWeatherName";
+    public final static String KEY_WEATHERPLAYLIST = "mWeatherPlaylist";
 
 
     // SQL query to create the table for the first time
@@ -91,7 +99,18 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_DAYNAME
             + " STRING, "
-            + KEY_SPOTIFYPLAYLIST
+            + KEY_DAYPLAYLIST
+            + " BLOB "
+            + ");";
+
+    public static final String CREATE_TABLE_ENTRIES_WEATHER = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ENTRIES_WEATHER
+            + " ("
+            + KEY_ROWID_WEATHER
+            + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_WEATHERNAME
+            + " STRING, "
+            + KEY_WEATHERPLAYLIST
             + " BLOB "
             + ");";
 
@@ -117,6 +136,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_ENTRIES_ALARM);
         db.execSQL(CREATE_TABLE_ENTRIES_SPOTIFY);
         db.execSQL(CREATE_TABLE_ENTRIES_DAY);
+        db.execSQL(CREATE_TABLE_ENTRIES_WEATHER);
     }
 
     @Override
@@ -127,6 +147,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_ALARM + "'");
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_SPOTIFY + "'");
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_DAYS + "'");
+        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_WEATHER + "'");
         onCreate(database);
     }
 
@@ -181,7 +202,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         SpotifyPlaylist playlist = entry.getSpotifyPlaylist();
         Gson gson = new Gson();
 
-        values.put(KEY_SPOTIFYPLAYLIST, gson.toJson(playlist).getBytes());
+        values.put(KEY_DAYPLAYLIST, gson.toJson(playlist).getBytes());
 
 
 
@@ -198,6 +219,32 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return newEntry;
     }
+
+    // Insert a item given each column value
+    public Weather insertWeatherEntry(Weather entry) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_WEATHERNAME, entry.getName());
+        SpotifyPlaylist playlist = entry.getSpotifyPlaylist();
+        Gson gson = new Gson();
+
+        values.put(KEY_WEATHERPLAYLIST, gson.toJson(playlist).getBytes());
+
+
+
+        database = getWritableDatabase();
+        long insertId = database.insert(TABLE_ENTRIES_WEATHER, null, values);
+        Cursor cursor = database.query(TABLE_ENTRIES_WEATHER,
+                allWeatherColumns,
+                KEY_ROWID_WEATHER + " = " + insertId,
+                null,null, null, null);
+
+        cursor.moveToLast();
+        Weather newEntry = cursorToEntryWeather(cursor);
+        Log.d("insertEntry", "new entry weather is "+ newEntry.getName());
+        cursor.close();
+        return newEntry;
+    }
+
 
     public void updateAlarmEntry(AlarmEntry entry) {
         ContentValues values = new ContentValues();
@@ -228,9 +275,20 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         Log.d("updateDayEntry", "playlist url is "+ playlist.getImageUrl());
         Gson gson = new Gson();
 
-        values.put(KEY_SPOTIFYPLAYLIST, gson.toJson(playlist).getBytes());
+        values.put(KEY_DAYPLAYLIST, gson.toJson(playlist).getBytes());
 
         database.update(TABLE_ENTRIES_DAYS, values, "_id="+entry.getId(), null);
+    }
+
+    public void updateWeatherEntry(Weather entry) {
+        ContentValues values = new ContentValues();
+        SpotifyPlaylist playlist = entry.getSpotifyPlaylist();
+        Log.d("updateWeatherEntry", "playlist url is "+ playlist.getImageUrl());
+        Gson gson = new Gson();
+
+        values.put(KEY_WEATHERPLAYLIST, gson.toJson(playlist).getBytes());
+
+        database.update(TABLE_ENTRIES_WEATHER, values, "_id="+entry.getId(), null);
     }
 
     // Remove an entry by giving its index
@@ -281,6 +339,24 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return d;
     }
+
+
+    // Query a specific entry by its index.
+    public Weather fetchEntryByIndexWeather(long rowId) {
+        Log.d("fetchEntryByIndex", "id is " + rowId);
+        Cursor cursor = database.query(TABLE_ENTRIES_WEATHER,
+                allWeatherColumns,
+                KEY_ROWID_WEATHER + " = " + rowId,
+                null,null, null, null);
+        Weather w= new Weather();
+        if (cursor.moveToFirst()){
+            w = cursorToEntryWeather(cursor);
+        }
+
+        cursor.close();
+        return w;
+    }
+
 
     // Query the entire table, return all rows
     public ArrayList<AlarmEntry> fetchAlarmEntries() {
@@ -381,7 +457,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setName(cursor.getString(cursor.getColumnIndex("mDayName")));
 
 
-        byte[] blob = cursor.getBlob(cursor.getColumnIndex("mSpotifyPlaylist"));
+        byte[] blob = cursor.getBlob(cursor.getColumnIndex("mDayPlaylist"));
         if (blob != null) {
             Log.d("cursorToentryDay", "blob not null");
             String json = new String(blob);
@@ -390,6 +466,48 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             entry.setSpotifyPlaylist(playlist);
             if(playlist != null)
                 Log.d("cursorToentryDay", "playlist not null url is" + playlist.getImageUrl());
+
+        }
+
+        return entry;
+    }
+
+
+    // Query the entire table, return all rows
+    public ArrayList<Weather> fetchWeatherEntries() {
+        Log.d("fetchWeatherEntries", "in fetch weather entries in db helper");
+        ArrayList<Weather> entries = new ArrayList<>();
+        Cursor cursor = database.query(TABLE_ENTRIES_WEATHER, allWeatherColumns, null,
+                null,null, null, null);
+        cursor.moveToFirst(); //Move the cursor to the first row.
+        while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
+            Weather entry = cursorToEntryWeather(cursor);
+            Log.d("fetch weather Entries", "row id for weather entry is: " + entry.getId());
+            entries.add(entry);
+            cursor.moveToNext();
+        }
+        // Make sure to close the cursor
+        cursor.close();
+        return entries;
+    }
+
+    private Weather cursorToEntryWeather(Cursor cursor) {
+
+        Weather entry = new Weather();
+
+        entry.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+        entry.setName(cursor.getString(cursor.getColumnIndex("mWeatherName")));
+
+
+        byte[] blob = cursor.getBlob(cursor.getColumnIndex("mWeatherPlaylist"));
+        if (blob != null) {
+            Log.d("cursorToentryWeather", "blob not null");
+            String json = new String(blob);
+            Gson gson = new Gson();
+            SpotifyPlaylist playlist = gson.fromJson(json, SpotifyPlaylist.class);
+            entry.setSpotifyPlaylist(playlist);
+            if(playlist != null)
+                Log.d("cursorToentryWeather", "playlist not null url is" + playlist.getImageUrl());
 
         }
 
