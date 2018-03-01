@@ -54,9 +54,11 @@ public class SetAlarmActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = getIntent();
         isNew = intent.getBooleanExtra(AlarmsFragment.NEWALARM, true);
+        Log.d("isNEW", Boolean.toString(isNew));
         saved = false;
         if (!isNew) {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
+            Log.d("onOff", Integer.toString(alarmEntry.getOnOff()));
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
             daysList = null;
@@ -79,6 +81,8 @@ public class SetAlarmActivity extends AppCompatActivity {
                     bundle.putString(RecurrencePickerDialog.BUNDLE_RRULE, recurrenceRule);
                     recurrencePickerDialog.setArguments(bundle);
                 }
+
+                daysList = new Boolean[]{false, false, false, false, false, false, false};
 
                 recurrencePickerDialog.setOnRecurrenceSetListener(new RecurrencePickerDialog.OnRecurrenceSetListener() {
                     @Override

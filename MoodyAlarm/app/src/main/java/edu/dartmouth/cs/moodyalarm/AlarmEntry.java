@@ -26,8 +26,6 @@ public class AlarmEntry implements Serializable {
 
 
     public AlarmEntry(){
-        this.onOff = 1; // default is on, when first created
-
     }
 
     public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list) {

@@ -19,6 +19,7 @@ public class PopupActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         alarm.stop_alert(this);
-        finish();
+        super.onBackPressed();
+        finishActivity(0);
     }
 }

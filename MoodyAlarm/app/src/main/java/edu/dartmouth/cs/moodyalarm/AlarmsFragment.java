@@ -144,7 +144,7 @@ public class AlarmsFragment extends Fragment {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         AlarmEntry element = (AlarmEntry) holder.OnOff.getTag();
 
-                        if (buttonView.isChecked()) {
+                        if (isChecked) {
                             element.setOnOff(1);
                             element.setSchedule(getActivity());
                             Log.d("TAG", "Set ON!!!");
@@ -152,7 +152,10 @@ public class AlarmsFragment extends Fragment {
                         else {
                             element.setOnOff(0);
                             element.cancelSchedule(getActivity());
+                            Log.d("TAG", "SET OFF!");
                         }
+
+                        dataStorage.updateAlarmEntry(element);
                     }
                 });
                 view.setTag(holder);
@@ -196,6 +199,7 @@ public class AlarmsFragment extends Fragment {
         public ArrayList<AlarmEntry> getEntries() {
             return entries;
         }
+
     }
 
 }
