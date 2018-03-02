@@ -30,11 +30,15 @@ public class Alarmhandler {
     public void start_alert(Context context, String uri){
 //        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
 //        mediaPlayer.start();
-//
 
-        Log.d("alarmhandler", "start alert access token is: " + MainActivity.accessToken);
-        MainActivity.mPlayer.playUri(null, uri, 0, 0);
+        if (uri.equals("Default")) {
+            mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
+            mediaPlayer.start();
+        } else {
+            Log.d("alarmhandler", "start alert access token is: " + MainActivity.accessToken);
+            MainActivity.mPlayer.playUri(null, uri, 0, 0);
 
+        }
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(2000);

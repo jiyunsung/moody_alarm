@@ -197,6 +197,13 @@ public class SetAlarmActivity extends AppCompatActivity {
         finish();
     }
 
+    public void voiceRecog(View view){
+
+        Intent emaIntent = new Intent(this, VoiceRecognitionActivity.class); //The activity you  want to start.
+        emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(emaIntent);
+    }
+
     private class writeSchema extends AsyncTask<Void, Void, Void> {
 
         // ui calling possible

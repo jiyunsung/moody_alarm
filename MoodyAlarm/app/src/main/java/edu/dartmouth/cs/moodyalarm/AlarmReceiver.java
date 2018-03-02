@@ -11,11 +11,11 @@ import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver
 {
-
     //Receive broadcast
     @Override
     public void onReceive(final Context context, Intent intent) {
 
+        Log.d("received??", "TT");
         intent.getAction();
         Log.d("Alarm receiver", "received intent");
 
@@ -32,6 +32,9 @@ public class AlarmReceiver extends BroadcastReceiver
 
     // start the Alarm Popup
     private void startPopup(Context context) {
+
+        //Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
+        //Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
         //Log.d("Alarm receiver", "received intent");
         Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
         emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
