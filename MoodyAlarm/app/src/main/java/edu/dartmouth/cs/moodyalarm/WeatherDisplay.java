@@ -91,7 +91,7 @@ public class WeatherDisplay extends Fragment {
 
 
     public void showPlaylistDialog(View v, Long id) {
-        DialogFragment fragment = new SpotifySettings();
+        DialogFragment fragment = SpotifySettings.newInstance("weather");
 
 
         fragment.show(getFragmentManager(), "playlistPicker");

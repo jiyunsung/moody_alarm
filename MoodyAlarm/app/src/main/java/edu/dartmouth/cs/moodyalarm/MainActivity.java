@@ -399,6 +399,9 @@ public class MainActivity extends AppCompatActivity
 
                                 JSONObject jsonObject = new JSONObject(response);
                                 String id = jsonObject.getString("id");
+                                JSONObject owner = jsonObject.getJSONObject("owner");
+                                String userId = owner.getString("id");
+                                Log.d("fetchdefaultPlaylists", "user id is " + userId);
 
                                 JSONArray arr = jsonObject.getJSONArray("images");
                                 for (int i = 0; i < arr.length(); i++)
@@ -408,6 +411,7 @@ public class MainActivity extends AppCompatActivity
                                     SpotifyPlaylist entry = new SpotifyPlaylist();
                                     entry.setPlaylistId(id);
                                     entry.setImageUrl(imageUrl);
+                                    entry.setUserId(userId);
 
                                     playlists.add(entry);
                                     imageUrls.add(imageUrl.toString());
@@ -483,7 +487,9 @@ public class MainActivity extends AppCompatActivity
                             for (int i = 0; i < items.length(); i++){
                                 JSONObject item = items.getJSONObject(i);
                                 String id = item.getString("id");
-                                Log.d("fetch user playlists", "id is "+ id + "for playlist " + item.getString("name"));
+                                JSONObject owner = item.getJSONObject("owner");
+                                String userId = owner.getString("id");
+                                Log.d("fetch user playlists", "user id is "+ userId + "for playlist " + item.getString("name"));
                                 JSONArray images = item.getJSONArray("images");
                                 JSONObject image = images.getJSONObject(0);
                                 String url = image.getString("url");
@@ -492,6 +498,7 @@ public class MainActivity extends AppCompatActivity
                                 SpotifyPlaylist entry = new SpotifyPlaylist();
                                 entry.setPlaylistId(id);
                                 entry.setImageUrl(url);
+                                entry.setUserId(userId);
                                 playlists.add(entry);
                             }
 
@@ -532,7 +539,7 @@ public class MainActivity extends AppCompatActivity
 
     public void fetchPlaylistTracksDefault(String id, final SpotifyPlaylist playlist, final Day day, final Weather weather){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
+        String url = "https://api.spotify.com/v1/users/" + playlist.getUserId() + "/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
         Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken);
 
@@ -569,7 +576,7 @@ public class MainActivity extends AppCompatActivity
 
     public void fetchPlaylistTracksUser(String id, final SpotifyPlaylist playlist){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/vivjiang/playlists/"+ id + "/tracks";
+        String url = "https://api.spotify.com/v1/users/" + playlist.getUserId() + "/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
         Log.d("Spotify service", "in user fetch playlist tracks access token is "+ MainActivity.accessToken);
 

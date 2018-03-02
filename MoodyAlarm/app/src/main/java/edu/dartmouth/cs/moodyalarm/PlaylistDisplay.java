@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,6 +60,9 @@ public class PlaylistDisplay extends AppCompatActivity{
     private Day day;
     private Weather weather;
     private int position;
+    private String id;
+    private String setting;
+
     private ArrayList<SpotifySong> songs;
     private ListView listView;
 
@@ -66,8 +70,21 @@ public class PlaylistDisplay extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist_display);
         position = getIntent().getIntExtra("pos", 0);
-        entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyDefault(Long.valueOf(position));
-        day = MainActivity.dataStorage.fetchEntryByIndexDay(DayDisplay.dayId);
+        id = getIntent().getStringExtra("id");
+        setting = getIntent().getStringExtra("settings");
+        if(!id.equals("spotify")) {
+            Log.d("playlistdisplay", "id not spotify");
+            entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyUser(Long.valueOf(position));
+        } else{
+            Log.d("playlistdisplay", "id is spotify");
+            entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyDefault(Long.valueOf(position));
+        }
+
+        if(setting.equals("day")) {
+            day = MainActivity.dataStorage.fetchEntryByIndexDay(DayDisplay.dayId);
+        } else if (setting.equals("weather")){
+            weather = MainActivity.dataStorage.fetchEntryByIndexWeather(WeatherDisplay.weatherId);
+        }
         listView = findViewById(R.id.songs_list);
         songs = new ArrayList<SpotifySong>();
 
@@ -90,8 +107,13 @@ public class PlaylistDisplay extends AppCompatActivity{
 
         switch (item.getItemId()) {
             case R.id.select:
-                day.setSpotifyPlaylist(entry);
-                MainActivity.dataStorage.updateDayEntry(day);
+                if(setting.equals("day")) {
+                    day.setSpotifyPlaylist(entry);
+                    MainActivity.dataStorage.updateDayEntry(day);
+                } else if(setting.equals("weather")){
+                    weather.setSpotifyPlaylist(entry);
+                    MainActivity.dataStorage.updateWeatherEntry(weather);
+                }
                 //DayDisplay.adapter.notifyDataSetChanged();
                 finish();
 
@@ -112,11 +134,12 @@ public class PlaylistDisplay extends AppCompatActivity{
 
     }
 
-    public void fetchPlaylistTracks(String id){
+    public void fetchPlaylistTracks(String playlistId){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
+        String userId = entry.getUserId();
+        String url = "https://api.spotify.com/v1/users/"+userId+"/playlists/"+ playlistId + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
-        Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken);
+        Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken + " and id is " + userId);
 
             StringRequest jsObjRequest = new StringRequest
                     (Request.Method.GET, url, new Response.Listener<String>() {

@@ -91,7 +91,9 @@ public class DayDisplay extends Fragment {
 
 
     public void showPlaylistDialog(View v, Long id) {
-        DialogFragment fragment = new SpotifySettings();
+
+
+        DialogFragment fragment = SpotifySettings.newInstance("day");
         Long dayId = id;
 
         fragment.show(getFragmentManager(), "playlistPicker");
