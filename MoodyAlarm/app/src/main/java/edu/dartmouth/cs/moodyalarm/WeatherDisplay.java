@@ -168,7 +168,7 @@ public class WeatherDisplay extends Fragment {
 
         // ui calling possible
 
-        private EntryDbHelper database;
+
         boolean initiallyEmpty;
         protected void onPreExecute() {
 
@@ -177,11 +177,9 @@ public class WeatherDisplay extends Fragment {
         // run threads
         @Override
         protected Void doInBackground(Void... params) {
-            database = new EntryDbHelper(getActivity().getApplicationContext());
-            database.open();
 
 
-            weathers = database.fetchWeatherEntries();
+            weathers = MainActivity.dataStorage.fetchWeatherEntries();
 
             return null;
         }

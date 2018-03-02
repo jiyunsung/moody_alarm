@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -60,16 +61,13 @@ public class PlaylistDisplay extends AppCompatActivity{
     private int position;
     private ArrayList<SpotifySong> songs;
     private ListView listView;
-    private EntryDbHelper database;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist_display);
         position = getIntent().getIntExtra("pos", 0);
-        database = new EntryDbHelper(getApplicationContext());
-        database.open();
-        entry = database.fetchEntryByIndexSpotify(Long.valueOf(position));
-        day = database.fetchEntryByIndexDay(DayDisplay.dayId);
+        entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyDefault(Long.valueOf(position));
+        day = MainActivity.dataStorage.fetchEntryByIndexDay(DayDisplay.dayId);
         listView = findViewById(R.id.songs_list);
         songs = new ArrayList<SpotifySong>();
 
@@ -93,7 +91,7 @@ public class PlaylistDisplay extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.select:
                 day.setSpotifyPlaylist(entry);
-                database.updateDayEntry(day);
+                MainActivity.dataStorage.updateDayEntry(day);
                 //DayDisplay.adapter.notifyDataSetChanged();
                 finish();
 
@@ -155,18 +153,18 @@ public class PlaylistDisplay extends AppCompatActivity{
 
 //
     //custom adapter class for list view
-    public class CustomAdapter extends ArrayAdapter<SpotifySong> {
+    public class CustomAdapter extends ArrayAdapter<String> {
 
 
         Context mContext;
-        ArrayList<SpotifySong> spotifySongs;
+        ArrayList<String> data;
     
     
-        public CustomAdapter(Context context, ArrayList<SpotifySong> songs) {
+        public CustomAdapter(Context context, ArrayList<String> songs) {
             super(context, R.layout.songs_list, songs);
-            this.spotifySongs = songs;
+            this.data = songs;
             this.mContext=context;
-            Log.d("customAdapter", "songs length is " + this.spotifySongs.size());
+            Log.d("customAdapter", "songs length is " + this.data.size());
     
         }
 
@@ -176,28 +174,47 @@ public class PlaylistDisplay extends AppCompatActivity{
         public View getView(int position, View convertView, ViewGroup parent) {
 
             // Get the data item for this position
-            SpotifySong e = getItem(position);
-            Log.d("in getView", "getting e with name " + e.getSongName());
-            // Check if an existing view is being reused, otherwise inflate the view
+            String s = getItem(position);
+        final View result;
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        convertView = inflater.inflate(R.layout.songs_list, parent, false);
 
 
-            final View result;
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.songs_list, parent, false);
+        try {
+
+            JSONObject jsonObject = new JSONObject(s);
 
 
-            TextView songName = (TextView) convertView.findViewById(R.id.song_name);
-            TextView songArtist = (TextView) convertView.findViewById(R.id.song_artist);
+            JSONObject track = jsonObject.getJSONObject("track");
+            JSONObject album = track.getJSONObject("album");
+
+            String songName = album.getString("name");
+            Log.d("song name is ", songName);
+
+
+            JSONArray artists = album.getJSONArray("artists");
+            JSONObject artist = artists.getJSONObject(0);
+            String artistName = artist.getString("name");
+
+            JSONArray images = album.getJSONArray("images");
+            JSONObject image = images.getJSONObject(0);
+            String imageUrl = image.getString("url");
+            Log.d("image url is ", imageUrl);
+
+
+            TextView song_name = convertView.findViewById(R.id.song_name);
+            song_name.setText(songName);
+
+            TextView song_artist = convertView.findViewById(R.id.song_artist);
+            song_artist.setText(artistName);
+
             ImageView albumPhoto = convertView.findViewById(R.id.album_photo);
             Picasso.with(getApplicationContext()).
-                load(e.getImageUrl()).into(albumPhoto);
+                    load(imageUrl).into(albumPhoto);
 
 
+        } catch(JSONException e){Log.d("error", e.toString());}
 
-        songName.setText(e.getSongName());
-            songArtist.setText(e.getSongArtist());
-
-            // Return the completed view to render on screen
             return convertView;
         }
     }
@@ -205,7 +222,8 @@ public class PlaylistDisplay extends AppCompatActivity{
     private class SpotifyAsyncTask extends AsyncTask<Void, Void, Void> {
 
         // ui calling possible
-        EntryDbHelper dataStorage;
+        ArrayList<String> data;
+
         protected void onPreExecute() {
 
         }
@@ -213,14 +231,15 @@ public class PlaylistDisplay extends AppCompatActivity{
         // run threads
         @Override
         protected Void doInBackground(Void... params) {
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
-            dataStorage.updateSpotifyEntry(entry);
+
+            MainActivity.dataStorage.updateSpotifyEntryDefault(entry);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
+
+           data = new ArrayList<>();
 
             try {
 
@@ -231,6 +250,7 @@ public class PlaylistDisplay extends AppCompatActivity{
                 Log.d("onPostExecute", "array length is " + arr.length());
                 for (int i = 0; i < arr.length(); i++){
                     JSONObject item = arr.getJSONObject(i);
+                    data.add(item.toString());
                     JSONObject track = item.getJSONObject("track");
                     JSONObject album = track.getJSONObject("album");
                     String songName = album.getString("name");
@@ -245,15 +265,15 @@ public class PlaylistDisplay extends AppCompatActivity{
                     JSONObject image = images.getJSONObject(1);
                     String imageUrl = image.getString("url");
                     Log.d("image url is ", imageUrl);
-                    
+
                     SpotifySong song = new SpotifySong(songName, artistName,imageUrl);
                     songs.add(song);
 
 
                 }
-                CustomAdapter adapter= new CustomAdapter(getApplicationContext(), songs);
+                CustomAdapter adapter= new CustomAdapter(getApplicationContext(), data);
 
-                adapter.addAll(songs);
+                adapter.addAll(data);
                 adapter.notifyDataSetChanged();
 
                 Log.d("onPostExecute", "adapter count is " + adapter.getCount());
@@ -268,46 +288,29 @@ public class PlaylistDisplay extends AppCompatActivity{
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                    SpotifySong song = songs.get(position);
+                    String songData = data.get(position);
 
-                    //Log.d("History onItemClick", "entry with id " + entry.getId() + "and input " + entry.getInputType());
+                    Log.d("playlist onItemClick", "song data is " + songData);
 
-                    
+                    DialogFragment fragment = new SpotifySettings();
+
+
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    Fragment prev = getSupportFragmentManager().findFragmentByTag("song");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    DialogFragment songFragment = SongFragment.newInstance(songData);
+                    songFragment.show(ft, "song");
 
                 }
             });
         }
 
     }
-
-//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-//        ImageView bmImage;
-//
-//        public DownloadImageTask(ImageView bmImage) {
-//            this.bmImage = bmImage;
-//        }
-//
-//        protected Bitmap doInBackground(String... urls) {
-//            String urldisplay = urls[0];
-//            Bitmap mIcon11 = null;
-//            try {
-//                InputStream in = new java.net.URL(urldisplay).openStream();
-//                mIcon11 = BitmapFactory.decodeStream(in);
-//            } catch (Exception e) {
-//                Log.e("Error", e.getMessage());
-//                e.printStackTrace();
-//            }
-//            return mIcon11;
-//        }
-//
-//        protected void onPostExecute(Bitmap result) {
-//            bmImage.setImageBitmap(result);
-//        }
-//    }
-//
-//
-//
-
 
 
 }

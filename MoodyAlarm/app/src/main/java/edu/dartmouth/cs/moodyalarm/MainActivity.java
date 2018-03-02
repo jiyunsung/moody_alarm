@@ -2,20 +2,10 @@ package edu.dartmouth.cs.moodyalarm;
 
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 
 import android.support.v4.app.ActivityCompat;
@@ -64,11 +54,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
@@ -91,17 +78,13 @@ public class MainActivity extends AppCompatActivity
 
 
     public static String accessToken = "";
-    public Boolean finishedDataRetrieval= false;
+    public Boolean finishedDefaultDataRetrieval = false;
+    public Boolean finishedUserDataRetrieval = false;
     public static EntryDbHelper dataStorage;
-    public static ArrayList<String> mImageUrls;
+
     public String uri = "";
 
-
-    boolean mIsBound;
-    //private ServiceConnection mConnection = this;
-    private Messenger mServiceMessenger = null;
     private static final String TAG = "vj";
-    //private final Messenger mMessenger = new Messenger(new IncomingMessageHandler());
 
     private FloatingActionButton fab;
 
@@ -318,7 +301,8 @@ public class MainActivity extends AppCompatActivity
 
     private class RetrieveDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        ArrayList<SpotifyPlaylist> playlists;
+        ArrayList<SpotifyPlaylist> playlists_default;
+        ArrayList<SpotifyPlaylist> playlists_user;
         // ui calling possible
         protected void onPreExecute() {
             Log.d("onPreExecute", "retreivedataasync task");
@@ -328,31 +312,52 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
 
-            playlists = dataStorage.fetchSpotifyEntries();
-            if (playlists.size() < NUMBER_DEFAULT_PLAYLISTS){
-                 finishedDataRetrieval = false;
+            playlists_default = dataStorage.fetchSpotifyEntriesDefault();
+            if (playlists_default.size() < NUMBER_DEFAULT_PLAYLISTS){
+                 finishedDefaultDataRetrieval = false;
             } else{
-                finishedDataRetrieval = true;
+                finishedDefaultDataRetrieval = true;
             }
+
+
+            playlists_user = dataStorage.fetchSpotifyEntriesUser();
+            if (playlists_user.size() == 0){
+                finishedUserDataRetrieval = false;
+            } else{
+                finishedUserDataRetrieval = true;
+            }
+
+
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            Log.d("onPostExecute", "main activity playlists length is "+playlists.size());
+            Log.d("onPostExecute", "main activity playlists_default length is "+ playlists_default.size());
 
 
             //dataStorage.close();
-            if(!finishedDataRetrieval){
+            if(!finishedDefaultDataRetrieval){
                 Log.d("retrieve data asynctask", "did not all data");
                 fetchDefaultPlaylists(getApplicationContext());
             } else {
                 Log.d("retrieve data asynctask", "got all data");
-                finishedDataRetrieval = true;
+                finishedDefaultDataRetrieval = true;
 
                 }
+
+            if(!finishedUserDataRetrieval){
+                Log.d("retrieve data asynctask", "did not all user data");
+                fetchUserPlaylists(getApplicationContext());
+            } else {
+                Log.d("retrieve data asynctask", "got all data");
+                finishedUserDataRetrieval = true;
+
             }
+            }
+
+
         }
 
 
@@ -378,7 +383,7 @@ public class MainActivity extends AppCompatActivity
 
         final ArrayList<String> imageUrls = new ArrayList<String>();
         final ArrayList<SpotifyPlaylist> playlists = new ArrayList<>();
-        Log.d("main activity", "in fetch default playlists access token is "+ MainActivity.accessToken);
+        Log.d("main activity", "in fetch default playlists_default access token is "+ MainActivity.accessToken);
 
 
         for (int i = 0; i< default_playlists.length;i++) {
@@ -389,7 +394,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onResponse(String response) {
                             // response
-                            Log.d("fetch default playlists Response", response);
+                            Log.d("fetch default playlists_default Response", response);
                             try {
 
                                 JSONObject jsonObject = new JSONObject(response);
@@ -409,9 +414,9 @@ public class MainActivity extends AppCompatActivity
                                     Log.d("imageUrls size: ", "size is " + imageUrls.size());
 
                                     if(playlists.size() == default_playlists.length){
-                                        Log.d("fetch default playlists", "imageURls size equals default");
+                                        Log.d("fetch default playlists_default", "imageURls size equals default");
                                         try {
-                                            new SpotifyAsyncSave().execute(playlists);
+                                            new SpotifyAsyncSaveDefault().execute(playlists);
                                         } catch(Exception e){
                                             Log.d("error", e.toString());
                                         }
@@ -453,7 +458,79 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void fetchPlaylistTracks(String id, final SpotifyPlaylist playlist, final Day day, final Weather weather){
+    public void fetchUserPlaylists(Context input){
+
+        RequestQueue queue = Volley.newRequestQueue(input);
+
+        String url = "https://api.spotify.com/v1/me/playlists";
+
+
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        final ArrayList<SpotifyPlaylist> playlists = new ArrayList<>();
+        Log.d("main activity", "in fetch user playlists_default access token is "+ MainActivity.accessToken);
+
+
+        StringRequest jsObjRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("fetch user playlists_user Response", response);
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray items = jsonObject.getJSONArray("items");
+                            for (int i = 0; i < items.length(); i++){
+                                JSONObject item = items.getJSONObject(i);
+                                String id = item.getString("id");
+                                Log.d("fetch user playlists", "id is "+ id + "for playlist " + item.getString("name"));
+                                JSONArray images = item.getJSONArray("images");
+                                JSONObject image = images.getJSONObject(0);
+                                String url = image.getString("url");
+                                Log.d("fetch user playlists", "url is " + url);
+
+                                SpotifyPlaylist entry = new SpotifyPlaylist();
+                                entry.setPlaylistId(id);
+                                entry.setImageUrl(url);
+                                playlists.add(entry);
+                            }
+
+                                new SpotifyAsyncSaveUser().execute(playlists);
+
+
+
+                        } catch (JSONException e) {
+                            Log.d("json error", e.toString());
+                        }
+
+
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                params.put("Accept", "application/json");
+
+                return params;
+            }
+        };
+
+        queue.add(jsObjRequest);
+
+
+    }
+
+
+    public void fetchPlaylistTracksDefault(String id, final SpotifyPlaylist playlist, final Day day, final Weather weather){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
         String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
@@ -466,7 +543,44 @@ public class MainActivity extends AppCompatActivity
                         // response
                         Log.d("fetchPlaylisttracks Response", response);
                         playlist.setTrackInfo(response);
-                        new SaveSongsAsyncTask(playlist, day, weather).execute();
+                        new SaveSongsAsyncTaskDefault(playlist, day, weather).execute();
+
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                params.put("Accept", "application/json");
+
+                return params;
+            }
+        };
+        queue.add(jsObjRequest);
+    }
+
+    public void fetchPlaylistTracksUser(String id, final SpotifyPlaylist playlist){
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        String url = "https://api.spotify.com/v1/users/vivjiang/playlists/"+ id + "/tracks";
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        Log.d("Spotify service", "in user fetch playlist tracks access token is "+ MainActivity.accessToken);
+
+        StringRequest jsObjRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("fetchPlaylisttracks user Response", response);
+                        playlist.setTrackInfo(response);
+                        new SaveSongsAsyncTaskUser(playlist).execute();
 
                     }
                 },
@@ -492,7 +606,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    private class SpotifyAsyncSave extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
+    private class SpotifyAsyncSaveDefault extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
 
         String [] dayArr = { "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"};
         String [] weatherArr = {"Clear", "Rainy","Stormy", "Snowy", "Cloudy", "Foggy", "Windy"};
@@ -509,7 +623,7 @@ public class MainActivity extends AppCompatActivity
 
             for (int i = 0; i < playlists.size(); i++){
                 Log.d("Spotifyasyncsave", "do in background, playlist id is " + playlists.get(i).getPlaylistId());
-                playlists.get(i).setId(dataStorage.insertSpotifyEntry(playlists.get(i)).getId());
+                playlists.get(i).setId(dataStorage.insertSpotifyEntryDefault(playlists.get(i)).getId());
             }
             return playlists;
 
@@ -532,20 +646,53 @@ public class MainActivity extends AppCompatActivity
                     weather = null;
                 }
 
-                fetchPlaylistTracks(result.get(i).getPlaylistId(), result.get(i), day, weather);
+                fetchPlaylistTracksDefault(result.get(i).getPlaylistId(), result.get(i), day, weather);
             }
         }
 
     }
 
 
-    private class SaveSongsAsyncTask extends AsyncTask<Void, Void, Void> {
+    private class SpotifyAsyncSaveUser extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
+
+
+        // ui calling possible
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected ArrayList<SpotifyPlaylist> doInBackground(ArrayList<SpotifyPlaylist>... params) {
+            ArrayList<SpotifyPlaylist> playlists = params[0];
+
+            for (int i = 0; i < playlists.size(); i++){
+                Log.d("Spotifyasyncsave user", "do in background, playlist id is " + playlists.get(i).getPlaylistId());
+                playlists.get(i).setId(dataStorage.insertSpotifyEntryUser(playlists.get(i)).getId());
+            }
+            return playlists;
+
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SpotifyPlaylist> result) {
+
+            for (int i = 0; i < result.size(); i++){
+
+
+                fetchPlaylistTracksUser(result.get(i).getPlaylistId(), result.get(i));
+            }
+        }
+
+    }
+
+    private class SaveSongsAsyncTaskDefault extends AsyncTask<Void, Void, Void> {
 
         SpotifyPlaylist playlist;
         Day day;
         Weather weather;
 
-        public SaveSongsAsyncTask(SpotifyPlaylist p,Day d, Weather w){
+        public SaveSongsAsyncTaskDefault(SpotifyPlaylist p,Day d, Weather w){
             this.playlist = p;
             this.day = d;
             this.weather= w;
@@ -559,7 +706,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
 
-            dataStorage.updateSpotifyEntry(this.playlist);
+            dataStorage.updateSpotifyEntryDefault(this.playlist);
 
             if(this.day != null) {
                 Log.d("savesongsasynctask", "playlist set for day: " + this.day.getName());
@@ -570,7 +717,7 @@ public class MainActivity extends AppCompatActivity
                 this.weather.setSpotifyPlaylist(this.playlist);
                 dataStorage.updateWeatherEntry(this.weather);
             } else{
-                finishedDataRetrieval = true;
+                finishedDefaultDataRetrieval = true;
             }
 
             return null;
@@ -581,8 +728,8 @@ public class MainActivity extends AppCompatActivity
 
             Log.d("savesongsasynctask", "onpostexecute ");
 
-            if (finishedDataRetrieval){
-                Log.d("savesong async task", "finished data retrieval, playing song");
+            if (finishedDefaultDataRetrieval){
+                Log.d("savesong async task", "finished data retrieval");
 //
 //
             }
@@ -590,6 +737,43 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    private class SaveSongsAsyncTaskUser extends AsyncTask<Void, Void, Void> {
+
+        SpotifyPlaylist playlist;
+
+
+        public SaveSongsAsyncTaskUser(SpotifyPlaylist p){
+            this.playlist = p;
+
+        }
+
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            dataStorage.updateSpotifyEntryUser(this.playlist);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+            Log.d("savesongsasynctask", "user onpostexecute ");
+
+
+
+        }
+
+    }
+
+
+
 
 
 

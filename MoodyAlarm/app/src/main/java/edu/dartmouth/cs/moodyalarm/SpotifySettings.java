@@ -10,15 +10,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +56,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
     private GridView gridview;
     private TextView loading;
+    private AnimationAdapter horizontalAdapter;
+    RecyclerView horizontal_recycler_view;
+    LinearLayoutManager horizontalLayoutManager;
 
     public ArrayList<SpotifyPlaylist> spotifyEntries;
 
@@ -61,17 +68,29 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-        View view=inflater.inflate(R.layout.spotify_settings,null);
-
-
         super.onCreate(savedInstanceState);
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.spotify_settings, null);
 
+        ArrayList<String> urls = new ArrayList<>();
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+        urls.add("https://i.scdn.co/image/7c543ab19dff5f50f187b0c0b0d50caf0ca34a76");
+
+
+
+
+
+       horizontal_recycler_view = view.findViewById(R.id.horizontal_recycler_view);
+
+//        View view=inflater.inflate(R.layout.spotify_settings,null);
+//
         new SpotifyAsyncTask().execute();
-
 
         spotifyEntries = new ArrayList<SpotifyPlaylist>();
 
@@ -79,7 +98,7 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
         loading = (TextView) view.findViewById(R.id.loading);
 
-        loading.setText("Loading playlists...");
+        loading.setText("Loading playlists_default...");
 
         Log.d("oncreateview", "just set image adapter");
 
@@ -152,9 +171,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
                 // if it's not recycled, initialize some attributes
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(425, 425));
+                imageView.setLayoutParams(new GridView.LayoutParams(375, 375));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(0, 0, 0, 0);
+                imageView.setPadding(0, 10, 0, 10);
                 imageView.setAdjustViewBounds(true);
                 //notifyDataSetChanged();
             } else {
@@ -176,7 +195,7 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
     }
 
 
-    private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
+    private class SpotifyAsyncTask extends AsyncTask<Void, Void, ArrayList<ArrayList<String>>> {
 
         // ui calling possible
         protected void onPreExecute() {
@@ -185,38 +204,56 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
         // run threads
         @Override
-        protected ArrayList<String> doInBackground(Void... params) {
+        protected ArrayList<ArrayList<String>> doInBackground(Void... params) {
+
+            ArrayList<ArrayList<String>> mImageUrls = new ArrayList<ArrayList<String>>();
+
+            ArrayList<SpotifyPlaylist> spotifyEntriesDefault = MainActivity.dataStorage.fetchSpotifyEntriesDefault();
+            ArrayList<SpotifyPlaylist> spotifyEntriesUser = MainActivity.dataStorage.fetchSpotifyEntriesUser();
+
+            Log.d("doInBackground", "entries size is "+ spotifyEntriesDefault.size());
 
 
-
-            ArrayList<SpotifyPlaylist> spotifyEntries = MainActivity.dataStorage.fetchSpotifyEntries();
-
-            Log.d("doInBackground", "entries size is "+ spotifyEntries.size());
-
-
-            ArrayList<String> mImageUrls = new ArrayList<String>();
+            ArrayList<String> defaultUrls = new ArrayList<String>();
             Log.d("do in background", "fetching all entries");
-            for (int i = 0; i < spotifyEntries.size(); i++){
-                mImageUrls.add(spotifyEntries.get(i).getImageUrl());
-                Log.d("for loop", "img url is "+ spotifyEntries.get(i).getImageUrl());
+            for (int i = 0; i < spotifyEntriesDefault.size(); i++){
+                defaultUrls.add(spotifyEntriesDefault.get(i).getImageUrl());
+                Log.d("default for loop", "img url is "+ spotifyEntriesDefault.get(i).getImageUrl());
 
             }
 
+            ArrayList<String> userUrls = new ArrayList<String>();
+            for (int i = 0; i < spotifyEntriesUser.size(); i++){
+                userUrls.add(spotifyEntriesUser.get(i).getImageUrl());
+                Log.d("user for loop", "img url is "+ spotifyEntriesUser.get(i).getImageUrl());
 
+            }
+
+            mImageUrls.add(defaultUrls);
+            mImageUrls.add(userUrls);
             return mImageUrls;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> result) {
+        protected void onPostExecute(ArrayList<ArrayList<String>> result) {
             Log.d("onPostExecute", "result length is "+result.size());
 
 
                 loading.setText("");
-                ImageAdapter adapter = new ImageAdapter(getActivity(), result);
+                ImageAdapter adapter = new ImageAdapter(getActivity(), result.get(0));
 
                 gridview.setAdapter(adapter);
                 gridview.setOnItemClickListener(SpotifySettings.this);
                 adapter.notifyDataSetChanged();
+
+            horizontalAdapter=new AnimationAdapter(getContext(),result.get(1));
+            horizontal_recycler_view.setAdapter(horizontalAdapter);
+            horizontalAdapter.notifyDataSetChanged();
+
+            horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+            horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
+            horizontal_recycler_view.setAdapter(horizontalAdapter);
+
 
         }
 

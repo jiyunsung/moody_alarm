@@ -35,14 +35,21 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
 
 
-    private String[] allSpotifyColumns = { KEY_ROWID_SPOTIFY, KEY_PLAYLISTID, KEY_IMAGEURL,KEY_IMAGEBITMAP, KEY_TRACKINFO};
+    private String[] allSpotifyColumnsDefault = {KEY_ROWID_SPOTIFY_DEFAULT, KEY_PLAYLISTID_DEFAULT, KEY_IMAGEURL_DEFAULT, KEY_TRACKINFO_DEFAULT};
 
-    public final static String TABLE_ENTRIES_SPOTIFY = "SpotifyTable";
-    public final static String KEY_ROWID_SPOTIFY = "_id";
-    public final static String KEY_PLAYLISTID = "mPlaylistId";
-    public final static String KEY_IMAGEURL = "mImageUrl";
-    public final static String KEY_IMAGEBITMAP = "mImageBitmap";
-    public final static String KEY_TRACKINFO = "mTrackInfo";
+    public final static String TABLE_ENTRIES_SPOTIFY_DEFAULT = "SpotifyTableDefault";
+    public final static String KEY_ROWID_SPOTIFY_DEFAULT = "_id";
+    public final static String KEY_PLAYLISTID_DEFAULT = "mPlaylistId";
+    public final static String KEY_IMAGEURL_DEFAULT = "mImageUrl";
+    public final static String KEY_TRACKINFO_DEFAULT = "mTrackInfo";
+
+    private String[] allSpotifyColumnsUser = {KEY_ROWID_SPOTIFY_USER, KEY_PLAYLISTID_USER, KEY_IMAGEURL_USER, KEY_TRACKINFO_USER};
+
+    public final static String TABLE_ENTRIES_SPOTIFY_USER = "SpotifyTableUser";
+    public final static String KEY_ROWID_SPOTIFY_USER = "_idUser";
+    public final static String KEY_PLAYLISTID_USER = "mPlaylistIdUser";
+    public final static String KEY_IMAGEURL_USER = "mImageUrlUser";
+    public final static String KEY_TRACKINFO_USER = "mTrackInfoUser";
 
 
     private String[] allDayColumns = { KEY_ROWID_DAY, KEY_DAYNAME, KEY_DAYPLAYLIST};
@@ -80,18 +87,29 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_DAYSOFWEEK
             + " BLOB" + ");";
 
-    public static final String CREATE_TABLE_ENTRIES_SPOTIFY = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_ENTRIES_SPOTIFY
+    public static final String CREATE_TABLE_ENTRIES_SPOTIFY_DEFAULT = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ENTRIES_SPOTIFY_DEFAULT
             + " ("
-            + KEY_ROWID_SPOTIFY
+            + KEY_ROWID_SPOTIFY_DEFAULT
             + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_PLAYLISTID
+            + KEY_PLAYLISTID_DEFAULT
             + " STRING, "
-            + KEY_IMAGEURL
+            + KEY_IMAGEURL_DEFAULT
             + " STRING, "
-            + KEY_IMAGEBITMAP
-            + " BLOB, "
-            + KEY_TRACKINFO
+            + KEY_TRACKINFO_DEFAULT
+            + " STRING "
+            + ");";
+
+    public static final String CREATE_TABLE_ENTRIES_SPOTIFY_USER= "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ENTRIES_SPOTIFY_USER
+            + " ("
+            + KEY_ROWID_SPOTIFY_USER
+            + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_PLAYLISTID_USER
+            + " STRING, "
+            + KEY_IMAGEURL_USER
+            + " STRING, "
+            + KEY_TRACKINFO_USER
             + " STRING "
             + ");";
 
@@ -137,7 +155,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_ENTRIES_ALARM);
-        db.execSQL(CREATE_TABLE_ENTRIES_SPOTIFY);
+        db.execSQL(CREATE_TABLE_ENTRIES_SPOTIFY_DEFAULT);
+        db.execSQL(CREATE_TABLE_ENTRIES_SPOTIFY_USER);
         db.execSQL(CREATE_TABLE_ENTRIES_DAY);
         db.execSQL(CREATE_TABLE_ENTRIES_WEATHER);
     }
@@ -148,7 +167,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
                 + oldVersion + " to " + newVersion
                 + ", which will destroy all old data");
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_ALARM + "'");
-        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_SPOTIFY + "'");
+        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_SPOTIFY_DEFAULT + "'");
+        database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_SPOTIFY_USER + "'");
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_DAYS + "'");
         database.execSQL("DROP TABLE IF EXISTS '" + TABLE_ENTRIES_WEATHER + "'");
         onCreate(database);
@@ -180,21 +200,39 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     }
 
     // Insert a item given each column value
-    public SpotifyPlaylist insertSpotifyEntry(SpotifyPlaylist entry) {
+    public SpotifyPlaylist insertSpotifyEntryDefault(SpotifyPlaylist entry) {
         ContentValues values = new ContentValues();
-        values.put(KEY_PLAYLISTID, entry.getPlaylistId());
-        values.put(KEY_IMAGEURL, entry.getImageUrl());
-        values.put(KEY_IMAGEBITMAP, entry.getImageBitmap());
+        values.put(KEY_PLAYLISTID_DEFAULT, entry.getPlaylistId());
+        values.put(KEY_IMAGEURL_DEFAULT, entry.getImageUrl());
 
-        long insertId = database.insert(TABLE_ENTRIES_SPOTIFY, null, values);
-        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY,
-                allSpotifyColumns,
-                KEY_ROWID_SPOTIFY + " = " + insertId,
+        long insertId = database.insert(TABLE_ENTRIES_SPOTIFY_DEFAULT, null, values);
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_DEFAULT,
+                allSpotifyColumnsDefault,
+                KEY_ROWID_SPOTIFY_DEFAULT + " = " + insertId,
                 null,null, null, null);
 
         cursor.moveToLast();
-        SpotifyPlaylist newEntry = cursorToEntrySpotify(cursor);
-        Log.d("insertEntry", "new spotify entry url is "+ newEntry.getImageUrl());
+        SpotifyPlaylist newEntry = cursorToEntrySpotifyDefault(cursor);
+        Log.d("insertEntry", "new spotify default entry url is "+ newEntry.getImageUrl());
+        cursor.close();
+        return newEntry;
+    }
+
+    // Insert a item given each column value
+    public SpotifyPlaylist insertSpotifyEntryUser(SpotifyPlaylist entry) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_PLAYLISTID_USER, entry.getPlaylistId());
+        values.put(KEY_IMAGEURL_USER, entry.getImageUrl());
+
+        long insertId = database.insert(TABLE_ENTRIES_SPOTIFY_USER, null, values);
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_USER,
+                allSpotifyColumnsUser,
+                KEY_ROWID_SPOTIFY_USER+ " = " + insertId,
+                null,null, null, null);
+
+        cursor.moveToLast();
+        SpotifyPlaylist newEntry = cursorToEntrySpotifyUser(cursor);
+        Log.d("insertEntry", "new spotify user entry url is "+ newEntry.getImageUrl());
         cursor.close();
         return newEntry;
     }
@@ -208,9 +246,6 @@ public class EntryDbHelper extends SQLiteOpenHelper {
 
         values.put(KEY_DAYPLAYLIST, gson.toJson(playlist).getBytes());
 
-
-
-        database = getWritableDatabase();
         long insertId = database.insert(TABLE_ENTRIES_DAYS, null, values);
         Cursor cursor = database.query(TABLE_ENTRIES_DAYS,
                 allDayColumns,
@@ -233,9 +268,6 @@ public class EntryDbHelper extends SQLiteOpenHelper {
 
         values.put(KEY_WEATHERPLAYLIST, gson.toJson(playlist).getBytes());
 
-
-
-        database = getWritableDatabase();
         long insertId = database.insert(TABLE_ENTRIES_WEATHER, null, values);
         Cursor cursor = database.query(TABLE_ENTRIES_WEATHER,
                 allWeatherColumns,
@@ -264,14 +296,25 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         database.update(TABLE_ENTRIES_ALARM, values, "_id="+entry.getId(), null);
     }
 
-    public void updateSpotifyEntry(SpotifyPlaylist entry) {
+    public void updateSpotifyEntryDefault(SpotifyPlaylist entry) {
         ContentValues values = new ContentValues();
-        values.put(KEY_TRACKINFO, entry.getTrackInfo());
-        values.put(KEY_IMAGEBITMAP, entry.getImageBitmap());
+        values.put(KEY_TRACKINFO_DEFAULT, entry.getTrackInfo());
 
 
-        database.update(TABLE_ENTRIES_SPOTIFY, values, "_id="+entry.getId(), null);
+
+        database.update(TABLE_ENTRIES_SPOTIFY_DEFAULT, values, "_id="+entry.getId(), null);
     }
+
+
+    public void updateSpotifyEntryUser(SpotifyPlaylist entry) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_TRACKINFO_USER, entry.getTrackInfo());
+
+
+
+        database.update(TABLE_ENTRIES_SPOTIFY_USER, values, "_idUser="+entry.getId(), null);
+    }
+
 
 
     public void updateDayEntry(Day entry) {
@@ -314,20 +357,37 @@ public class EntryDbHelper extends SQLiteOpenHelper {
 
 
     // Query a specific entry by its index.
-    public SpotifyPlaylist fetchEntryByIndexSpotify(long rowId) {
+    public SpotifyPlaylist fetchEntryByIndexSpotifyDefault(long rowId) {
         Log.d("fetchEntryByIndex", "id is " + rowId);
-        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY,
-                allSpotifyColumns,
-                KEY_ROWID_SPOTIFY + " = " + rowId,
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_DEFAULT,
+                allSpotifyColumnsDefault,
+                KEY_ROWID_SPOTIFY_DEFAULT + " = " + rowId,
                 null,null, null, null);
         SpotifyPlaylist e = new SpotifyPlaylist();
         if (cursor.moveToFirst()){
-           e = cursorToEntrySpotify(cursor);
+           e = cursorToEntrySpotifyDefault(cursor);
         }
 
         cursor.close();
         return e;
     }
+
+    // Query a specific entry by its index.
+    public SpotifyPlaylist fetchEntryByIndexSpotifyUser(long rowId) {
+        Log.d("fetchEntryByIndex", "id is " + rowId);
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_USER,
+                allSpotifyColumnsUser,
+                KEY_ROWID_SPOTIFY_USER + " = " + rowId,
+                null,null, null, null);
+        SpotifyPlaylist e = new SpotifyPlaylist();
+        if (cursor.moveToFirst()){
+            e = cursorToEntrySpotifyUser(cursor);
+        }
+
+        cursor.close();
+        return e;
+    }
+
 
     // Query a specific entry by its index.
     public Day fetchEntryByIndexDay(long rowId) {
@@ -404,14 +464,14 @@ public class EntryDbHelper extends SQLiteOpenHelper {
 
 
     // Query the entire table, return all rows
-    public ArrayList<SpotifyPlaylist> fetchSpotifyEntries() {
-        Log.d("fetchEntries", "in fetch entries in db helper");
+    public ArrayList<SpotifyPlaylist> fetchSpotifyEntriesDefault() {
+        Log.d("fetchEntries", "in fetch entries default in db helper");
         ArrayList<SpotifyPlaylist> entries = new ArrayList<>();
-        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY, allSpotifyColumns, null,
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_DEFAULT, allSpotifyColumnsDefault, null,
                 null,null, null, null);
         cursor.moveToFirst(); //Move the cursor to the first row.
         while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
-            SpotifyPlaylist entry = cursorToEntrySpotify(cursor);
+            SpotifyPlaylist entry = cursorToEntrySpotifyDefault(cursor);
             Log.d("fetch Entries", "row id for entry is: " + entry.getId());
             entries.add(entry);
             cursor.moveToNext();
@@ -421,7 +481,25 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         return entries;
     }
 
-    private SpotifyPlaylist cursorToEntrySpotify(Cursor cursor) {
+    // Query the entire table, return all rows
+    public ArrayList<SpotifyPlaylist> fetchSpotifyEntriesUser() {
+        Log.d("fetchEntries", "in fetch entries user in db helper");
+        ArrayList<SpotifyPlaylist> entries = new ArrayList<>();
+        Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_USER, allSpotifyColumnsUser, null,
+                null,null, null, null);
+        cursor.moveToFirst(); //Move the cursor to the first row.
+        while (!cursor.isAfterLast()) {//Returns whether the cursor is pointing to the position after the last row.
+            SpotifyPlaylist entry = cursorToEntrySpotifyUser(cursor);
+            Log.d("fetch Entries", "row id for user entry is: " + entry.getId());
+            entries.add(entry);
+            cursor.moveToNext();
+        }
+        // Make sure to close the cursor
+        cursor.close();
+        return entries;
+    }
+
+    private SpotifyPlaylist cursorToEntrySpotifyDefault(Cursor cursor) {
 
         SpotifyPlaylist entry = new SpotifyPlaylist();
 
@@ -429,9 +507,18 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistId")));
         entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrl")));
         entry.setTrackInfo(cursor.getString(cursor.getColumnIndex("mTrackInfo")));
-        entry.setImageBitmap(cursor.getBlob(cursor.getColumnIndex("mImageBitmap")));
 
+        return entry;
+    }
 
+    private SpotifyPlaylist cursorToEntrySpotifyUser(Cursor cursor) {
+
+        SpotifyPlaylist entry = new SpotifyPlaylist();
+
+        entry.setId(cursor.getLong(cursor.getColumnIndex("_idUser")));
+        entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistIdUser")));
+        entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrlUser")));
+        entry.setTrackInfo(cursor.getString(cursor.getColumnIndex("mTrackInfoUser")));
 
         return entry;
     }

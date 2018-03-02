@@ -67,14 +67,6 @@ public class SpotifyPlaylist implements Serializable {
 
     }
 
-    public byte[] getImageBitmap(){
-        return this.mImageBitmap;
-    }
-
-    public void setImageBitmap(byte[] imageBitmap){
-        this.mImageBitmap = imageBitmap;
-
-    }
 
 
 }
