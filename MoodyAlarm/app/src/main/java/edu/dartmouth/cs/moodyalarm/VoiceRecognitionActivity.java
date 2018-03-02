@@ -6,6 +6,7 @@ package edu.dartmouth.cs.moodyalarm;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
@@ -22,13 +23,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 
 public class VoiceRecognitionActivity extends AppCompatActivity implements
         RecognitionListener {
 
     private static final int REQUEST_RECORD_PERMISSION = 100;
     private TextView returnedText;
+    private TextView targetText;
     private ToggleButton toggleButton;
     private ProgressBar progressBar;
     private SpeechRecognizer speech = null;
@@ -36,6 +45,9 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     private String LOG_TAG = "VoiceRecognitionActivity";
 
     public static Alarmhandler alarm = new Alarmhandler();
+    private QuoteReader quotes;
+
+    private String answer[];
 
 
     @Override
@@ -43,7 +55,11 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_recognition);
 
+        quotes = new QuoteReader();
+        answer = quotes.choose();
         alarm.start_alert(getApplicationContext(), "Default");
+        targetText = (TextView) findViewById(R.id.Target);
+        targetText.setText(answer[0] + " by " + answer[1]);
         returnedText = (TextView) findViewById(R.id.textView1);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
@@ -121,7 +137,7 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     public void onBeginningOfSpeech() {
         Log.i(LOG_TAG, "onBeginningOfSpeech");
         progressBar.setIndeterminate(false);
-        progressBar.setMax(10);
+        progressBar.setMax(30);
     }
 
     @Override
@@ -164,15 +180,22 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
         Log.i(LOG_TAG, "onResults");
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+
+        Log.d("TAG", answer[0].replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase());
         String text = "";
         for (String result : matches) {
             text += result + "\n";
-            if (result.equals("answer")){
+            Log.d("result", result);
+            if (result.replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().equals(answer[0].replaceAll("[^a-zA-Z ]", "").toLowerCase())){
                 alarm.stop_alert(getApplicationContext());
+                Log.d("tag", "succeeded");
             }
         }
         returnedText.setText(text);
+
     }
+
 
     @Override
     public void onRmsChanged(float rmsdB) {
@@ -216,4 +239,56 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
         }
         return message;
     }
+
+    public class QuoteReader {
+
+        private Map<Integer, String[]> map;
+        private int bound;
+
+        public QuoteReader() {
+
+            map = new HashMap<Integer, String[]>();
+            Resources res = getResources();
+            InputStream in_s = res.openRawResource(R.raw.quotes);
+            Scanner sc = new Scanner(in_s);
+
+            sc.useDelimiter("--");
+
+            int n = 0;
+            while (sc.hasNext())
+            {
+                String unformatted = sc.next();
+                if (unformatted.contains("\n") & unformatted.length() <= 100) {
+
+                    String finalLines[] = new String[2];
+                    finalLines[1] = unformatted.substring(0, unformatted.indexOf("\n"));
+                    finalLines[0] = unformatted.substring(unformatted.indexOf("\n") + 1);
+                    map.put(n, finalLines);
+                    n++;
+                }
+            }
+
+            bound = n;
+            Log.d("TAG", map.toString());
+
+        }
+
+        private String[] choose()
+        {
+
+            Random rand = new Random();
+            int value = rand.nextInt(bound - 1);
+
+            Log.d("rand", Integer.toString(value));
+            String[] chosen_quote = this.map.get(value);
+            String[] author = this.map.get(value + 1);
+
+            String[] returned_pair = new String[2];
+            returned_pair[0] = chosen_quote[0];
+            returned_pair[1] = author[1];
+
+            return returned_pair;
+        }
+    }
 }
+

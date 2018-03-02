@@ -51,7 +51,9 @@
             android:launchMode="singleInstance" />
 
         <service android:name=".LocationService" />
-        <activity android:name=".VoiceRecognitionActivity"></activity>
+        <activity android:name=".VoiceRecognitionActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"></activity>
 
     </application>
 

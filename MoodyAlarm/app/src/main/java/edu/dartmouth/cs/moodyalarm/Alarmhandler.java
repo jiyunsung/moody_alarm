@@ -46,12 +46,12 @@ public class Alarmhandler {
 
 
     public void stop_alert(Context context){
-//        if (mediaPlayer != null){
-//            mediaPlayer.release();
-//        }
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+        }
 
         //Spotify.destroyPlayer(MainActivity.class);
-        MainActivity.mPlayer.pause(null);
+//        MainActivity.mPlayer.pause(null);
         if (vibrator.hasVibrator()) {
             vibrator.cancel();
         }

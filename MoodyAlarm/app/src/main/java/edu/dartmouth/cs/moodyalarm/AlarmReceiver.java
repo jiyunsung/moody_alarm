@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Random;
+
 public class AlarmReceiver extends BroadcastReceiver
 {
     //Receive broadcast
@@ -36,7 +38,14 @@ public class AlarmReceiver extends BroadcastReceiver
         //Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
         //Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
         //Log.d("Alarm receiver", "received intent");
-        Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
+        Random random = new Random();
+        int value = random.nextInt(1);
+        Intent emaIntent;
+        if (value == 1) {
+            emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
+        } else {
+            emaIntent = new Intent(context, VoiceRecognitionActivity.class);
+        }
         emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(emaIntent);
     }
