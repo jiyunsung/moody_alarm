@@ -178,12 +178,7 @@ public class AlarmEntry implements Serializable {
 
                     i++;
                 }
-            } else if (this.repeat == 3) { // monthly
-
-
-            } else { // yearly
-
-            }
+            } 
         }
 
     }
