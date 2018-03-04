@@ -5,5 +5,18 @@
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="sand">#ecebe8</color>
+    <color name="white">#ffffff</color>
     <color name="grey">#828282</color>
+    <color name="lightGrey">#718792</color>
+    <color name="darkGrey">#1c313a</color>
+    <color name="buttonGrey">#29434e</color>
+    <color name="darkPurple">#24202E</color>
+    <color name="purple">#382733</color>
+    <color name="lighterPurple">#4C3B4D</color>
+    <color name="lightLightPurple">#8e818e</color>color>
+    <color name="lightLightPurple2">#ceae9eae</color>color>
+    <color name="transparentPurple">#5abcaabc</color>color>
+    <color name="copper">#B87333</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

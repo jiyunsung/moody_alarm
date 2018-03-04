@@ -66,8 +66,16 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         Log.d("popup oncreate", "pos is " + AlarmSettings.position);
         mIsBound = false; // by default set this to unbound
 
-        if(AlarmSettings.position == 1) {
-            Log.d("popUp activity", "pos is 1");
+        Intent intent = getIntent();
+        Long id = intent.getLongExtra("pos", 1);
+        AlarmEntry a = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
+        String setting = a.getSetting();
+
+
+
+        Log.d("popup oncreate", "setting retrieved is " + setting);
+
+        if(setting.equals("day")) {
             uri = playPlaylistByDay(day, this);
             alarm.start_alert(this, uri);
         } else{

@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity
 
 
         // set toolbar instead of app bar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
@@ -115,20 +115,27 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
-                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
-                startActivity(setAlarm);
+//                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
+//                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
+//                startActivity(setAlarm);
+                Fragment fragment = new SetAlarmActivityRedesign();
+
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("main").commit();
+
+
+
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+        //toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
 
         displaySelectedScreen(R.id.viewAlarms, true);
 
@@ -293,8 +300,8 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
     }
 
 
@@ -615,7 +622,7 @@ public class MainActivity extends AppCompatActivity
 
     private class SpotifyAsyncSaveDefault extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
 
-        String [] dayArr = { "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"};
+        String [] dayArr = { "Sun","Mon", "Tues","Wed", "Thurs", "Fri", "Sat"};
         String [] weatherArr = {"Clear", "Rainy","Stormy", "Snowy", "Cloudy", "Foggy", "Windy"};
 
         // ui calling possible

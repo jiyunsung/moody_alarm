@@ -217,10 +217,11 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
             alarmEntry.setDaysofweek(new ArrayList<Boolean>(Arrays.asList(daysList)));
+            alarmEntry.setSetting("weather");
 
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
-            dataStorage.insertAlarmEntry(alarmEntry);
+            alarmEntry.setId((dataStorage.insertAlarmEntry(alarmEntry).getId()));
             Log.d("writeSchema", "do in background");
 
             alarmEntry.setSchedule(getApplicationContext());

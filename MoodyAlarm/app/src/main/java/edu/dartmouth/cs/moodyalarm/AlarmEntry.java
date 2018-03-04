@@ -23,18 +23,19 @@ public class AlarmEntry implements Serializable {
     private Integer minute;
     private Integer repeat; // an indicator of recurrence. 0 if no repeat. 1 for weekly, 2 for daily, 3 for monthly, and 4 for yearly
     private ArrayList<Boolean> daysofweek; // only works with weekly alarms. otherwise just list of falses. length of 7.
-
+    private String setting;
 
     public AlarmEntry(){
     }
 
-    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list) {
+    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list, String s) {
         this.id = id;
         this.onOff = onOff; // 1 if on
         this.hour = hour;
         this.minute = minute;
         this.repeat = repeat;
         this.daysofweek = list;
+        this.setting = s;
     }
 
     public long getId() { return id; }
@@ -52,6 +53,9 @@ public class AlarmEntry implements Serializable {
     public void setMinute(int minute) {  this.minute = minute; }
     public void setRepeat(int repeat) { this.repeat = repeat; }
     public void setDaysofweek(ArrayList<Boolean> daysofweek) { this.daysofweek = daysofweek; }
+
+    public String getSetting() { return setting; }
+    public void setSetting(String s) {this.setting = s;}
 
     public void turnOnOff(){
         if (this.onOff == 1)
@@ -79,6 +83,10 @@ public class AlarmEntry implements Serializable {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
+        intent.putExtra("alarm", this.id);
+        Log.d("setSchedule", "setting is " + this.setting);
+        Log.d("setSchedule", "id is " + this.id);
+
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 

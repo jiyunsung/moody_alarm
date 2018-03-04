@@ -3,9 +3,8 @@
     package="edu.dartmouth.cs.moodyalarm">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
@@ -51,10 +50,11 @@
             android:launchMode="singleInstance" />
 
         <service android:name=".LocationService" />
-        <activity android:name=".VoiceRecognitionActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"></activity>
 
+        <activity
+            android:name=".VoiceRecognitionActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

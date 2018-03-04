@@ -24,7 +24,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String DATABASE_NAME = "database";
     private static final Integer DATABASE_VERSION = 1;
     private SQLiteDatabase database;
-    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK};
+    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK, KEY_SETTING};
 
     public final static String TABLE_ENTRIES_ALARM = "AlarmsTable";
     public final static String KEY_ROWID_ALARM = "_id";
@@ -33,6 +33,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_MINUTE = "mMinute";
     public final static String KEY_REPEAT = "mRepeat";
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
+    public final static String KEY_SETTING = "mSetting";
 
 
 
@@ -94,7 +95,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_REPEAT
             + " INTEGER NOT NULL, "
             + KEY_DAYSOFWEEK
-            + " BLOB" + ");";
+            + " BLOB, "
+            +   KEY_SETTING
+            + " STRING "
+            + ");";
 
     public static final String CREATE_TABLE_ENTRIES_SPOTIFY_DEFAULT = "CREATE TABLE IF NOT EXISTS "
             + TABLE_ENTRIES_SPOTIFY_DEFAULT
@@ -198,6 +202,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_HOUR, entry.getHour());
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
+        values.put(KEY_SETTING, entry.getSetting());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysofweek(); // convert into byte array format
         Gson gson = new Gson();
@@ -309,6 +314,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_HOUR, entry.getHour());
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
+        values.put(KEY_SETTING, entry.getSetting());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysofweek(); // convert into byte array format
         Gson gson = new Gson();
@@ -418,7 +424,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
                 allAlarmColumns,
                 KEY_ROWID_ALARM + " = " + rowId,
                 null,null, null, null);
-        AlarmEntry entry = cursorToEntryAlarm(cursor);
+        AlarmEntry entry = new AlarmEntry();
+        if (cursor.moveToFirst()) {
+            entry = cursorToEntryAlarm(cursor);
+        }
         cursor.close();
         return entry;
     }
@@ -516,6 +525,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setHour(cursor.getInt(2));
         entry.setMinute(cursor.getInt(3));
         entry.setRepeat(cursor.getInt(4));
+        entry.setSetting(cursor.getString(cursor.getColumnIndex("mSetting")));
 
 
         // get location list

@@ -1,243 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
-
-    <TextView
-        android:id="@+id/weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="15dp"
-        android:textSize="40dp"
-        android:text="Clear"
-        android:textColor="@android:color/black" />
+    android:gravity="center_horizontal"
+    android:padding="5dp"
+    >
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="250dp">
+    <!-- A CardView that contains a TextView -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_width="350dp"
+        android:layout_height="140dp"
+        android:padding="2dp"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardBackgroundColor="#50000000"
+        >
 
-        <ImageView
-            android:id="@+id/playlist_img"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_gravity="center"
-            android:src="@android:drawable/ic_dialog_info" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="left"
+            >
+
+            <TextView
+                android:id="@+id/weather"
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:textSize="30dp"
+                android:text="Monday"
+                android:gravity="center"
+                android:textColor="@color/white" />
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="30dp"
+                android:text="Change"
+                android:textColor="@color/white"
+                android:id="@+id/change"
+                android:background="@drawable/button_border"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="220dp"
+            >
+
+            <ImageView
+                android:id="@+id/playlist_img"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:src="@android:drawable/ic_dialog_info" />
 
 
-    </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
 
 </RelativeLayout>
 
-
-
-
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
-
-
-    <!--<TextView-->
-        <!--android:id="@+id/textView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:gravity="center_horizontal"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:text="Customize alarm music by weather:"-->
-        <!--android:textSize="15sp" />-->
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="50dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Sunny"-->
-            <!--android:textSize="15sp" />-->
-
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="50dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/sunny"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="100dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Cloudy"-->
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="100dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/cloudy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="150dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Rainy"-->
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="150dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/rainy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="200dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Foggy"-->
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="200dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/foggy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="250dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Snowy"-->
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="250dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/snowy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="300dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Stormy"-->
-
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="300dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/stormy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal">-->
-        <!--<TextView-->
-
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="left"-->
-            <!--android:layout_marginTop="350dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="Windy"-->
-            <!--android:textSize="15sp" />-->
-
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="350dp"-->
-            <!--android:layout_marginRight="25dp"-->
-            <!--android:text="Change"-->
-            <!--android:id="@+id/windy"-->
-            <!--android:onClick="changePlaylist"/>-->
-
-    <!--</LinearLayout>-->
-
-<!--</RelativeLayout>-->

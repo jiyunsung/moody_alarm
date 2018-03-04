@@ -65,7 +65,7 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
     public String[] DEFAULT_PLAYLISTS;
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
     private GridView gridview;
-    private TextView loading;
+//    private TextView loading;
     private AnimationAdapter horizontalAdapter;
     RecyclerView horizontal_recycler_view;
     LinearLayoutManager horizontalLayoutManager;
@@ -96,6 +96,7 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
         super.onCreate(savedInstanceState);
         setting = getArguments().getString("settings");
+        Log.d("spotify settings ", "setting is " + setting);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -126,9 +127,9 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
         gridview = (GridView) view.findViewById(R.id.gridview);
         //v.setOnDragListener(new DragEventListener());
 
-        loading = (TextView) view.findViewById(R.id.loading);
-
-        loading.setText("Loading playlists_default...");
+//        loading = (TextView) view.findViewById(R.id.loading);
+//
+//        loading.setText("Loading playlists_default...");
 
         Log.d("oncreateview", "just set image adapter");
 
@@ -143,8 +144,7 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
-        Toast.makeText(getActivity(), "" + position,
-                Toast.LENGTH_SHORT).show();
+
 
         Intent intent = new Intent(getActivity(), PlaylistDisplay.class);
         intent.putExtra("pos", position+1);
@@ -278,14 +278,14 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
             Log.d("onPostExecute", "result length is "+result.size());
 
 
-                loading.setText("");
+//                loading.setText("");
                 ImageAdapter adapter = new ImageAdapter(getActivity(), result.get(0));
 
                 gridview.setAdapter(adapter);
                 gridview.setOnItemClickListener(SpotifySettings.this);
                 adapter.notifyDataSetChanged();
 
-            horizontalAdapter=new AnimationAdapter(getContext(),result.get(1));
+            horizontalAdapter=new AnimationAdapter(getContext(),result.get(1), setting);
             horizontal_recycler_view.setAdapter(horizontalAdapter);
             horizontalAdapter.notifyDataSetChanged();
 
@@ -296,6 +296,8 @@ public class SpotifySettings extends DialogFragment implements AdapterView.OnIte
 
 
         }
+
+
 
     }
 

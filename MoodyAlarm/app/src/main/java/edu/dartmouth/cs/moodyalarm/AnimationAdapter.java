@@ -31,6 +31,7 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.MyVi
     private Context context;
     private LayoutInflater inflater;
     private ArrayList<SpotifyPlaylist> playlists;
+    private String setting;
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -48,9 +49,10 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.MyVi
     }
 
 
-    public AnimationAdapter(Context context, ArrayList<SpotifyPlaylist> data) {
+    public AnimationAdapter(Context context, ArrayList<SpotifyPlaylist> data, String setting) {
         this.context = context;
         this.playlists = data;
+        this.setting = setting;
     }
 
     @Override
@@ -80,6 +82,7 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.MyVi
                 Intent intent = new Intent(context, PlaylistDisplay.class);
                 intent.putExtra("pos", position+1);
                 intent.putExtra("id", "vivjiang");
+                intent.putExtra("settings", setting);
                 context.startActivity(intent);
 
 
