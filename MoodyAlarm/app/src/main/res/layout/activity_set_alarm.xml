@@ -14,15 +14,76 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"/>
 
-        <TextView
-            android:id="@+id/recurrence"
+        <CheckBox android:id="@+id/checkbox_repeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Set Recurrence"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp" />
+            android:text="   Repeat"
+            android:onClick="onRepeatClicked"/>
+
+        <LinearLayout
+            android:id="@+id/weekday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonSun"
+                android:textOn = "S"
+                android:textOff = "S"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonM"
+                android:textOn = "M"
+                android:textOff = "M"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonTue"
+                android:textOn = "T"
+                android:textOff = "T"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonW"
+                android:textOn = "W"
+                android:textOff = "W"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonThur"
+                android:textOn = "T"
+                android:textOff = "T"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonF"
+                android:textOn = "F"
+                android:textOff = "F"
+                android:onClick="onToggleClicked"/>
+
+            <ToggleButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonSat"
+                android:textOn = "S"
+                android:textOff = "S"
+                android:onClick="onToggleClicked"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

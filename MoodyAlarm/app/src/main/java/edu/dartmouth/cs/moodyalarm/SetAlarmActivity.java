@@ -13,6 +13,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,10 +43,9 @@ public class SetAlarmActivity extends AppCompatActivity {
     private EntryDbHelper dataStorage;
     private boolean isNew;
     public AlarmEntry alarmEntry = new AlarmEntry();
-    private TextView recurrence;
-    private String recurrenceRule;
-    private Boolean[] daysList;
+    public Boolean[] daysList;
     private boolean saved;
+    private LinearLayout weekdays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,78 +57,47 @@ public class SetAlarmActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = getIntent();
         isNew = intent.getBooleanExtra(AlarmsFragment.NEWALARM, true);
-        Log.d("isNEW", Boolean.toString(isNew));
         saved = false;
+
+        weekdays = (LinearLayout) findViewById(R.id.weekday);
+
+
         if (!isNew) {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
-            Log.d("onOff", Integer.toString(alarmEntry.getOnOff()));
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
-            daysList = null;
+            daysList = alarmEntry.getDaysofweek();
+            CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
+            if (alarmEntry.getRepeated() == 1) {
+                weekdays.setVisibility(View.VISIBLE);
+                checkBox.setChecked(true);
+
+                ToggleButton buttonSun = (ToggleButton) findViewById(R.id.buttonSun);
+                buttonSun.setChecked(daysList[0]);
+                ToggleButton buttonM = (ToggleButton) findViewById(R.id.buttonM);
+                buttonM.setChecked(daysList[1]);
+                ToggleButton buttonTue = (ToggleButton) findViewById(R.id.buttonTue);
+                buttonTue.setChecked(daysList[2]);
+                ToggleButton buttonW = (ToggleButton) findViewById(R.id.buttonW);
+                buttonW.setChecked(daysList[3]);
+                ToggleButton buttonThur = (ToggleButton) findViewById(R.id.buttonThur);
+                buttonThur.setChecked(daysList[4]);
+                ToggleButton buttonF = (ToggleButton) findViewById(R.id.buttonF);
+                buttonF.setChecked(daysList[5]);
+                ToggleButton buttonSat = (ToggleButton) findViewById(R.id.buttonSat);
+                buttonSat.setChecked(daysList[6]);
+
+            } else {
+                weekdays.setVisibility(View.INVISIBLE);
+                checkBox.setChecked(false);
+            }
         } else {
             alarmEntry = new AlarmEntry();
             alarmEntry.setOnOff(1);
             alarmEntry.setRepeat(0);
+            weekdays.setVisibility(View.INVISIBLE);
             daysList = new Boolean[]{false, false, false, false, false, false, false};
-
         }
-
-        recurrence = (TextView) findViewById(R.id.recurrence);
-        recurrence.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RecurrencePickerDialog recurrencePickerDialog = new RecurrencePickerDialog();
-
-                if (recurrenceRule != null && recurrenceRule.length() > 0) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(RecurrencePickerDialog.BUNDLE_RRULE, recurrenceRule);
-                    recurrencePickerDialog.setArguments(bundle);
-                }
-
-                daysList = new Boolean[]{false, false, false, false, false, false, false};
-
-                recurrencePickerDialog.setOnRecurrenceSetListener(new RecurrencePickerDialog.OnRecurrenceSetListener() {
-                    @Override
-                    public void onRecurrenceSet(String rrule) {
-                        recurrenceRule = rrule;
-
-                        if (recurrenceRule != null && recurrenceRule.length() > 0) {
-                            EventRecurrence recurrenceEvent = new EventRecurrence();
-                            recurrenceEvent.setStartDate(new Time("" + new Date().getTime()));
-                            recurrenceEvent.parse(rrule);
-                            Log.d("TAG", recurrenceEvent.toString());
-                            Log.d("TAG", rrule.toString());
-                            String srt = EventRecurrenceFormatter.getRepeatString(SetAlarmActivity.this, getResources(), recurrenceEvent, true);
-                            recurrence.setText(srt);
-
-                            String[] separated = recurrenceEvent.toString().split(";");
-                            String byDay = separated[separated.length - 1].split("=")[1];
-
-                            if (byDay.contains("SU"))
-                                daysList[0] = true;
-                            if (byDay.contains("MO"))
-                                daysList[1] = true;
-                            if (byDay.contains("TU"))
-                                daysList[2] = true;
-                            if (byDay.contains("WE"))
-                                daysList[3] = true;
-                            if (byDay.contains("TH"))
-                                daysList[4] = true;
-                            if (byDay.contains("FR"))
-                                daysList[5] = true;
-                            if (byDay.contains("SA"))
-                                daysList[6] = true;
-
-                            alarmEntry.setRepeat(1);
-                        } else {
-                            recurrence.setText("No recurrence");
-                            alarmEntry.setRepeat(0);
-                        }
-                    }
-                });
-                recurrencePickerDialog.show(getSupportFragmentManager(), "recurrencePicker");
-            }
-        });
     }
 
     // create the options menu
@@ -216,7 +187,7 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
-            alarmEntry.setDaysofweek(new ArrayList<Boolean>(Arrays.asList(daysList)));
+            alarmEntry.setDaysofweek(daysList);
 
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
@@ -245,20 +216,11 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
-
-
-            if (daysList != null) {
-                ArrayList<Boolean> daysOfWeek = new ArrayList<>();
-                for (boolean day : daysList) {
-                    daysOfWeek.add(day);
-                }
-                alarmEntry.setDaysofweek(daysOfWeek);
-            }
+            alarmEntry.setDaysofweek(daysList);
 
             dataStorage= new EntryDbHelper(getApplicationContext());
             dataStorage.open();
             dataStorage.updateAlarmEntry(alarmEntry);
-            Log.d("updateSchema", "do in background");
 
             alarmEntry.setSchedule(getApplicationContext());
             return null;
@@ -268,6 +230,74 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
         }
 
+    }
+
+    public void onRepeatClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        if (checked) {
+            alarmEntry.setRepeat(1);
+            weekdays.setVisibility(View.VISIBLE);
+        } else {
+            alarmEntry.setRepeat(0);
+            weekdays.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void onToggleClicked(View view) {
+
+        switch(view.getId()) {
+            case R.id.buttonSun:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[0] = true;
+                } else {
+                    daysList[0] = false;
+                }
+                break;
+            case R.id.buttonM:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[1] = true;
+                } else {
+                    daysList[1] = false;
+                }
+                break;
+            case R.id.buttonTue:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[2] = true;
+                } else {
+                    daysList[2] = false;
+                }
+                break;
+            case R.id.buttonW:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[3] = true;
+                } else {
+                    daysList[3] = false;
+                }
+                break;
+            case R.id.buttonThur:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[4] = true;
+                } else {
+                    daysList[4] = false;
+                }
+                break;
+            case R.id.buttonF:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[5] = true;
+                } else {
+                    daysList[5] = false;
+                }
+                break;
+            case R.id.buttonSat:
+                if(((ToggleButton) view).isChecked()) {
+                    daysList[6] = true;
+                } else {
+                    daysList[6] = false;
+                }
+                break;
+        }
     }
 
 }

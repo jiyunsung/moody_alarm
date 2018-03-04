@@ -184,7 +184,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
 
-        ArrayList<Boolean> daysOfWeek = entry.getDaysofweek(); // convert into byte array format
+        ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
         values.put(KEY_DAYSOFWEEK, gson.toJson(daysOfWeek).getBytes());
 
@@ -291,7 +291,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
 
-        ArrayList<Boolean> daysOfWeek = entry.getDaysofweek(); // convert into byte array format
+        ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
         values.put(KEY_DAYSOFWEEK, gson.toJson(daysOfWeek).getBytes());
 
@@ -458,7 +458,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             String json = new String(blob);
             Gson gson = new Gson();
             ArrayList<Boolean> daysOfWeek = gson.fromJson(json.trim(), new TypeToken<ArrayList<Boolean>>() {}.getType());
-            entry.setDaysofweek(daysOfWeek);
+            entry.setDaysOfWeek2(daysOfWeek);
 
         }
         return entry;
