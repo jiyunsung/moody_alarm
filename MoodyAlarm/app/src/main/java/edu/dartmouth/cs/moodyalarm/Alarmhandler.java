@@ -51,7 +51,7 @@ public class Alarmhandler {
         }
 
         //Spotify.destroyPlayer(MainActivity.class);
-        MainActivity.mPlayer.pause(null);
+//        MainActivity.mPlayer.pause(null);
         if (vibrator.hasVibrator()) {
             vibrator.cancel();
         }

@@ -38,4 +38,16 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="UpdatedScene2" parent="DefaultScene">
+        <item name="bauble_small">#0000ff</item>
+    </style>
+
+    <style name="UpdatedScene" parent="DefaultScene">
+        <item name="bauble_small">#ffff00</item>
+    </style>
+
+    <style name="DefaultScene">
+        <item name="bauble_small">#ff0000</item>
+    </style>
+
 </resources>

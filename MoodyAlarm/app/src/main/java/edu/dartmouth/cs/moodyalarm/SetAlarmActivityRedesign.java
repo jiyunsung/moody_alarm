@@ -362,9 +362,6 @@ public class SetAlarmActivityRedesign extends Fragment{
                         if(y<=2310 && y > 2290){
                             alarm.setText("24:00");
                         }
-
-
-
                         break;
                     default:
                         return false;
@@ -415,6 +412,7 @@ public class SetAlarmActivityRedesign extends Fragment{
             entry.setMinute(minute);
             entry.setOnOff(1);
             entry.setRepeat(0);
+            entry.setVibrate(1);
             entry.setSetting("weather");
 
             entry.setId((MainActivity.dataStorage.insertAlarmEntry(entry).getId()));

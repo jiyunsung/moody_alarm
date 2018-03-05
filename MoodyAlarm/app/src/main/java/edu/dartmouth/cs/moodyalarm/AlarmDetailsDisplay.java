@@ -66,21 +66,14 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-
         TextView timeDisplay  = view.findViewById(R.id.labelExpanded);
-
         timeDisplay.setText(time);
-
-
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final View v = view;
-
-
 
         Bundle args = getArguments();
         time = args.getString(TIME);
@@ -121,6 +114,24 @@ public class AlarmDetailsDisplay extends Fragment {
                 } else {
                     entry.setRepeat(0);
                     weekdays.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        CheckBox vibrate = (CheckBox) view.findViewById(R.id.checkbox_vibrate);
+        if (entry.getVibrate() == 1) {
+            vibrate.setChecked(true);
+        } else {
+            vibrate.setChecked(false);
+        }
+
+        vibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                if (isChecked) {
+                    entry.setVibrate(1);
+                } else {
+                    entry.setVibrate(0);
                 }
             }
         });

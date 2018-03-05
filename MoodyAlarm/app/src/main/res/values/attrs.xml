@@ -9,4 +9,9 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="ChristmasTree">
+        <attr name="bauble_round" format="color" />
+        <attr name="bauble_small" format="color" />
+    </declare-styleable>
+
 </resources>

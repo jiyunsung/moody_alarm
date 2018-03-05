@@ -5,32 +5,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-
-import be.billington.calendar.recurrencepicker.EventRecurrence;
-import be.billington.calendar.recurrencepicker.EventRecurrenceFormatter;
-import be.billington.calendar.recurrencepicker.RecurrencePickerDialog;
-
-import java.util.Date;
 
 /**
  * Created by jiyunsung on 2/25/18.
@@ -170,7 +155,7 @@ public class SetAlarmActivity extends AppCompatActivity {
 
     public void voiceRecog(View view){
 
-        Intent emaIntent = new Intent(this, PuzzleActivity.class); //The activity you  want to start.
+        Intent emaIntent = new Intent(this, SudokuActivity.class); //The activity you  want to start.
         emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(emaIntent);
     }

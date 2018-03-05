@@ -21,11 +21,12 @@ public class AlarmReceiver extends BroadcastReceiver
         Log.d("Alarm receiver", "received intent");
 
         long alarmId = intent.getLongExtra("alarm", -1);
-        AlarmEntry entry = MainActivity.dataStorage.fetchEntryByIndexAlarm(alarmId);
-        if (entry.getRepeated() == 0 ) { // no repeats : this is the last time the alarm is going off, so this should be off
-            entry.setOnOff(0);
-            MainActivity.dataStorage.updateAlarmEntry(entry);
-        }
+        Log.d("id", Long.toString(alarmId));
+//        AlarmEntry entry = MainActivity.dataStorage.fetchEntryByIndexAlarm(alarmId);
+//        if (entry.getRepeated() == 0 ) { // no repeats : this is the last time the alarm is going off, so this should be off
+//            entry.setOnOff(0);
+//            MainActivity.dataStorage.updateAlarmEntry(entry);
+//        }
 
         String setting = "";
 ////        setting = intent.getStringExtra("setting");
