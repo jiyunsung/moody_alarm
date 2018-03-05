@@ -76,8 +76,6 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             doBindService();
             startService(new Intent(PopupActivity.this, LocationService.class));
         }
-
-
     }
 
     @Override

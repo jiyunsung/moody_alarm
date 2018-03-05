@@ -178,7 +178,7 @@ public class AlarmEntry implements Serializable {
 
                     i++;
                 }
-            } 
+            }
         }
 
     }
