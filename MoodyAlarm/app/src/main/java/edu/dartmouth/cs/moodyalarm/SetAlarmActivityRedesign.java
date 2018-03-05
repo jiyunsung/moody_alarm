@@ -76,6 +76,7 @@ public class SetAlarmActivityRedesign extends Fragment{
     public String newUrl;
     public String setting;
     public TextView alarm;
+    public int timesIndex = 0;
 
 
 
@@ -85,10 +86,15 @@ public class SetAlarmActivityRedesign extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.set_alarm_redesign, container, false);
-
+        MainActivity.fab.setVisibility(View.INVISIBLE);
         LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
         final LinearLayout alarmContainer = view.findViewById(R.id.alarm_container);
         alarm = view.findViewById(R.id.alarm);
+        final String [] times = {"00:00","00:30", "1:00", "1:30" ,"2:00", "2:30", "3:00", "3:30","4:00","4:30",
+                "5:00", "5:30", "6:00", "6:30", "7:00","7:30", "8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30",
+                "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00",
+                "16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00", "22:30","23:00","23:30","24:00"};
+
 
         alarm.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -112,70 +118,111 @@ public class SetAlarmActivityRedesign extends Fragment{
                     case MotionEvent.ACTION_UP:
 
                         long eventDuration = e.getEventTime() - e.getDownTime();
-                        Log.d("screenContainer", "action up duration is " + eventDuration);
+                        Log.d("screenContainer", "action up duration is " + eventDuration + "and e raw y is " + e.getRawY() +
+                        "and alarm container y is " + alarmContainer.getY());
 
                         if (eventDuration < 100) {
-                            if (e.getRawY() < alarmContainer.getY()) {
+                            if (e.getRawY() < alarmContainer.getY()+250) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
-                                int minute = Integer.parseInt(arr[1]);
+
+                                String [] minArr = arr[1].split(" ");
+
+                                int minute = Integer.parseInt(minArr[0]);
                                 minute--;
                                 if (minute < 0) {
                                     minute = 60 + minute;
                                     hour--;
                                 }
+                                String time = "";
                                 if (minute < 10) {
-                                    alarm.setText(hour + ":" + "0" + minute);
+                                    time = hour + ":" + "0" + minute;
                                 } else {
-                                    alarm.setText(hour + ":" + minute);
+                                    time = hour + ":" + minute;
+                                }
+
+                                if (hour < 12){
+                                    alarm.setText(time + " AM");
+                                } else{
+                                    alarm.setText(time + " PM");
                                 }
                             } else if (e.getRawY() > alarmContainer.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
-                                int minute = Integer.parseInt(arr[1]);
+
+                                String [] minArr = arr[1].split(" ");
+
+                                int minute = Integer.parseInt(minArr[0]);
                                 minute++;
                                 if (minute == 60) {
                                     minute = 60 - minute;
                                     hour++;
                                 }
+                                String time = "";
                                 if (minute < 10) {
-                                    alarm.setText(hour + ":" + "0" + minute);
+                                    time = hour + ":" + "0" + minute;
                                 } else {
-                                    alarm.setText(hour + ":" + minute);
+                                    time = hour + ":" + minute;
+                                }
+
+                                if (hour < 12){
+                                    alarm.setText(time + " AM");
+                                } else{
+                                    alarm.setText(time + " PM");
                                 }
                             }
                         }else {
-                            if (e.getRawY() < alarmContainer.getY()) {
+                            if (e.getRawY() < alarmContainer.getY()+250) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
-                                int minute = Integer.parseInt(arr[1]);
+
+                                String [] minArr = arr[1].split(" ");
+
+                                int minute = Integer.parseInt(minArr[0]);
                                 minute = minute-5;
                                 if (minute < 0) {
                                     minute = 60 + minute;
                                     hour--;
                                 }
+                                String time = "";
                                 if (minute < 10) {
-                                    alarm.setText(hour + ":" + "0" + minute);
+                                    time = hour + ":" + "0" + minute;
                                 } else {
-                                    alarm.setText(hour + ":" + minute);
+                                    time = hour + ":" + minute;
+                                }
+
+                                if (hour < 12){
+                                    alarm.setText(time + " AM");
+                                } else{
+                                    alarm.setText(time + " PM");
                                 }
                             } else if (e.getRawY() > alarmContainer.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
-                                int minute = Integer.parseInt(arr[1]);
+
+                                String [] minArr = arr[1].split(" ");
+
+                                int minute = Integer.parseInt(minArr[0]);
                                 minute = minute + 5;
                                 if (minute >= 60) {
                                     minute = 60 - minute;
                                     hour++;
                                 }
+                                String time = "";
                                 if (minute < 10) {
-                                    alarm.setText(hour + ":" + "0" + minute);
+                                    time = hour + ":" + "0" + minute;
                                 } else {
-                                    alarm.setText(hour + ":" + minute);
+                                    time = hour + ":" + minute;
+                                }
+
+                                if (hour < 12){
+                                    alarm.setText(time + " AM");
+                                } else{
+                                    alarm.setText(time + " PM");
                                 }
                             }
                         }
@@ -190,181 +237,40 @@ public class SetAlarmActivityRedesign extends Fragment{
         alarmContainer.setOnTouchListener(new View.OnTouchListener() {
             float dX, dY;
 
+
             // Defines the one method for the interface, which is called when the View is long-clicked
             public boolean onTouch(View v, MotionEvent e) {
                 switch (e.getAction()) {
 
                     case MotionEvent.ACTION_DOWN:
+                        alarm.setText("12:00 PM");
                         dY = v.getY() - e.getRawY();
                         break;
 
                     case MotionEvent.ACTION_MOVE:
+                        if((e.getRawY()) <2300 && (e.getRawY()) >= 300) {
 
-                        v.animate()
-                                .y(e.getRawY() + dY)
-                                .setDuration(0)
-                                .start();
-                        float y = e.getRawY();
-                        Log.d("ACTION MOVE", "y is "+ y);
-                        if(y<=235 && y > 200) {
-                            alarm.setText("12:00");
-                        }
+                            v.animate()
+                                    .y(e.getRawY() + dY)
+                                    .setDuration(0)
+                                    .start();
+                            float y = e.getRawY();
+                            int i = 0;
+                            for (i = 0; i < times.length; i++) {
+                                if (y >= (40 * i + 300) && y < (i * 40 + 400)) {
+                                    String[] arr = times[i].split(":");
 
-                        if(y<=270 && y > 235) {
-                            alarm.setText("12:30");
-                        }
+                                    int hour = Integer.parseInt(arr[0]);
+                                    if (hour < 12)
+                                        alarm.setText(times[i] + " AM");
+                                    else
+                                        alarm.setText(times[i] + " PM");
+                                    timesIndex = i;
+                                }
+                            }
+                            Log.d("ACTION MOVE", "y is " + y);
 
-                        if(y<=305 && y > 270){
-                            alarm.setText("1:00");
                         }
-                        if(y<=340 && y > 305) {
-                            alarm.setText("1:30");
-                        }
-
-                        if(y<=375 && y > 340){
-                            alarm.setText("2:00");
-                        }
-
-                        if(y<=410 && y > 375) {
-                            alarm.setText("2:30");
-                        }
-
-                        if(y<=445 && y > 410){
-                            alarm.setText("3:00");
-                        }
-                        if(y<=480 && y > 445) {
-                            alarm.setText("3:30");
-                        }
-
-                        if(y<=53 && y > 480){
-                            alarm.setText("4:00");
-                        }
-                        if(y<=580 && y > 530) {
-                            alarm.setText("4:30");
-                        }
-
-
-                        if(y<=630 && y > 580){
-                            alarm.setText("5:00");
-                        }
-                        if(y<=680 && y > 630) {
-                            alarm.setText("5:30");
-                        }
-
-                        if(y<=730 && y > 680){
-                            alarm.setText("6:00");
-                        }
-                        if(y<=780 && y > 730){
-                            alarm.setText("6:30");
-                        }
-                        if(y<=830 && y > 780){
-                            alarm.setText("7:00");
-                        }
-                        if(y<=890 && y > 830){
-                            alarm.setText("7:30");
-                        }
-                        if(y<=950 && y > 890){
-                            alarm.setText("8:00");
-                        }
-                        if(y<=1010 && y > 950){
-                            alarm.setText("8:30");
-                        }
-                        if(y<=1070 && y > 1010){
-                            alarm.setText("9:00");
-                        }
-                        if(y<=1130 && y > 1070){
-                            alarm.setText("9:30");
-                        }
-                        if(y<=1170 && y >1130 ){
-                            alarm.setText("10:00");
-                        }
-                        if(y<=1210 && y >1170 ){
-                            alarm.setText("10:30");
-                        }
-                        if(y<=1250 && y > 1210){
-                            alarm.setText("11:00");
-                        }
-                        if(y<=1290 && y > 1250){
-                            alarm.setText("11:30");
-                        }
-                        if(y<=1330 && y > 1290){
-                            alarm.setText("12:00");
-                        }
-                        if(y<=1370 && y > 1330){
-                            alarm.setText("12:30");
-                        }
-                        if(y<=1410 && y > 1370){
-                            alarm.setText("13:00");
-                        }
-                        if(y<=1450 && y > 1410){
-                            alarm.setText("13:30");
-                        }
-                        if(y<=1490 && y > 1450){
-                            alarm.setText("14:00");
-                        }
-                        if(y<=1530 && y > 1490){
-                            alarm.setText("14:30");
-                        }
-                        if(y<=1570 && y > 1530){
-                            alarm.setText("15:00");
-                        }
-                        if(y<=1610 && y > 1570){
-                            alarm.setText("15:30");
-                        }
-                        if(y<=1650 && y > 1610){
-                            alarm.setText("16:00");
-                        }
-                        if(y<=1690 && y > 1650){
-                            alarm.setText("16:30");
-                        }
-                        if(y<=1730 && y > 1690){
-                            alarm.setText("17:00");
-                        }
-                        if(y<=1770 && y > 1730){
-                            alarm.setText("17:30");
-                        }
-                        if(y<=1810 && y > 1770){
-                            alarm.setText("18:00");
-                        }
-                        if(y<=1850 && y > 1810){
-                            alarm.setText("18:30");
-                        }
-                        if(y<=1890 && y > 1850){
-                            alarm.setText("19:00");
-                        }
-                        if(y<=1930 && y > 1890){
-                            alarm.setText("19:30");
-                        }
-                        if(y<=1970 && y > 1930){
-                            alarm.setText("20:00");
-                        }
-                        if(y<=2050 && y > 2010){
-                            alarm.setText("20:30");
-                        }
-                        if(y<=2090 && y > 2050){
-                            alarm.setText("21:00");
-                        }
-                        if(y<=2130 && y > 2090){
-                            alarm.setText("21:30");
-                        }
-                        if(y<=2170 && y > 2130){
-                            alarm.setText("22:00");
-                        }
-                        if(y<=2210 && y > 2170){
-                            alarm.setText("22:30");
-                        }
-                        if(y<=2250 && y > 2210){
-                            alarm.setText("23:00");
-                        }
-                        if(y<=2290 && y > 2250){
-                            alarm.setText("23:30");
-                        }
-                        if(y<=2310 && y > 2290){
-                            alarm.setText("24:00");
-                        }
-
-
-
                         break;
                     default:
                         return false;
@@ -392,7 +298,7 @@ public class SetAlarmActivityRedesign extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getActivity().setTitle("Spotify Settings");
+
     }
 
 
@@ -407,10 +313,13 @@ public class SetAlarmActivityRedesign extends Fragment{
         @Override
         protected Void doInBackground(Void... arg0) {
             AlarmEntry entry = new AlarmEntry();
-            String [] arr = alarm.getText().toString().split(":");
+            String[] arr = alarm.getText().toString().split(":");
 
             int hour = Integer.parseInt(arr[0]);
-            int minute = Integer.parseInt(arr[1]);
+
+            String [] minArr = arr[1].split(" ");
+
+            int minute = Integer.parseInt(minArr[0]);
             entry.setHour(hour);
             entry.setMinute(minute);
             entry.setOnOff(1);

@@ -93,7 +93,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.display_alarms, container, false);
-
+        MainActivity.fab.setVisibility(View.VISIBLE);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.horizontal_recycler_view);
         new loadSchema().execute();
@@ -112,7 +112,8 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Alarms");
+        getActivity().setTitle("Alarmify");
+
         mDragListener = this;
     }
 
@@ -343,6 +344,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                             .replace(R.id.content_frame, alarmDetails)
                             .addToBackStack(null)
                             .commit();
+                    MainActivity.fab.setVisibility(View.INVISIBLE);
 
 
 

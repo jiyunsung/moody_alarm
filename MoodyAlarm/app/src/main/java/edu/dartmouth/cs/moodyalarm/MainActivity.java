@@ -2,8 +2,11 @@ package edu.dartmouth.cs.moodyalarm;
 
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +17,8 @@ import android.support.v4.app.FragmentTransaction;
 
 
 import android.support.v4.content.ContextCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -57,6 +62,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.view.View.VISIBLE;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
 
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "vj";
 
-    private FloatingActionButton fab;
+    public static FloatingActionButton fab;
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
@@ -97,6 +104,7 @@ public class MainActivity extends AppCompatActivity
         dataStorage = new EntryDbHelper(this);
         dataStorage.open();
 
+
         // Spotify Login code
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
@@ -106,11 +114,12 @@ public class MainActivity extends AppCompatActivity
 
 
         // set toolbar instead of app bar
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
+//        fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
+        fab.setVisibility(VISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,12 +141,12 @@ public class MainActivity extends AppCompatActivity
 //        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
 //                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 //        drawer.addDrawerListener(toggle);
-        //toggle.syncState();
-
+//        toggle.syncState();
+//
 //        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 //        navigationView.setNavigationItemSelectedListener(this);
 
-        displaySelectedScreen(R.id.viewAlarms, true);
+        displaySelectedScreen(R.id.alarms, true);
 
 
         //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
@@ -169,6 +178,21 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
 
 
+        displaySelectedScreen(item.getItemId(), false);
+        return true;
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.navigation, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
         displaySelectedScreen(item.getItemId(), false);
         return true;
     }
@@ -206,7 +230,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
+    @Override
+    protected void onResume(){
+        super.onResume();
+        fab.setVisibility(View.VISIBLE);
+    }
 
     @Override
     protected void onDestroy() {
@@ -278,17 +306,18 @@ public class MainActivity extends AppCompatActivity
         //initializing the fragment object which is selected
 
         switch (itemId) {
-            case R.id.viewAlarms:
+            case R.id.alarms:
 
                 fragment = new AlarmsFragment();
-                fab.setVisibility(View.VISIBLE);
+                fab.setVisibility(VISIBLE);
                 break;
-            case R.id.editAlarm:
+
+            case R.id.playlist_settings:
                 fragment = new AlarmSettings();
                 fab.setVisibility(View.INVISIBLE);
 
                 break;
-            case R.id.editSnooze:
+            case R.id.snooze_settings:
                 fragment = new SnoozeSettings();
                 fab.setVisibility(View.INVISIBLE);
         }
