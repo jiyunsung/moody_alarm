@@ -24,11 +24,12 @@ public class AlarmEntry implements Serializable {
     private Integer repeat; // an indicator of recurrence. 0 if no repeat. 1 for weekly, 2 for daily, 3 for monthly, and 4 for yearly
     private ArrayList<Boolean> daysofweek; // only works with weekly alarms. otherwise just list of falses. length of 7.
     private String setting;
+    private Integer vibrate;
 
     public AlarmEntry(){
     }
 
-    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list, String s) {
+    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list, String s, Integer v) {
         this.id = id;
         this.onOff = onOff; // 1 if on
         this.hour = hour;
@@ -36,6 +37,7 @@ public class AlarmEntry implements Serializable {
         this.repeat = repeat;
         this.daysofweek = list;
         this.setting = s;
+        this.vibrate = v;
     }
 
     public long getId() { return id; }
@@ -58,6 +60,7 @@ public class AlarmEntry implements Serializable {
     public ArrayList<Boolean> getDaysOfWeek2() {
         return this.daysofweek;
     }
+    public int getVibrate() { return this.vibrate; }
 
     public void setId(long id) {
         this.id = id;
@@ -78,13 +81,7 @@ public class AlarmEntry implements Serializable {
 
     public String getSetting() { return setting; }
     public void setSetting(String s) {this.setting = s;}
-
-    public void turnOnOff(){
-        if (this.onOff == 1)
-            this.onOff = 0;
-        else
-            this.onOff = 1;
-    }
+    public void setVibrate(int v) {this.vibrate = v; }
 
     public void cancelSchedule(Context context) {
         Intent intent = new Intent(context, AlarmReceiver.class);
@@ -193,6 +190,18 @@ public class AlarmEntry implements Serializable {
             }
         }
 
+
+
     }
+
+    public void setSnooze(Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+        intent.putExtra("alarm", this.id);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+    }
+
 
 }

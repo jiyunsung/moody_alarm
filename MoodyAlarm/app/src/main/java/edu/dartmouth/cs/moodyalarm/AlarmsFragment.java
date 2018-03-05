@@ -262,10 +262,6 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                 }
             });
 
-
-
-
-
             view.setTag(holder);
             holder.OnOff.setTag(entry);
             String minute="";
@@ -347,7 +343,6 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                     FragmentTransaction ft = getActivity().getSupportFragmentManager()
                             .beginTransaction();
 
-
                             ft.addSharedElement(holder.card_view, "expand")
                             .replace(R.id.content_frame, alarmDetails)
                             .addToBackStack(null)
@@ -355,12 +350,8 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                     MainActivity.fab.setVisibility(View.INVISIBLE);
 
 
-
                 }
             });
-
-
-
 
         }
 
@@ -404,10 +395,6 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
         public void onAttachedToRecyclerView(RecyclerView recyclerView) {
             super.onAttachedToRecyclerView(recyclerView);
         }
-
-
-
-
     }
 
     @Override
@@ -417,10 +404,8 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
         if (resultCode == 0) {
                 String setting=data.getStringExtra("setting");
                 Log.d("onActivityResult", "in alarms fragment setting is " + setting);
-
         }
     }
-
 
     private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
 

@@ -128,6 +128,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                     entry.setOnOff(1);
                     entry.setRepeat(0);
                     entry.setSetting("weather");
+                    entry.setVibrate(1);
                     entry.setId(id);
                     AlarmDetailsDisplay alarmDetails;
                     if(id == -1) {
@@ -342,11 +343,6 @@ public class SetAlarmActivityRedesign extends Fragment{
 
 
     }
-
-
-
-
-
 
 
 }

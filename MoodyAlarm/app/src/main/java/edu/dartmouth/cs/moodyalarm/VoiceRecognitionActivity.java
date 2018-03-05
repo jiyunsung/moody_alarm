@@ -23,6 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.w3c.dom.Text;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +49,7 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     public static Alarmhandler alarm = new Alarmhandler();
     private QuoteReader quotes;
 
+    private TextView instruction;
     private String answer[];
 
 
@@ -57,10 +62,14 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
         answer = quotes.choose();
         alarm.start_alert(getApplicationContext(), "Default");
         targetText = (TextView) findViewById(R.id.Target);
-        targetText.setText(answer[0] + " by " + answer[1]);
+        targetText.setText(answer[0]);
         returnedText = (TextView) findViewById(R.id.textView1);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+
+        instruction = (TextView) findViewById(R.id.instruction);
+        String inst = "In order to dismiss the alarm, please click the 'Start Recording' button and say the the following quote by " + answer[1];
+        instruction.setText(inst);
 
 
         progressBar.setVisibility(View.INVISIBLE);
@@ -135,7 +144,7 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     public void onBeginningOfSpeech() {
         Log.i(LOG_TAG, "onBeginningOfSpeech");
         progressBar.setIndeterminate(false);
-        progressBar.setMax(30);
+        progressBar.setMax(10);
     }
 
     @Override
@@ -185,7 +194,7 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
         for (String result : matches) {
             text += result + "\n";
             Log.d("result", result);
-            if (result.replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().equals(answer[0].replaceAll("[^a-zA-Z ]", "").toLowerCase())){
+            if (result.replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().equals(answer[0].replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase())){
                 alarm.stop_alert(getApplicationContext());
                 Log.d("tag", "succeeded");
             }

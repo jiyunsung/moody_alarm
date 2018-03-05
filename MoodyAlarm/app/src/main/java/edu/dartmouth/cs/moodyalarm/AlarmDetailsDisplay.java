@@ -71,21 +71,14 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-
         TextView timeDisplay  = view.findViewById(R.id.labelExpanded);
-
         timeDisplay.setText(time);
-
-
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final View v = view;
-
-
 
         Bundle args = getArguments();
         time = args.getString(TIME);
@@ -140,9 +133,29 @@ public class AlarmDetailsDisplay extends Fragment {
             }
         });
 
+        CheckBox vibrate = (CheckBox) view.findViewById(R.id.checkbox_vibrate);
+        if (entry.getVibrate() == 1) {
+            vibrate.setChecked(true);
+        } else {
+            vibrate.setChecked(false);
+        }
+
+        vibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                if (isChecked) {
+                    entry.setVibrate(1);
+                } else {
+                    entry.setVibrate(0);
+                }
+            }
+        });
+
+        if(entry.getSetting().equals("weather")) {
 
 
-        if(setting.equals("weather")) {
+
+//        if(setting.equals("weather")) {
 
             weather.setPaintFlags(weather.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             weather.setTextColor(Color.parseColor("#ffffff"));
@@ -201,8 +214,6 @@ public class AlarmDetailsDisplay extends Fragment {
 
         weather.setOnLongClickListener(new View.OnLongClickListener(){
             public boolean onLongClick(View v){
-
-
 
                 Fragment fragment = new WeatherDisplay();
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();

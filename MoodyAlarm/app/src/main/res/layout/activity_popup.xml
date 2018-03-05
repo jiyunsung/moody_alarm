@@ -347,7 +347,8 @@
                 android:text="Snooze"
                 android:textColor="@color/white"
                 android:id="@+id/snooze"
-                android:background="@drawable/button_border"/>
+                android:background="@drawable/button_border"
+                android:onClick="onSnooze"/>
             <Button
                 android:layout_width="100dp"
                 android:layout_height="30dp"
@@ -356,7 +357,8 @@
                 android:text="Dismiss"
                 android:textColor="@color/white"
                 android:id="@+id/dismiss"
-                android:background="@drawable/button_border"/>
+                android:background="@drawable/button_border"
+                android:onClick="onDismiss"/>
 
         </LinearLayout>
 

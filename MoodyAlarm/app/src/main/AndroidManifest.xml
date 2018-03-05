@@ -22,12 +22,13 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
 
         <receiver
@@ -53,18 +54,22 @@
 
         <activity
             android:name=".VoiceRecognitionActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:launchMode="singleTask">
+        </activity>
+        <activity
+            android:name=".SudokuActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".MathActivity">
+
+        </activity>
+        <activity android:name=".PuzzleActivity"
+            android:screenOrientation="portrait">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
+
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
-        </activity>
-
-        <activity android:name=".PuzzleActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
-
         </activity>
     </application>
 

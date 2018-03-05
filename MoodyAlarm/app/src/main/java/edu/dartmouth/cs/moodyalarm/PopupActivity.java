@@ -110,7 +110,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     @Override
     public void onBackPressed() {
-        alarm.stop_alert(this);
+        //alarm.stop_alert(this);
 
         super.onBackPressed();
         if(mIsBound) {
@@ -464,5 +464,14 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     }
 
 
+    public void onSnooze(View view) {
+        alarm.stop_alert(this);
+        a.setSnooze(this);
+    }
+
+
+    public void onDismiss(View view) {
+
+    }
 
 }
