@@ -55,6 +55,7 @@
             android:name=".VoiceRecognitionActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+
         <activity android:name=".PuzzleActivity"></activity>
     </application>
 

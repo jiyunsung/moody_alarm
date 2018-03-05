@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity
 
 
         // set toolbar instead of app bar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add_alarm_black_24dp);
@@ -115,20 +115,27 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
-                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
-                startActivity(setAlarm);
+//                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
+//                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
+//                startActivity(setAlarm);
+                Fragment fragment = new SetAlarmActivityRedesign();
+
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("main").commit();
+
+
+
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+        //toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
 
         displaySelectedScreen(R.id.viewAlarms, true);
 
@@ -293,8 +300,8 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
     }
 
 
@@ -399,6 +406,9 @@ public class MainActivity extends AppCompatActivity
 
                                 JSONObject jsonObject = new JSONObject(response);
                                 String id = jsonObject.getString("id");
+                                JSONObject owner = jsonObject.getJSONObject("owner");
+                                String userId = owner.getString("id");
+                                Log.d("fetchdefaultPlaylists", "user id is " + userId);
 
                                 JSONArray arr = jsonObject.getJSONArray("images");
                                 for (int i = 0; i < arr.length(); i++)
@@ -408,6 +418,7 @@ public class MainActivity extends AppCompatActivity
                                     SpotifyPlaylist entry = new SpotifyPlaylist();
                                     entry.setPlaylistId(id);
                                     entry.setImageUrl(imageUrl);
+                                    entry.setUserId(userId);
 
                                     playlists.add(entry);
                                     imageUrls.add(imageUrl.toString());
@@ -483,7 +494,9 @@ public class MainActivity extends AppCompatActivity
                             for (int i = 0; i < items.length(); i++){
                                 JSONObject item = items.getJSONObject(i);
                                 String id = item.getString("id");
-                                Log.d("fetch user playlists", "id is "+ id + "for playlist " + item.getString("name"));
+                                JSONObject owner = item.getJSONObject("owner");
+                                String userId = owner.getString("id");
+                                Log.d("fetch user playlists", "user id is "+ userId + "for playlist " + item.getString("name"));
                                 JSONArray images = item.getJSONArray("images");
                                 JSONObject image = images.getJSONObject(0);
                                 String url = image.getString("url");
@@ -492,6 +505,7 @@ public class MainActivity extends AppCompatActivity
                                 SpotifyPlaylist entry = new SpotifyPlaylist();
                                 entry.setPlaylistId(id);
                                 entry.setImageUrl(url);
+                                entry.setUserId(userId);
                                 playlists.add(entry);
                             }
 
@@ -532,7 +546,7 @@ public class MainActivity extends AppCompatActivity
 
     public void fetchPlaylistTracksDefault(String id, final SpotifyPlaylist playlist, final Day day, final Weather weather){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
+        String url = "https://api.spotify.com/v1/users/" + playlist.getUserId() + "/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
         Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken);
 
@@ -569,7 +583,7 @@ public class MainActivity extends AppCompatActivity
 
     public void fetchPlaylistTracksUser(String id, final SpotifyPlaylist playlist){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/vivjiang/playlists/"+ id + "/tracks";
+        String url = "https://api.spotify.com/v1/users/" + playlist.getUserId() + "/playlists/"+ id + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
         Log.d("Spotify service", "in user fetch playlist tracks access token is "+ MainActivity.accessToken);
 
@@ -608,7 +622,7 @@ public class MainActivity extends AppCompatActivity
 
     private class SpotifyAsyncSaveDefault extends AsyncTask<ArrayList<SpotifyPlaylist>, Void, ArrayList<SpotifyPlaylist>> {
 
-        String [] dayArr = { "Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday"};
+        String [] dayArr = { "Sun","Mon", "Tues","Wed", "Thurs", "Fri", "Sat"};
         String [] weatherArr = {"Clear", "Rainy","Stormy", "Snowy", "Cloudy", "Foggy", "Windy"};
 
         // ui calling possible

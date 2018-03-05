@@ -90,8 +90,11 @@ public class DayDisplay extends Fragment {
     }
 
 
+
     public void showPlaylistDialog(View v, Long id) {
-        DialogFragment fragment = new SpotifySettings();
+
+
+        DialogFragment fragment = SpotifySettings.newInstance("day");
         Long dayId = id;
 
         fragment.show(getFragmentManager(), "playlistPicker");
@@ -117,7 +120,7 @@ public class DayDisplay extends Fragment {
 
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             // Get the data item for this position
             final Day d = getItem(position);
@@ -144,8 +147,29 @@ public class DayDisplay extends Fragment {
 
             dayName.setText(d.getName());
             if(d.getName().equals("Wednesday")){
-                dayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40f);
+                dayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
             }
+
+
+            Button change = convertView.findViewById(R.id.change);
+            change.setOnClickListener(new View.OnClickListener() {
+
+                public void onClick(View v) {
+
+                    Log.d("button click listener", "position is "+ position);
+                    if(d == null){
+                        Log.d("button click listener", "d is null");
+                    }else{
+                        Log.d("button click listener", "d name and id is" + d.getName() + ", " + d.getId());
+                    }
+                    dayId = d.getId();
+                    showPlaylistDialog(view, dayId);
+
+
+                }
+            });
+
+
             return convertView;
         }
 
@@ -187,24 +211,24 @@ public class DayDisplay extends Fragment {
             Log.d("onPostExecute", "day async task adapter count is " + adapter.getCount());
             listView.setAdapter(adapter);
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Log.d("item click listener", "position is "+ position);
-                    Day d= days.get(position);
-                    if(d == null){
-                        Log.d("on item click listener", "d is null");
-                    }else{
-                        Log.d("on item click listener", "d name and id is" + d.getName() + ", " + d.getId());
-                    }
-                    dayId = d.getId();
-                    showPlaylistDialog(view, dayId);
-
-
-                }
-            });
-
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                    Log.d("item click listener", "position is "+ position);
+//                    Day d= days.get(position);
+//                    if(d == null){
+//                        Log.d("on item click listener", "d is null");
+//                    }else{
+//                        Log.d("on item click listener", "d name and id is" + d.getName() + ", " + d.getId());
+//                    }
+//                    dayId = d.getId();
+//                    showPlaylistDialog(view, dayId);
+//
+//
+//                }
+//            });
+//
 
 
 

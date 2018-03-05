@@ -27,61 +27,47 @@
             android:orientation="horizontal"
             android:gravity="center_horizontal">
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonSun"
-                android:textOn = "S"
-                android:textOff = "S"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonM"
-                android:textOn = "M"
-                android:textOff = "M"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonTue"
-                android:textOn = "T"
-                android:textOff = "T"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonW"
-                android:textOn = "W"
-                android:textOff = "W"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonThur"
-                android:textOn = "T"
-                android:textOff = "T"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonF"
-                android:textOn = "F"
-                android:textOff = "F"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
-            <ToggleButton
+            <TextView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonSat"
-                android:textOn = "S"
-                android:textOff = "S"
-                android:onClick="onToggleClicked"/>
+                android:clickable="true"/>
 
         </LinearLayout>
 

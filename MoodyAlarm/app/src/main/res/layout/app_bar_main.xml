@@ -4,26 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_img"
     tools:context="edu.dartmouth.cs.moodyalarm.MainActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+    <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--&gt;-->
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+        <!--&lt;!&ndash;<android.support.v7.widget.Toolbar&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/toolbar"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="?attr/actionBarSize"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="@android:color/transparent"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:popupTheme="@style/AppTheme.NoActionBar" />&ndash;&gt;-->
 
-    </android.support.design.widget.AppBarLayout>
+    <!--</android.support.design.widget.AppBarLayout>-->
 
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.FloatingActionButton
@@ -31,7 +34,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"/>
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@android:color/transparent"/>
 
     <include layout="@layout/content_main" />
 

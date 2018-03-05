@@ -1,0 +1,305 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scene_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+    <RelativeLayout
+        android:id="@+id/list_container"
+        android:layout_width="335dp"
+        android:layout_height="280dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_expanded"
+        android:layout_width="335dp"
+        android:layout_height="280dp"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardBackgroundColor="#25000000"
+        android:layout_marginTop="20dp"
+        android:transitionName="expand"
+        >
+
+    <Switch
+        android:id="@+id/switchOnOff"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="245dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:layout_marginTop="25dp"
+        android:focusableInTouchMode="false">
+    </Switch>
+
+    <TextView
+        android:id="@+id/labelExpanded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:text="12:00"
+        android:fontFamily="sans-serif-thin"
+        android:textColor="@color/sand"
+        android:textSize="45dp"
+        ></TextView>
+
+
+        <LinearLayout
+            android:id="@+id/weekday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="60dp"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonSun"
+                android:text="SUN"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonM"
+                android:text="MON"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonTue"
+                android:text="TUE"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonW"
+                android:text="WED"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonThur"
+                android:text="THU"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonF"
+                android:text="FRI"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+            <Button
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonSat"
+                android:text="SAT"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
+
+        </LinearLayout>
+
+
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/transparentPurple"
+        android:layout_marginTop="100dp"></View>
+
+    <!--<TextView-->
+        <!--android:id="@+id/row0"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textSize="14sp"-->
+        <!--android:text="Playlist"-->
+        <!--android:textColor="@color/sand"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="110dp"-->
+        <!--/>-->
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="110dp"
+            android:layout_marginRight="10dp"
+
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <ImageView
+            android:layout_width="45dp"
+            android:id="@+id/playlistImg"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/deepfocus"
+            android:clickable="true"/>
+
+
+            <Button
+                android:id="@+id/defaultPlaylist"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:text="DEFAULT" />
+
+            <Button
+                android:id="@+id/weatherPlaylist"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@android:color/transparent"
+                android:text="WEATHER" />
+
+            <Button
+                android:id="@+id/dayPlaylist"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/darkPurple"
+                android:clickable="true"
+                android:background="@android:color/transparent"
+
+                android:text="DAY" />
+
+
+            <!--<ImageView-->
+                <!--android:layout_width="45dp"-->
+                <!--android:id="@+id/defaultPlaylist"-->
+                <!--android:layout_height="45dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:src="@drawable/deepfocus"-->
+                <!--android:clickable="true"/>-->
+
+                <!--<ImageView-->
+                    <!--android:layout_width="55dp"-->
+                    <!--android:layout_height="55dp"-->
+                    <!--android:id="@+id/weatherPlaylist"-->
+                    <!--android:layout_marginLeft="45dp"-->
+                    <!--android:src="@drawable/weather_icons"-->
+                    <!--android:clickable="true"/>-->
+
+          <!--<ImageView-->
+                    <!--android:layout_width="55dp"-->
+                    <!--android:layout_height="55dp"-->
+                    <!--android:id="@+id/dayPlaylist"-->
+                    <!--android:layout_marginLeft="45dp"-->
+                    <!--android:src="@drawable/calendar"-->
+                    <!--android:clickable="true"/>-->
+
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/transparentPurple"
+            android:layout_marginTop="180dp"></View>
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <ImageView
+                android:layout_width="30dp"
+                android:id="@+id/challenge"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+
+                android:src="@drawable/deepfocus"
+                android:clickable="true"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/sand"
+                android:text="None" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:text="Vibrate"
+                android:scaleY="0.75"
+                android:scaleX="0.75"/>
+
+
+
+
+
+            <!--<ImageView-->
+            <!--android:layout_width="45dp"-->
+            <!--android:id="@+id/defaultPlaylist"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:src="@drawable/deepfocus"-->
+            <!--android:clickable="true"/>-->
+
+            <!--<ImageView-->
+            <!--android:layout_width="55dp"-->
+            <!--android:layout_height="55dp"-->
+            <!--android:id="@+id/weatherPlaylist"-->
+            <!--android:layout_marginLeft="45dp"-->
+            <!--android:src="@drawable/weather_icons"-->
+            <!--android:clickable="true"/>-->
+
+            <!--<ImageView-->
+            <!--android:layout_width="55dp"-->
+            <!--android:layout_height="55dp"-->
+            <!--android:id="@+id/dayPlaylist"-->
+            <!--android:layout_marginLeft="45dp"-->
+            <!--android:src="@drawable/calendar"-->
+            <!--android:clickable="true"/>-->
+
+        </RadioGroup>
+
+    </android.support.v7.widget.CardView>
+    </RelativeLayout>
+
+</RelativeLayout>

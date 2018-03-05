@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background_img"
+    android:gravity="center"
+    android:id="@+id/linear_layout"
+    android:clickable="true"
+    android:animateLayoutChanges="true">
+
+    <!--<ListView-->
+    <!--android:id="@+id/list_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:dividerHeight="0dp"-->
+    <!--android:divider="@null">-->
+
+    <!--</ListView>-->
+
+    <LinearLayout
+        android:id="@+id/alarm_container"
+        android:layout_width="500dp"
+        android:layout_height="50dp"
+        android:background="#10ffffff"
+        android:gravity="center">
+
+    <TextView
+        android:id="@+id/alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="12:00"
+        android:textSize="40dp"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        android:textColor="@color/white"
+        android:clickable="true"
+
+        />
+
+    </LinearLayout>
+
+
+</LinearLayout>
+

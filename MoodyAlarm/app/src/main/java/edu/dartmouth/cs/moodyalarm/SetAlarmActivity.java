@@ -66,7 +66,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry = (AlarmEntry) intent.getSerializableExtra(AlarmsFragment.POSITION);
             alarmTimePicker.setCurrentHour(alarmEntry.getHour());
             alarmTimePicker.setCurrentMinute(alarmEntry.getMinute());
-            daysList = alarmEntry.getDaysofweek();
+
             CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
             if (alarmEntry.getRepeated() == 1) {
                 weekdays.setVisibility(View.VISIBLE);
@@ -187,11 +187,15 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
+
+
+            alarmEntry.setSetting("weather");
+
             alarmEntry.setDaysofweek(daysList);
 
-            dataStorage= new EntryDbHelper(getApplicationContext());
-            dataStorage.open();
-            dataStorage.insertAlarmEntry(alarmEntry);
+
+
+            alarmEntry.setId((MainActivity.dataStorage.insertAlarmEntry(alarmEntry).getId()));
             Log.d("writeSchema", "do in background");
 
             alarmEntry.setSchedule(getApplicationContext());

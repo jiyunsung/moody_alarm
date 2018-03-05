@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,6 +60,9 @@ public class PlaylistDisplay extends AppCompatActivity{
     private Day day;
     private Weather weather;
     private int position;
+    private String id;
+    private String setting = "day";
+
     private ArrayList<SpotifySong> songs;
     private ListView listView;
 
@@ -66,13 +70,30 @@ public class PlaylistDisplay extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist_display);
         position = getIntent().getIntExtra("pos", 0);
-        entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyDefault(Long.valueOf(position));
-        day = MainActivity.dataStorage.fetchEntryByIndexDay(DayDisplay.dayId);
+        id = getIntent().getStringExtra("id");
+        setting = getIntent().getStringExtra("settings");
+        if(!id.equals("spotify")) {
+            Log.d("playlistdisplay", "id not spotify");
+            entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyUser(Long.valueOf(position));
+        } else{
+            Log.d("playlistdisplay", "id is spotify");
+            entry = MainActivity.dataStorage.fetchEntryByIndexSpotifyDefault(Long.valueOf(position));
+        }
+
+        if(setting.equals("day")) {
+            day = MainActivity.dataStorage.fetchEntryByIndexDay(DayDisplay.dayId);
+        } else if (setting.equals("weather")){
+            weather = MainActivity.dataStorage.fetchEntryByIndexWeather(WeatherDisplay.weatherId);
+        }
         listView = findViewById(R.id.songs_list);
         songs = new ArrayList<SpotifySong>();
 
         Log.d("playlistdisplay", "fetched entry with playlist id "+ entry.getPlaylistId());
-        fetchPlaylistTracks(entry.getPlaylistId());
+        if (entry.getTrackInfo() != null){
+            displaySongs();
+        } else {
+            fetchPlaylistTracks(entry.getPlaylistId());
+        }
 
     }
 
@@ -90,8 +111,13 @@ public class PlaylistDisplay extends AppCompatActivity{
 
         switch (item.getItemId()) {
             case R.id.select:
-                day.setSpotifyPlaylist(entry);
-                MainActivity.dataStorage.updateDayEntry(day);
+                if(setting.equals("day")) {
+                    day.setSpotifyPlaylist(entry);
+                    MainActivity.dataStorage.updateDayEntry(day);
+                } else if(setting.equals("weather")){
+                    weather.setSpotifyPlaylist(entry);
+                    MainActivity.dataStorage.updateWeatherEntry(weather);
+                }
                 //DayDisplay.adapter.notifyDataSetChanged();
                 finish();
 
@@ -112,11 +138,12 @@ public class PlaylistDisplay extends AppCompatActivity{
 
     }
 
-    public void fetchPlaylistTracks(String id){
+    public void fetchPlaylistTracks(String playlistId){
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        String url = "https://api.spotify.com/v1/users/spotify/playlists/"+ id + "/tracks";
+        String userId = entry.getUserId();
+        String url = "https://api.spotify.com/v1/users/"+userId+"/playlists/"+ playlistId + "/tracks";
         final ArrayList<String> imageUrls = new ArrayList<String>();
-        Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken);
+        Log.d("Spotify service", "in fetch playlist tracks access token is "+ MainActivity.accessToken + " and id is " + userId);
 
             StringRequest jsObjRequest = new StringRequest
                     (Request.Method.GET, url, new Response.Listener<String>() {
@@ -238,78 +265,84 @@ public class PlaylistDisplay extends AppCompatActivity{
 
         @Override
         protected void onPostExecute(Void result) {
-
-           data = new ArrayList<>();
-
-            try {
-
-                JSONObject jsonObject = new JSONObject(entry.getTrackInfo());
+            displaySongs();
 
 
-                JSONArray arr = jsonObject.getJSONArray("items");
-                Log.d("onPostExecute", "array length is " + arr.length());
-                for (int i = 0; i < arr.length(); i++){
-                    JSONObject item = arr.getJSONObject(i);
-                    data.add(item.toString());
-                    JSONObject track = item.getJSONObject("track");
-                    JSONObject album = track.getJSONObject("album");
-                    String songName = album.getString("name");
-                    Log.d("song name is ", songName);
+    }
 
-                    JSONArray artists = track.getJSONArray("artists");
-                    JSONObject artist = artists.getJSONObject(0);
-                    String artistName = artist.getString("name");
-                    Log.d("artist name is ", artistName);
-
-                    JSONArray images = album.getJSONArray("images");
-                    JSONObject image = images.getJSONObject(1);
-                    String imageUrl = image.getString("url");
-                    Log.d("image url is ", imageUrl);
-
-                    SpotifySong song = new SpotifySong(songName, artistName,imageUrl);
-                    songs.add(song);
+    }
 
 
+    public void displaySongs(){
+        final ArrayList<String> data = new ArrayList<>();
+
+        try {
+
+            JSONObject jsonObject = new JSONObject(entry.getTrackInfo());
+
+
+            JSONArray arr = jsonObject.getJSONArray("items");
+            Log.d("onPostExecute", "array length is " + arr.length());
+            for (int i = 0; i < arr.length(); i++){
+                JSONObject item = arr.getJSONObject(i);
+                data.add(item.toString());
+                JSONObject track = item.getJSONObject("track");
+                JSONObject album = track.getJSONObject("album");
+                String songName = album.getString("name");
+                Log.d("song name is ", songName);
+
+                JSONArray artists = track.getJSONArray("artists");
+                JSONObject artist = artists.getJSONObject(0);
+                String artistName = artist.getString("name");
+                Log.d("artist name is ", artistName);
+
+                JSONArray images = album.getJSONArray("images");
+                JSONObject image = images.getJSONObject(1);
+                String imageUrl = image.getString("url");
+                Log.d("image url is ", imageUrl);
+
+                SpotifySong song = new SpotifySong(songName, artistName,imageUrl);
+                songs.add(song);
+
+
+            }
+            CustomAdapter adapter= new CustomAdapter(getApplicationContext(), data);
+
+            adapter.addAll(data);
+            adapter.notifyDataSetChanged();
+
+            Log.d("onPostExecute", "adapter count is " + adapter.getCount());
+            listView.setAdapter(adapter);
+        } catch(JSONException e){Log.d("error", e.toString());}
+
+
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                String songData = data.get(position);
+
+                Log.d("playlist onItemClick", "song data is " + songData);
+
+                DialogFragment fragment = new SpotifySettings();
+
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                Fragment prev = getSupportFragmentManager().findFragmentByTag("song");
+                if (prev != null) {
+                    ft.remove(prev);
                 }
-                CustomAdapter adapter= new CustomAdapter(getApplicationContext(), data);
+                ft.addToBackStack(null);
 
-                adapter.addAll(data);
-                adapter.notifyDataSetChanged();
+                // Create and show the dialog.
+                DialogFragment songFragment = SongFragment.newInstance(songData);
+                songFragment.show(ft, "song");
 
-                Log.d("onPostExecute", "adapter count is " + adapter.getCount());
-                listView.setAdapter(adapter);
-            } catch(JSONException e){Log.d("error", e.toString());}
-
-
-
-            
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-                    String songData = data.get(position);
-
-                    Log.d("playlist onItemClick", "song data is " + songData);
-
-                    DialogFragment fragment = new SpotifySettings();
-
-
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    Fragment prev = getSupportFragmentManager().findFragmentByTag("song");
-                    if (prev != null) {
-                        ft.remove(prev);
-                    }
-                    ft.addToBackStack(null);
-
-                    // Create and show the dialog.
-                    DialogFragment songFragment = SongFragment.newInstance(songData);
-                    songFragment.show(ft, "song");
-
-                }
-            });
-        }
-
+            }
+        });
     }
 
 

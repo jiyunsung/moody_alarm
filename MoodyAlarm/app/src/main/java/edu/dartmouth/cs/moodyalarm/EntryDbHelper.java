@@ -24,7 +24,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String DATABASE_NAME = "database";
     private static final Integer DATABASE_VERSION = 1;
     private SQLiteDatabase database;
-    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK};
+    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK, KEY_SETTING};
 
     public final static String TABLE_ENTRIES_ALARM = "AlarmsTable";
     public final static String KEY_ROWID_ALARM = "_id";
@@ -33,10 +33,12 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_MINUTE = "mMinute";
     public final static String KEY_REPEAT = "mRepeat";
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
+    public final static String KEY_SETTING = "mSetting";
 
 
 
-    private String[] allSpotifyColumnsDefault = {KEY_ROWID_SPOTIFY_DEFAULT, KEY_PLAYLISTID_DEFAULT, KEY_IMAGEURL_DEFAULT, KEY_TRACKINFO_DEFAULT};
+    private String[] allSpotifyColumnsDefault = {KEY_ROWID_SPOTIFY_DEFAULT, KEY_PLAYLISTID_DEFAULT,
+            KEY_IMAGEURL_DEFAULT, KEY_TRACKINFO_DEFAULT, KEY_USERID_DEFAULT, KEY_PLAYLISTNAME_DEFAULT};
 
 
     public final static String TABLE_ENTRIES_SPOTIFY_DEFAULT = "SpotifyTableDefault";
@@ -44,14 +46,20 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_PLAYLISTID_DEFAULT = "mPlaylistId";
     public final static String KEY_IMAGEURL_DEFAULT = "mImageUrl";
     public final static String KEY_TRACKINFO_DEFAULT = "mTrackInfo";
+    public final static String KEY_USERID_DEFAULT = "mUserId";
+    public final static String KEY_PLAYLISTNAME_DEFAULT= "mPlaylistName";
 
-    private String[] allSpotifyColumnsUser = {KEY_ROWID_SPOTIFY_USER, KEY_PLAYLISTID_USER, KEY_IMAGEURL_USER, KEY_TRACKINFO_USER};
+    private String[] allSpotifyColumnsUser = {KEY_ROWID_SPOTIFY_USER, KEY_PLAYLISTID_USER,
+            KEY_IMAGEURL_USER, KEY_TRACKINFO_USER, KEY_USERID_USER, KEY_PLAYLISTNAME_USER};
 
     public final static String TABLE_ENTRIES_SPOTIFY_USER = "SpotifyTableUser";
     public final static String KEY_ROWID_SPOTIFY_USER = "_idUser";
     public final static String KEY_PLAYLISTID_USER = "mPlaylistIdUser";
     public final static String KEY_IMAGEURL_USER = "mImageUrlUser";
     public final static String KEY_TRACKINFO_USER = "mTrackInfoUser";
+    public final static String KEY_USERID_USER= "mUserIdUser";
+    public final static String KEY_PLAYLISTNAME_USER= "mPlaylistNameUser";
+
 
 
     private String[] allDayColumns = { KEY_ROWID_DAY, KEY_DAYNAME, KEY_DAYPLAYLIST};
@@ -87,7 +95,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_REPEAT
             + " INTEGER NOT NULL, "
             + KEY_DAYSOFWEEK
-            + " BLOB" + ");";
+            + " BLOB, "
+            +   KEY_SETTING
+            + " STRING "
+            + ");";
 
     public static final String CREATE_TABLE_ENTRIES_SPOTIFY_DEFAULT = "CREATE TABLE IF NOT EXISTS "
             + TABLE_ENTRIES_SPOTIFY_DEFAULT
@@ -99,6 +110,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_IMAGEURL_DEFAULT
             + " STRING, "
             + KEY_TRACKINFO_DEFAULT
+            + " STRING, "
+            + KEY_USERID_DEFAULT
+            + " STRING, "
+            + KEY_PLAYLISTNAME_DEFAULT
             + " STRING "
             + ");";
 
@@ -112,6 +127,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_IMAGEURL_USER
             + " STRING, "
             + KEY_TRACKINFO_USER
+            + " STRING, "
+            + KEY_USERID_USER
+            + " STRING, "
+            + KEY_PLAYLISTNAME_USER
             + " STRING "
             + ");";
 
@@ -183,6 +202,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_HOUR, entry.getHour());
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
+        values.put(KEY_SETTING, entry.getSetting());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
@@ -206,6 +226,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_PLAYLISTID_DEFAULT, entry.getPlaylistId());
         values.put(KEY_IMAGEURL_DEFAULT, entry.getImageUrl());
+        values.put(KEY_USERID_DEFAULT, entry.getUserId());
+        values.put(KEY_PLAYLISTNAME_DEFAULT, entry.getUserId());
 
         long insertId = database.insert(TABLE_ENTRIES_SPOTIFY_DEFAULT, null, values);
         Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_DEFAULT,
@@ -225,6 +247,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_PLAYLISTID_USER, entry.getPlaylistId());
         values.put(KEY_IMAGEURL_USER, entry.getImageUrl());
+        values.put(KEY_USERID_USER, entry.getUserId());
+        values.put(KEY_PLAYLISTNAME_USER, entry.getUserId());
 
         long insertId = database.insert(TABLE_ENTRIES_SPOTIFY_USER, null, values);
         Cursor cursor = database.query(TABLE_ENTRIES_SPOTIFY_USER,
@@ -290,6 +314,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_HOUR, entry.getHour());
         values.put(KEY_MINUTE, entry.getMinute());
         values.put(KEY_REPEAT, entry.getRepeated());
+        values.put(KEY_SETTING, entry.getSetting());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
@@ -299,22 +324,69 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     }
 
     public void updateSpotifyEntryDefault(SpotifyPlaylist entry) {
+        boolean update = false;
         ContentValues values = new ContentValues();
-        values.put(KEY_TRACKINFO_DEFAULT, entry.getTrackInfo());
 
+        if(entry.getPlaylistId() != null) {
+            values.put(KEY_PLAYLISTID_DEFAULT, entry.getPlaylistId());
+            update = true;
+        }
+        if (entry.getImageUrl() != null){
+            update = true;
+            values.put(KEY_IMAGEURL_DEFAULT, entry.getImageUrl());
+        }
 
+        if (entry.getUserId() != null){
+            values.put(KEY_USERID_DEFAULT, entry.getUserId());
+            update = true;
+        }
 
-        database.update(TABLE_ENTRIES_SPOTIFY_DEFAULT, values, "_id="+entry.getId(), null);
+        if (entry.getTrackInfo() != null) {
+            values.put(KEY_TRACKINFO_DEFAULT, entry.getTrackInfo());
+            update = true;
+        }
+
+        if (entry.getPlaylistName() != null){
+            update = true;
+            values.put(KEY_PLAYLISTNAME_DEFAULT, entry.getImageUrl());
+        }
+
+        if(update) {
+            database.update(TABLE_ENTRIES_SPOTIFY_DEFAULT, values, "_id=" + entry.getId(), null);
+        }
     }
 
 
     public void updateSpotifyEntryUser(SpotifyPlaylist entry) {
+        boolean update = false;
         ContentValues values = new ContentValues();
-        values.put(KEY_TRACKINFO_USER, entry.getTrackInfo());
 
+        if(entry.getPlaylistId() != null) {
+            values.put(KEY_PLAYLISTID_USER, entry.getPlaylistId());
+            update = true;
+        }
+        if (entry.getImageUrl() != null){
+            update = true;
+            values.put(KEY_IMAGEURL_USER, entry.getImageUrl());
+        }
 
+        if (entry.getUserId() != null){
+            values.put(KEY_USERID_USER, entry.getUserId());
+            update = true;
+        }
 
-        database.update(TABLE_ENTRIES_SPOTIFY_USER, values, "_idUser="+entry.getId(), null);
+        if (entry.getTrackInfo() != null) {
+            values.put(KEY_TRACKINFO_USER, entry.getTrackInfo());
+            update = true;
+        }
+        if (entry.getPlaylistName() != null){
+            update = true;
+            values.put(KEY_PLAYLISTNAME_USER, entry.getImageUrl());
+        }
+
+        if(update) {
+            database.update(TABLE_ENTRIES_SPOTIFY_USER, values, "_idUser=" + entry.getId(), null);
+        }
     }
 
 
@@ -352,7 +424,10 @@ public class EntryDbHelper extends SQLiteOpenHelper {
                 allAlarmColumns,
                 KEY_ROWID_ALARM + " = " + rowId,
                 null,null, null, null);
-        AlarmEntry entry = cursorToEntryAlarm(cursor);
+        AlarmEntry entry = new AlarmEntry();
+        if (cursor.moveToFirst()) {
+            entry = cursorToEntryAlarm(cursor);
+        }
         cursor.close();
         return entry;
     }
@@ -450,6 +525,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setHour(cursor.getInt(2));
         entry.setMinute(cursor.getInt(3));
         entry.setRepeat(cursor.getInt(4));
+        entry.setSetting(cursor.getString(cursor.getColumnIndex("mSetting")));
 
 
         // get location list
@@ -509,6 +585,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistId")));
         entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrl")));
         entry.setTrackInfo(cursor.getString(cursor.getColumnIndex("mTrackInfo")));
+        entry.setUserId(cursor.getString(cursor.getColumnIndex("mUserId")));
+        entry.setPlaylistName(cursor.getString(cursor.getColumnIndex("mPlaylistName")));
 
         return entry;
     }
@@ -521,6 +599,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setPlaylistId(cursor.getString(cursor.getColumnIndex("mPlaylistIdUser")));
         entry.setImageUrl(cursor.getString(cursor.getColumnIndex("mImageUrlUser")));
         entry.setTrackInfo(cursor.getString(cursor.getColumnIndex("mTrackInfoUser")));
+        entry.setUserId(cursor.getString(cursor.getColumnIndex("mUserIdUser")));
+        entry.setPlaylistName(cursor.getString(cursor.getColumnIndex("mPlaylistNameUser")));
 
         return entry;
     }

@@ -21,7 +21,27 @@ public class AlarmReceiver extends BroadcastReceiver
         intent.getAction();
         Log.d("Alarm receiver", "received intent");
 
-        startPopup(context);
+        String setting = "";
+////        setting = intent.getStringExtra("setting");
+////        if (!setting.isEmpty()) {
+////            Log.d("Alarm receiver", "on receive setting is " + setting);
+////        }else {
+////            Log.d("Alarm receiver", "on receive setting is null");
+////        }
+//
+        Long id  = intent.getLongExtra("alarm", 1);
+//
+//        Log.d("alarmReceiver ", "on receive id is " + id);
+        //AlarmEntry a = MainActivity.dataStorage.fetchEntryByIndexAlarm(1);
+//        if (a!= null){
+//            setting = "day";
+//        } else{
+//            setting = "weather";
+//        }
+////        setting = a.getSetting();
+//        Log.d("alarmReceiver ", "alarm setting is " + setting);
+
+        startPopup(context, id);
 //        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
 //        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 //        if (alarmUri == null)
@@ -33,19 +53,26 @@ public class AlarmReceiver extends BroadcastReceiver
     }
 
     // start the Alarm Popup
-    private void startPopup(Context context) {
+    private void startPopup(Context context, Long id) {
 
         //Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
         //Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
         //Log.d("Alarm receiver", "received intent");
         Random random = new Random();
         int value = random.nextInt(1);
-        Intent emaIntent;
-        if (value == 1) {
-            emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
-        } else {
-            emaIntent = new Intent(context, VoiceRecognitionActivity.class);
-        }
+        Intent emaIntent = new Intent(context, PopupActivity.class);
+        emaIntent.putExtra("pos", id);
+
+
+
+//        if (value == 1) {
+//            emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
+//        } else {
+//            emaIntent = new Intent(context, VoiceRecognitionActivity.class);
+//        }
+
+
+
         emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(emaIntent);
     }

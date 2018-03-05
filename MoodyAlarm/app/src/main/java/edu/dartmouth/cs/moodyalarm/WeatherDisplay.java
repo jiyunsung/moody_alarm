@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -63,6 +64,18 @@ public class WeatherDisplay extends Fragment {
         listView = view.findViewById(R.id.weather_list);
         playlists = new ArrayList<SpotifyPlaylist>();
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_arrow_back_black_24dp);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Fragment fragment = new AlarmDetailsDisplay();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+            }
+        });
+
         new WeatherAsyncTask().execute();
 
         return view;
@@ -91,7 +104,7 @@ public class WeatherDisplay extends Fragment {
 
 
     public void showPlaylistDialog(View v, Long id) {
-        DialogFragment fragment = new SpotifySettings();
+        DialogFragment fragment = SpotifySettings.newInstance("weather");
 
 
         fragment.show(getFragmentManager(), "playlistPicker");
@@ -117,7 +130,7 @@ public class WeatherDisplay extends Fragment {
 
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             // Get the data item for this position
             final Weather w = getItem(position);
@@ -127,7 +140,7 @@ public class WeatherDisplay extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.weather, parent, false);
 
-            TextView dayName = (TextView) convertView.findViewById(R.id.weather);
+            TextView weatherName = (TextView) convertView.findViewById(R.id.weather);
             //Button select = convertView.findViewById(R.id.button_day);
 
             ImageView playlistImg = convertView.findViewById(R.id.playlist_img);
@@ -143,7 +156,7 @@ public class WeatherDisplay extends Fragment {
                 playlistImg.setImageResource(R.drawable.spotify_logo);
             }
 
-            dayName.setText(w.getName());
+            weatherName.setText(w.getName());
 //            if(w.getName().equals("Wednesday")){
 //                dayName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40f);
 //            }
@@ -155,6 +168,24 @@ public class WeatherDisplay extends Fragment {
 //            });
 
             // Return the completed view to render on screen
+
+            Button change = convertView.findViewById(R.id.change);
+            change.setOnClickListener(new View.OnClickListener() {
+
+                public void onClick(View v) {
+
+                    Log.d("button click listener", "position is "+ position);
+                    if(w == null){
+                        Log.d("button click listener", "d is null");
+                    }else{
+                        Log.d("button click listener", "d name and id is" + w.getName() + ", " + w.getId());
+                    }
+                    weatherId = w.getId();
+                    showPlaylistDialog(view, weatherId);
+
+
+                }
+            });
             return convertView;
         }
 
@@ -198,23 +229,23 @@ public class WeatherDisplay extends Fragment {
             Log.d("onPostExecute", "weather async task adapter count is " + adapter.getCount());
             listView.setAdapter(adapter);
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Log.d("item click listener", "position is "+ position);
-                    Weather w= weathers.get(position);
-                    if(w == null){
-                        Log.d("on item click listener", "w is null");
-                    }else{
-                        Log.d("on item click listener", "w name and id is" + w.getName() + ", " + w.getId());
-                    }
-                    weatherId = w.getId();
-                    showPlaylistDialog(view, weatherId);
-
-
-                }
-            });
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                    Log.d("item click listener", "position is "+ position);
+//                    Weather w= weathers.get(position);
+//                    if(w == null){
+//                        Log.d("on item click listener", "w is null");
+//                    }else{
+//                        Log.d("on item click listener", "w name and id is" + w.getName() + ", " + w.getId());
+//                    }
+//                    weatherId = w.getId();
+//                    showPlaylistDialog(view, weatherId);
+//
+//
+//                }
+//            });
 
 
 
