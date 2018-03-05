@@ -3,7 +3,7 @@
     android:id="@+id/dialog_screen"
     android:layout_width="375dp"
     android:layout_height="400dp"
-    android:background="@color/darkPurple"
+    android:background="@drawable/background_darkened"
     >
 
     <!--<TextView-->
