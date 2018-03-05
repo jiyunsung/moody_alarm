@@ -353,6 +353,8 @@ public class SudokuActivity extends AppCompatActivity {
 
         if (adapter.isCorrect()) {
             Toast.makeText(this, "correct!", Toast.LENGTH_SHORT).show();
+            PopupActivity.alarm.stop_alert(getApplicationContext());
+            finish();
         } else {
             Toast.makeText(this, "try again!", Toast.LENGTH_SHORT).show();
         }

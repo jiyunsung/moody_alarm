@@ -147,7 +147,7 @@ public class AlarmEntry implements Serializable {
                     calendar.add(Calendar.DATE, 1);
                 }
 
-                // the request code distinguish different stress meter schedule instances
+                // the request code distinguish different schedule instances
                 int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
                 PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
@@ -189,18 +189,25 @@ public class AlarmEntry implements Serializable {
                 }
             }
         }
-
-
-
     }
 
-    public void setSnooze(Context context) {
+    public void setSnooze(Context context, int snooze_length) {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
         intent.putExtra("alarm", this.id);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.MINUTE, snooze_length);
+
+        // the request code distinguish snooze
+        int requestCode = MainActivity.SNOOZE_REQUESTCODE;
+
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
     }
 
 

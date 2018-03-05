@@ -84,4 +84,12 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/saveSnooze"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onSave"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text = "Save"/>
+
 </LinearLayout>

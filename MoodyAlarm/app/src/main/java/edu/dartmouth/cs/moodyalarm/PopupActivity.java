@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -65,12 +66,14 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     private String setting = "";
     private Context context;
     private AlarmEntry a;
+    SharedPreferences prefs;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
+        prefs = getSharedPreferences(MainActivity.PREFS_NAME, 0);
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         Log.d("popup oncreate", "day is " + day);
@@ -466,11 +469,30 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     public void onSnooze(View view) {
         alarm.stop_alert(this);
-        a.setSnooze(this);
+        Integer restoredLength = prefs.getInt("Length", 10);
+        a.setSnooze(this, restoredLength);
     }
 
-
     public void onDismiss(View view) {
+
+        Integer restoredActivity = prefs.getInt("Activity", 3);
+        if (restoredActivity == 1) {
+            Intent intent = new Intent(this, MathActivity.class);
+            intent.putExtra("alarm", a);
+            startActivity(intent);
+        } else if (restoredActivity == 0) {
+            Intent intent = new Intent(this, VoiceRecognitionActivity.class);
+            intent.putExtra("alarm", a);
+            startActivity(intent);
+        } else if (restoredActivity == 2) {
+            Intent intent = new Intent(this, SudokuActivity.class);
+            intent.putExtra("alarm", a);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, PuzzleActivity.class);
+            intent.putExtra("alarm", a);
+            startActivity(intent);
+        }
 
     }
 

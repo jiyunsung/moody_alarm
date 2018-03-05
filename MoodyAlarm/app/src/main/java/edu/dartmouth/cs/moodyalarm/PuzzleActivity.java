@@ -233,10 +233,13 @@ public class PuzzleActivity extends AppCompatActivity {
         if (clicked.size() != 3) {
             Toast.makeText(PuzzleActivity.this, "select exactly three blocks!", Toast.LENGTH_SHORT).show();
         } else {
-            if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)]))
+            if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)])) {
                 Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
-            else
+                PopupActivity.alarm.stop_alert(getApplicationContext());
+                finish();
+            }else {
                 Toast.makeText(PuzzleActivity.this, "try again!", Toast.LENGTH_SHORT).show();
+            }
         }
 
     }

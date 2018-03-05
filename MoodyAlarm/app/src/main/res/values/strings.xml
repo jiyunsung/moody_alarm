@@ -8,9 +8,10 @@
     <string name="alarm_transition_name">Expand</string>
 
     <string-array name="activity_type_array">
-        <item>Activity One</item>
-        <item>Activity Two</item>
-        <item>Activity Three</item>
+        <item>Voice Recognition</item>
+        <item>Simple Arithmetics</item>
+        <item>Sudoku</item>
+        <item>Set Puzzle</item>
     </string-array>
 
     <string-array name="time_array">

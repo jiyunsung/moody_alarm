@@ -163,6 +163,8 @@ public class MathActivity extends AppCompatActivity {
 
         if (answer == submitted) {
             Toast.makeText(this, "correct!", Toast.LENGTH_SHORT).show();
+            PopupActivity.alarm.stop_alert(getApplicationContext());
+            finish();
         } else {
             Toast.makeText(this, "try again!", Toast.LENGTH_SHORT).show();
         }
