@@ -17,9 +17,15 @@ public class AlarmReceiver extends BroadcastReceiver
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-        Log.d("received??", "TT");
         intent.getAction();
         Log.d("Alarm receiver", "received intent");
+
+//        long alarmId = intent.getLongExtra("alarm", -1);
+//        AlarmEntry entry = MainActivity.dataStorage.fetchEntryByIndexAlarm(alarmId);
+//        if (entry.getRepeated() == 0 ) { // no repeats : this is the last time the alarm is going off, so this should be off
+//            entry.setOnOff(0);
+//            MainActivity.dataStorage.updateAlarmEntry(entry);
+//        }
 
         String setting = "";
 ////        setting = intent.getStringExtra("setting");

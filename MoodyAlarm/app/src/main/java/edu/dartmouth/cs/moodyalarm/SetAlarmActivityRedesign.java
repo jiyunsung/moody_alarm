@@ -100,7 +100,9 @@ public class SetAlarmActivityRedesign extends Fragment{
 
             @Override
             public boolean onLongClick(View v) {
-                new writeSchema().execute();
+                if(!alarm.getText().equals("Scroll to set time")) {
+                    new writeSchema().execute();
+                }
 //                Toast.makeText(getActivity(), "Alarm saved!",
 //                        Toast.LENGTH_LONG).show();
                 return true;
@@ -338,10 +340,6 @@ public class SetAlarmActivityRedesign extends Fragment{
         }
 
     }
-
-
-
-
 
 
 }

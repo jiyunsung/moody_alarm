@@ -2,7 +2,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/transparent_black</item>
         <item name="colorPrimaryDark">@color/transparent_black</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/copper</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="windowNoTitle">true</item>
         <item name="actionBarStyle">@style/ActionBar</item>

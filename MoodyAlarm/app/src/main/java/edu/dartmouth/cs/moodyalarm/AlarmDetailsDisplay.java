@@ -16,7 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -34,6 +37,7 @@ public class AlarmDetailsDisplay extends Fragment {
     public AlarmEntry entry;
     public static String setting="weather";
     public Boolean[]daysOfWeek;
+    private LinearLayout weekdays;
 
     private static final String TIME = "12:00";
 
@@ -54,9 +58,6 @@ public class AlarmDetailsDisplay extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.expanded, container, false);
-
-
-
         super.onCreate(savedInstanceState);
 
         return view;
@@ -101,8 +102,30 @@ public class AlarmDetailsDisplay extends Fragment {
         else
             onOff.setChecked(false);
 
-        if(entry.getSetting().equals("weather")) {
+        weekdays = (LinearLayout) view.findViewById(R.id.weekday);
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox_repeat);
+        if (entry.getRepeated() == 1) {
+            weekdays.setVisibility(View.VISIBLE);
+            checkBox.setChecked(true);
+        } else {
+            weekdays.setVisibility(View.INVISIBLE);
+            checkBox.setChecked(false);
+        }
 
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                if (isChecked) {
+                    entry.setRepeat(1);
+                    weekdays.setVisibility(View.VISIBLE);
+                } else {
+                    entry.setRepeat(0);
+                    weekdays.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        if(entry.getSetting().equals("weather")) {
 
             weather.setPaintFlags(weather.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             weather.setTextColor(Color.parseColor("#ffffff"));
@@ -165,7 +188,7 @@ public class AlarmDetailsDisplay extends Fragment {
             }
         });
 
-        day.setOnLongClickListener(new View.OnLongClickListener(){
+        day.setOnLongClickListener( new View.OnLongClickListener(){
             public boolean onLongClick(View v){
 
 

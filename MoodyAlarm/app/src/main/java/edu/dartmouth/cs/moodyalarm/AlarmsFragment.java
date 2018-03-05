@@ -81,8 +81,6 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
     public static final String NEWALARM = "alarm";
     public static final String[] DAYS = new String[] {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-
-
     private OnStartDragListener mDragListener;
     private ItemTouchHelper mItemTouchHelper;
     private GestureDetector gestureDetector;

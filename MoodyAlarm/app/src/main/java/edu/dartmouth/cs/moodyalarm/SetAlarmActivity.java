@@ -170,7 +170,7 @@ public class SetAlarmActivity extends AppCompatActivity {
 
     public void voiceRecog(View view){
 
-        Intent emaIntent = new Intent(this, VoiceRecognitionActivity.class); //The activity you  want to start.
+        Intent emaIntent = new Intent(this, PuzzleActivity.class); //The activity you  want to start.
         emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.startActivity(emaIntent);
     }
