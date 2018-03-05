@@ -43,7 +43,21 @@ public class AlarmEntry implements Serializable {
     public int getHour() { return hour; }
     public int getMinute() { return minute; }
     public int  getRepeated() { return repeat; }
-    public ArrayList<Boolean> getDaysofweek() { return daysofweek; }
+    public Boolean[] getDaysofweek() {
+        Boolean[] daysList = new Boolean[]{false, false, false, false, false, false, false};
+        int i = 0;
+        if (this.daysofweek != null) {
+            for (boolean day : this.daysofweek) {
+                daysList[i] = day;
+                i++;
+            }
+        } else{
+            Log.d("alarmentry", "days of week was null");
+        }
+        return daysList; }
+    public ArrayList<Boolean> getDaysOfWeek2() {
+        return this.daysofweek;
+    }
 
     public void setId(long id) {
         this.id = id;
@@ -52,7 +66,15 @@ public class AlarmEntry implements Serializable {
     public void setHour(int hour) { this.hour = hour; }
     public void setMinute(int minute) {  this.minute = minute; }
     public void setRepeat(int repeat) { this.repeat = repeat; }
-    public void setDaysofweek(ArrayList<Boolean> daysofweek) { this.daysofweek = daysofweek; }
+    public void setDaysofweek(Boolean[] daysList) {
+        this.daysofweek = new ArrayList<>();
+        for (boolean day : daysList) {
+            daysofweek.add(day);
+        }
+    }
+    public void setDaysOfWeek2(ArrayList<Boolean> daysofweek) {
+        this.daysofweek = daysofweek;
+    }
 
     public String getSetting() { return setting; }
     public void setSetting(String s) {this.setting = s;}
@@ -168,12 +190,7 @@ public class AlarmEntry implements Serializable {
 
                     i++;
                 }
-            } else if (this.repeat == 3) { // monthly
-
-
-            } else { // yearly
-
-            }
+            } 
         }
 
     }

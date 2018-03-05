@@ -316,7 +316,11 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
             });
             holder.card_view.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-
+                    if(entry.getDaysofweek() != null){
+                        Log.d("alarms fragment", "getDaysof week not null");
+                    } else{
+                        Log.d("alarms fragment", "getDaysof week  null");
+                    }
 
                     AlarmDetailsDisplay alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry);
                     //alarmDetails.setTargetFragment(AlarmsFragment.this,0);

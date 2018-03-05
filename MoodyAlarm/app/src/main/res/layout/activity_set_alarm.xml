@@ -14,15 +14,62 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"/>
 
-        <TextView
-            android:id="@+id/recurrence"
+        <CheckBox android:id="@+id/checkbox_repeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Set Recurrence"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp" />
+            android:text="   Repeat"
+            android:onClick="onRepeatClicked"/>
+
+        <LinearLayout
+            android:id="@+id/weekday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonSun"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonM"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonTue"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonW"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonThur"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonF"
+                android:clickable="true"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/buttonSat"
+                android:clickable="true"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
