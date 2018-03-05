@@ -431,8 +431,4 @@ public class SetAlarmActivityRedesign extends Fragment{
     }
 
 
-
-
-
-
 }

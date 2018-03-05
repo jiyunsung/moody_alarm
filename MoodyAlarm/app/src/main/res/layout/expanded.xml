@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/list_container"
         android:layout_width="335dp"
-        android:layout_height="280dp"
+        android:layout_height="310dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
@@ -47,13 +47,20 @@
         android:textSize="45dp"
         ></TextView>
 
+        <CheckBox
+            android:id="@+id/checkbox_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = " Repeat"
+            android:layout_marginTop="70dp"/>
+
 
         <LinearLayout
             android:id="@+id/weekday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="90dp"
             android:gravity="center_horizontal">
 
             <Button
@@ -132,7 +139,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/transparentPurple"
-        android:layout_marginTop="100dp"></View>
+        android:layout_marginTop="130dp"></View>
 
     <!--<TextView-->
         <!--android:id="@+id/row0"-->
@@ -148,7 +155,7 @@
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="110dp"
+            android:layout_marginTop="140dp"
             android:layout_marginRight="10dp"
 
             android:orientation="horizontal"
@@ -230,12 +237,12 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/transparentPurple"
-            android:layout_marginTop="180dp"></View>
+            android:layout_marginTop="210dp"></View>
 
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="220dp"
 
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
