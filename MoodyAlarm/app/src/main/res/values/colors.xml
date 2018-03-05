@@ -16,7 +16,9 @@
     <color name="lightLightPurple">#8e818e</color>color>
     <color name="lightLightPurple2">#ceae9eae</color>color>
     <color name="transparentPurple">#5abcaabc</color>color>
-    <color name="copper">#B87333</color>
+    <color name="copper">#b1dc3f55</color>
+    <color name="yellow">#71f7d66d</color>
+    <color name="actionbar">#3b000000</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

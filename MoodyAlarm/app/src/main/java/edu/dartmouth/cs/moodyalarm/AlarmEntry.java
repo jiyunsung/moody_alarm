@@ -190,6 +190,18 @@ public class AlarmEntry implements Serializable {
             }
         }
 
+
+
     }
+
+    public void setSnooze(Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+        intent.putExtra("alarm", this.id);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+    }
+
 
 }

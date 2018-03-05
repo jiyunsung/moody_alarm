@@ -8,6 +8,8 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,7 +23,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -38,7 +44,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class PopupActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -54,6 +62,9 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     private Weather weather;
     private String uri="";
+    private String setting = "";
+    private Context context;
+    private AlarmEntry a;
 
 
     @Override
@@ -68,22 +79,20 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
         Intent intent = getIntent();
         Long id = intent.getLongExtra("pos", 1);
-        AlarmEntry a = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
-        String setting = a.getSetting();
+        a = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
+        setting = a.getSetting();
+        context = this;
 
 
 
         Log.d("popup oncreate", "setting retrieved is " + setting);
 
-        if(setting.equals("day")) {
-            uri = playPlaylistByDay(day, this);
-            alarm.start_alert(this, uri);
-        } else{
-            Log.d("popUp activity", "pos is 0 fetch by weather");
+
+
             automaticBind();
             doBindService();
             startService(new Intent(PopupActivity.this, LocationService.class));
-        }
+
     }
 
     @Override
@@ -101,7 +110,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     @Override
     public void onBackPressed() {
-        alarm.stop_alert(this);
+        //alarm.stop_alert(this);
 
         super.onBackPressed();
         if(mIsBound) {
@@ -115,7 +124,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         finishActivity(0);
     }
 
-    public String playPlaylistByDay(int id, Context context){
+    public void getPlaylistByDay(int id, Context context, String response){
         String uri = "";
         Log.d("playPlaylist by day", "id is " + id);
 
@@ -123,39 +132,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         SpotifyPlaylist todayPlaylist = today.getSpotifyPlaylist();
         Log.d("playlist id is ", todayPlaylist.getPlaylistId());
         String tracks = todayPlaylist.getTrackInfo();
-        try {
-
-            JSONObject jsonObject = new JSONObject(tracks);
-
-
-            JSONArray arr = jsonObject.getJSONArray("items");
-
-            JSONObject item = arr.getJSONObject(0);
-            JSONObject track = item.getJSONObject("track");
-            JSONObject album = track.getJSONObject("album");
-            JSONArray images = album.getJSONArray("images");
-            JSONObject image = images.getJSONObject(1);
-            String imageUrl = image.getString("url");
-
-            String songName = album.getString("name");
-            //Log.d("song name is ", songName);
-            TextView song = findViewById(R.id.song_name);
-            song.setText(songName);
-
-            TextView day = findViewById(R.id.field);
-            day.setText(today.getName());
-            uri = album.getString("uri");
-
-
-            ImageView songPhoto = findViewById(R.id.playlist_img);
-            Picasso.with(getApplicationContext()).
-                    load(imageUrl).into(songPhoto);
-
-
-            Log.d("track uri is ", uri);
-
-        } catch(JSONException e){Log.d("error", e.toString());}
-        return uri;
+        displayPopUp(tracks, response);
 
 
     }
@@ -303,7 +280,14 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                             id=7;
                         }
 
-                        playPlaylistByWeather(id, getApplicationContext());
+                        if(setting.equals("day")){
+                            Calendar calendar = Calendar.getInstance();
+                            int day = calendar.get(Calendar.DAY_OF_WEEK);
+                            getPlaylistByDay(day, context,response);
+
+                        } else {
+                            getPlaylistByWeather(id, getApplicationContext(),response);
+                        }
 
                     } catch(JSONException e){Log.d("error", e.toString());}
 
@@ -321,12 +305,18 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         queue.add(jsObjRequest);
     }
 
-    public void playPlaylistByWeather(int id, Context context){
+    public void getPlaylistByWeather(int id, Context context, String response){
         Log.d("pop up activity", "play by weather");
         Weather weather = MainActivity.dataStorage.fetchEntryByIndexWeather(id);
         SpotifyPlaylist todayPlaylist = weather.getSpotifyPlaylist();
         Log.d("playlist id is ", todayPlaylist.getPlaylistId());
         String tracks = todayPlaylist.getTrackInfo();
+
+        displayPopUp(tracks, response);
+
+    }
+
+    public void displayPopUp(String tracks, String weatherResponse){
         try {
 
             JSONObject jsonObject = new JSONObject(tracks);
@@ -346,23 +336,142 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             TextView song = findViewById(R.id.song_name);
             song.setText(songName);
 
-            TextView day = findViewById(R.id.field);
-            day.setText(weather.getName());
-            uri = album.getString("uri");
-
+            JSONArray artists = album.getJSONArray("artists");
+            JSONObject artist = artists.getJSONObject(0);
+            String artistName = artist.getString("name");
+            TextView artist_name = findViewById(R.id.song_artist);
+            artist_name.setText(artistName);
 
             ImageView songPhoto = findViewById(R.id.playlist_img);
             Picasso.with(getApplicationContext()).
                     load(imageUrl).into(songPhoto);
+            uri = album.getString("uri");
+
+
+            JSONObject weatherObject = new JSONObject(weatherResponse);
+            JSONArray weather = weatherObject.getJSONArray("weather");
+            JSONObject weatherInfo = weather.getJSONObject(0);
+            String main = weatherInfo.getString("main");
+            String description = weatherInfo.getString("description");
+
+            JSONObject mainInfo = weatherObject.getJSONObject("main");
+            String temp = mainInfo.getString("temp");
+
+            String location = weatherObject.getString("name");
+
+            TextView w = findViewById(R.id.weather);
+            w.setText(main);
+
+            TextView d = findViewById(R.id.weather_description);
+            d.setText(description);
+
+            TextView temperature = findViewById(R.id.temp);
+            temperature.setText(temp);
+
+            TextView loc = findViewById(R.id.location);
+            loc.setText(location);
+
+
+            int hour = a.getHour();
+            int minute = a.getMinute();
+            String ampm = "";
+            if(hour >= 12){
+                ampm = "PM";
+            } else{
+                ampm = "AM";
+            }
+            String time= "";
+            if (minute < 10){
+                time = hour+":" + "0"+minute;
+            } else{
+                time = hour+":" + minute;
+            }
+
+            TextView timeDisplay = findViewById(R.id.labelExpanded);
+            timeDisplay.setText(time);
+
+            TextView amPm = findViewById(R.id.ampm);
+            amPm.setText(ampm);
+
+            Date now = new Date();
+            SimpleDateFormat newDateFormat = new SimpleDateFormat("EEEE MMM d, yyyy");
+            String MyDate = newDateFormat.format(now);
+
+            TextView day = findViewById(R.id.day);
+            day.setText(MyDate);
+
+            LinearLayout weekdays = (LinearLayout) findViewById(R.id.weekday);
+            CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
+            if (a.getRepeated() == 1) {
+                weekdays.setVisibility(View.VISIBLE);
+                checkBox.setChecked(true);
+            } else {
+                weekdays.setVisibility(View.INVISIBLE);
+                checkBox.setChecked(false);
+            }
+
+            Boolean[] daysOfWeek = a.getDaysofweek();
+
+            Button buttonSun = (Button) findViewById(R.id.buttonSun);
+            if(daysOfWeek[0]){
+                buttonSun.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonSun.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonM =  findViewById(R.id.buttonM);
+            if(daysOfWeek[1]){
+                buttonM.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonM.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonTue = findViewById(R.id.buttonTue);
+            if(daysOfWeek[2]){
+                buttonTue.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonTue.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonW =  findViewById(R.id.buttonW);
+            if(daysOfWeek[3]){
+                buttonW.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonW.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonThur =findViewById(R.id.buttonThur);
+            if(daysOfWeek[4]){
+                buttonThur.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonThur.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonF = findViewById(R.id.buttonF);
+            if(daysOfWeek[5]){
+                buttonF.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonF.setTextColor(Color.parseColor("#ffffff"));
+            }
+
+            Button buttonSat = findViewById(R.id.buttonSat);
+            if(daysOfWeek[6]){
+                buttonSat.setPaintFlags(buttonSun.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                buttonSat.setTextColor(Color.parseColor("#ffffff"));
+            }
+
 
 
             Log.d("track uri is ", uri);
+            alarm.start_alert(this, uri);
 
         } catch(JSONException e){Log.d("error", e.toString());}
-        alarm.start_alert(this, uri);
 
     }
 
 
+    public void onSnooze(View view) {
+        alarm.stop_alert(this);
+        a.setSnooze(this);
+    }
+
+
+    public void onDismiss(View view) {
+
+    }
 
 }

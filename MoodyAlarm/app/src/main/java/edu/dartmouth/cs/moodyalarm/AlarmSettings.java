@@ -31,6 +31,8 @@ public class AlarmSettings extends Fragment {
         View x =  inflater.inflate(R.layout.tab_layout,null);
         // set up stuff.
         tabLayout = (TabLayout) x.findViewById(R.id.tab);
+
+        tabLayout.setVisibility(View.GONE);
         viewPager = (ViewPager) x.findViewById(R.id.viewpager);
 
         // create a new adapter for our pageViewer. This adapters returns child fragments as per the positon of the page Viewer.
@@ -73,10 +75,12 @@ public class AlarmSettings extends Fragment {
 
                 if(pos == 0) {
                     position = 0;
+                    getActivity().setTitle("Weather");
                     return new WeatherDisplay();
 
                 } else{
                     position = 1;
+                    getActivity().setTitle("Day");
                 return new DayDisplay();
 
                 }
@@ -94,12 +98,13 @@ public class AlarmSettings extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
 
-            switch (position){
-                case 0 :
-                    return "WEATHER";
-                case 1 :
-                    return "DAY";
-            }
+//            switch (position){
+//                case 0 :
+//                    return "WEATHER";
+//                case 1 :
+//
+//                    return "DAY";
+//            }
             return null;
         }
     }

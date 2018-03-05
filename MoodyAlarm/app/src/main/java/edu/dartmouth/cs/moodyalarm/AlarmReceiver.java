@@ -22,6 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver
 
         long alarmId = intent.getLongExtra("alarm", -1);
         Log.d("id", Long.toString(alarmId));
+//        long alarmId = intent.getLongExtra("alarm", -1);
 //        AlarmEntry entry = MainActivity.dataStorage.fetchEntryByIndexAlarm(alarmId);
 //        if (entry.getRepeated() == 0 ) { // no repeats : this is the last time the alarm is going off, so this should be off
 //            entry.setOnOff(0);

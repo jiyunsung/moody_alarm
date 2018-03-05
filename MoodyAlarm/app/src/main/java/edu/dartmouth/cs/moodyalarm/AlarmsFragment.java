@@ -79,7 +79,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
 
     public static final String POSITION = "POS";
     public static final String NEWALARM = "alarm";
-    public static final String[] DAYS = new String[] {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    public static final String[] DAYS = new String[] {"Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"};
 
     private OnStartDragListener mDragListener;
     private ItemTouchHelper mItemTouchHelper;
@@ -91,7 +91,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.display_alarms, container, false);
-
+        MainActivity.fab.setVisibility(View.VISIBLE);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.horizontal_recycler_view);
         new loadSchema().execute();
@@ -110,7 +110,8 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Alarms");
+        getActivity().setTitle("Alarmify");
+
         mDragListener = this;
     }
 
@@ -177,6 +178,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
             Switch OnOff;
             View v;
             CardView card_view;
+            TextView ampm;
 
 
             public MyViewHolder(View view) {
@@ -190,6 +192,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                 v = view.findViewById(R.id.relative_layout);
                 card_view = view.findViewById(R.id.card_view);
 
+                ampm = view.findViewById(R.id.ampm);
 
 
             }
@@ -267,10 +270,18 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
             } else{
                 minute = Integer.toString(entry.getMinute());
             }
+            String ampm="";
+            if(entry.getHour() < 12){
+                ampm="AM";
+            }else{
+                ampm="PM";
+            }
 
             final String time = (entry.getHour() + ":" + minute);
 
+
             holder.Label.setText(time);
+            holder.ampm.setText(ampm);
             if (entry.getOnOff() == 1)
                 holder.OnOff.setChecked(true);
             else
@@ -316,7 +327,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                         Log.d("alarms fragment", "getDaysof week  null");
                     }
 
-                    AlarmDetailsDisplay alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry);
+                    AlarmDetailsDisplay alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
                     //alarmDetails.setTargetFragment(AlarmsFragment.this,0);
 
                     // Note that we need the API version check here because the actual transition classes (e.g. Fade)
@@ -336,6 +347,9 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                             .replace(R.id.content_frame, alarmDetails)
                             .addToBackStack(null)
                             .commit();
+                    MainActivity.fab.setVisibility(View.INVISIBLE);
+
+
                 }
             });
 

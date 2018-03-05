@@ -74,7 +74,7 @@ public class DayDisplay extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        getActivity().setTitle("Alarm Settings");
+        getActivity().setTitle("Day");
     }
 
     @Override

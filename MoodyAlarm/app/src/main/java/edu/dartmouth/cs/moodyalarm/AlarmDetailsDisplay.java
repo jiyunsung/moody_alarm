@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
@@ -38,15 +39,18 @@ public class AlarmDetailsDisplay extends Fragment {
     public static String setting="weather";
     public Boolean[]daysOfWeek;
     private LinearLayout weekdays;
+    public Boolean isNew;
+    public Context context;
 
     private static final String TIME = "12:00";
 
 
-    public static AlarmDetailsDisplay newInstance(String time, AlarmEntry e) {
+    public static AlarmDetailsDisplay newInstance(String time, AlarmEntry e, Boolean isNew) {
         Bundle args = new Bundle();
         args.putString(TIME, time);
 
         args.putSerializable("alarm", e);
+        args.putBoolean("isNew", isNew);
         AlarmDetailsDisplay fragment = new AlarmDetailsDisplay();
         fragment.setArguments(args);
 
@@ -58,6 +62,7 @@ public class AlarmDetailsDisplay extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.expanded, container, false);
+        context = getActivity();
         super.onCreate(savedInstanceState);
 
         return view;
@@ -77,7 +82,17 @@ public class AlarmDetailsDisplay extends Fragment {
 
         Bundle args = getArguments();
         time = args.getString(TIME);
+
         entry = (AlarmEntry) args.getSerializable("alarm");
+
+        isNew = args.getBoolean("isNew");
+        if (isNew){
+            setting = "weather";
+        } else{
+            setting = entry.getSetting();
+        }
+
+
         daysOfWeek = entry.getDaysofweek();
         if (daysOfWeek == null){
             Log.d("alarm details display", "days of week is null");
@@ -138,6 +153,10 @@ public class AlarmDetailsDisplay extends Fragment {
 
         if(entry.getSetting().equals("weather")) {
 
+
+
+//        if(setting.equals("weather")) {
+
             weather.setPaintFlags(weather.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             weather.setTextColor(Color.parseColor("#ffffff"));
             day.setPaintFlags( day.getPaintFlags() & (~ Paint.UNDERLINE_TEXT_FLAG));
@@ -153,7 +172,38 @@ public class AlarmDetailsDisplay extends Fragment {
 
         TextView timeDisplay  = view.findViewById(R.id.labelExpanded);
 
-        timeDisplay.setText(time);
+        int hour = entry.getHour();
+        String ampm;
+        if (hour < 12){
+            ampm = "AM";
+        } else{
+            ampm = "PM";
+        }
+
+        int minute = entry.getMinute();
+        Log.d("alarmdetails display", "minute is " + minute);
+        String time = "";
+        String min = "";
+        if ((entry.getMinute() < 10)){
+            min = "0"+Integer.toString(minute);
+        } else{
+            min = Integer.toString(minute);
+        }
+
+        timeDisplay.setText(entry.getHour() + ":" + min);
+
+        timeDisplay.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId());
+
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+            }
+        });
+
+        TextView amPm = view.findViewById(R.id.ampm);
+        amPm.setText(ampm);
 
 //        ImageView weather = view.findViewById(R.id.weatherPlaylist);
 //        ImageView day = view.findViewById(R.id.dayPlaylist);
@@ -164,8 +214,6 @@ public class AlarmDetailsDisplay extends Fragment {
 
         weather.setOnLongClickListener(new View.OnLongClickListener(){
             public boolean onLongClick(View v){
-
-
 
                 Fragment fragment = new WeatherDisplay();
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();
@@ -183,7 +231,7 @@ public class AlarmDetailsDisplay extends Fragment {
                 weather.setTextColor(Color.parseColor("#ffffff"));
                 setting="weather";
                 entry.setSetting("weather");
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
 
                 Button day = v.findViewById(R.id.dayPlaylist);
@@ -219,7 +267,7 @@ public class AlarmDetailsDisplay extends Fragment {
                 day.setTextColor(Color.parseColor("#ffffff"));
                 setting="day";
                 entry.setSetting("day");
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
 
                 Button weather = v.findViewById(R.id.weatherPlaylist);
@@ -257,7 +305,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[0] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -284,7 +332,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[1] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -310,7 +358,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[2]  = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -338,7 +386,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[3] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -364,7 +412,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[4] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -390,7 +438,7 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[5] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
+
 
             }
         });
@@ -416,12 +464,80 @@ public class AlarmDetailsDisplay extends Fragment {
                     daysOfWeek[6] = false;
                     entry.setDaysofweek(daysOfWeek);
                 }
-                MainActivity.dataStorage.updateAlarmEntry(entry);
 
+
+            }
+        });
+
+        Button save = view.findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(isNew){
+                    new writeSchema().execute();
+                } else{
+                    new updateSchema().execute();
+                }
+                getFragmentManager().popBackStack();
             }
         });
         //buttonSat.setChecked(daysList[6]);
 
+        Button cancel = view.findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+
+                getFragmentManager().popBackStack();
+            }
+        });
+
+
+    }
+
+
+
+    private class writeSchema extends AsyncTask<Void, Void, Void> {
+
+        // ui calling possible
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            entry.setId((MainActivity.dataStorage.insertAlarmEntry(entry).getId()));
+            Log.d("writeSchema", "do in background");
+
+            entry.setSchedule(context);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+
+    }
+
+    private class updateSchema extends AsyncTask<Void, Void, Void> {
+
+        // ui calling possible
+        protected void onPreExecute() {
+
+        }
+
+        // run threads
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            MainActivity.dataStorage.updateAlarmEntry(entry);
+
+            entry.setSchedule(context);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
 
     }
 

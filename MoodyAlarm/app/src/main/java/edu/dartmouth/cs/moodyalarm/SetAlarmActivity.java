@@ -80,6 +80,7 @@ public class SetAlarmActivity extends AppCompatActivity {
             alarmEntry = new AlarmEntry();
             alarmEntry.setOnOff(1);
             alarmEntry.setRepeat(0);
+            alarmEntry.setVibrate(1);
             weekdays.setVisibility(View.INVISIBLE);
             daysList = new Boolean[]{false, false, false, false, false, false, false};
         }
