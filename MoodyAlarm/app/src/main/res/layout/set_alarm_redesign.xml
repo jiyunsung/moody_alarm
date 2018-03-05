@@ -29,7 +29,7 @@
         android:id="@+id/alarm"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:text="Scroll to set time"
+        android:text="12:00 PM"
         android:fontFamily="sans-serif-thin"
         android:textSize="40dp"
         android:gravity="center"

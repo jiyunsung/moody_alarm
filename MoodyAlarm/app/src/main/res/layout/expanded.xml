@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/list_container"
         android:layout_width="335dp"
-        android:layout_height="310dp"
+        android:layout_height="350dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
@@ -16,7 +16,7 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view_expanded"
         android:layout_width="335dp"
-        android:layout_height="280dp"
+        android:layout_height="350dp"
         card_view:cardCornerRadius="4dp"
         card_view:cardBackgroundColor="#25000000"
         android:layout_marginTop="20dp"
@@ -27,25 +27,55 @@
         android:id="@+id/switchOnOff"
         android:layout_width="45dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="245dp"
+        android:layout_marginLeft="260dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:focusable="false"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="35dp"
         android:focusableInTouchMode="false">
     </Switch>
 
-    <TextView
-        android:id="@+id/labelExpanded"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="15dp"
-        android:text="12:00"
-        android:fontFamily="sans-serif-thin"
-        android:textColor="@color/sand"
-        android:textSize="45dp"
-        ></TextView>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            >
+
+            <TextView
+                android:id="@+id/labelExpanded"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="30dp"
+                android:text="12:00"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:clickable="true"
+                android:fontFamily="sans-serif-thin"
+                android:textColor="@color/sand"
+                android:textSize="45dp"
+                ></TextView>
+            <TextView
+                android:id="@+id/ampm"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:text="AM"
+                android:padding="5dp"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:fontFamily="sans-serif-thin"
+                android:textColor="@color/sand"
+                android:textSize="25dp"
+                ></TextView>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/checkbox_repeat"
@@ -54,6 +84,14 @@
             android:text = " Repeat"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="70dp"/>
+            <CheckBox
+                android:id="@+id/checkbox_vibrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "Vibrate"
+                android:layout_marginLeft="135dp"
+                android:layout_marginTop="71dp"/>
+        </LinearLayout>
 
 
         <LinearLayout
@@ -240,72 +278,87 @@
             android:background="@color/transparentPurple"
             android:layout_marginTop="210dp"></View>
 
-        <RadioGroup
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/challenges"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="220dp"
 
             android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            >
-
-            <ImageView
-                android:layout_width="30dp"
-                android:id="@+id/challenge"
-                android:layout_height="30dp"
-                android:layout_marginTop="5dp"
-
-                android:src="@drawable/deepfocus"
-                android:clickable="true"/>
-
-
+            android:layout_marginTop="220dp"
+            android:gravity="center_horizontal">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Challenges:"
+                android:layout_marginTop="15dp"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/voice"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/sand"
-                android:text="None" />
+                android:src="@drawable/deepfocus"
+                android:clickable="true"/>
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/sudoku"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/deepfocus"
+                android:clickable="true"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/puzzle"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/deepfocus"
+                android:clickable="true"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/math"
+                android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/deepfocus"
+                android:clickable="true"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="270dp"
+            android:layout_marginLeft="50dp"
+            >
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:text="Save"
+                android:textColor="@color/white"
+                android:id="@+id/save"
+                android:background="@drawable/button_border"/>
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="5dp"
-                android:text="Vibrate"
-                android:scaleY="0.75"
-                android:scaleX="0.75"/>
+                android:text="Cancel"
+                android:textColor="@color/white"
+                android:id="@+id/cancel"
+                android:background="@drawable/button_border"/>
 
-
-
-
-
-            <!--<ImageView-->
-            <!--android:layout_width="45dp"-->
-            <!--android:id="@+id/defaultPlaylist"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:layout_marginTop="5dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:src="@drawable/deepfocus"-->
-            <!--android:clickable="true"/>-->
-
-            <!--<ImageView-->
-            <!--android:layout_width="55dp"-->
-            <!--android:layout_height="55dp"-->
-            <!--android:id="@+id/weatherPlaylist"-->
-            <!--android:layout_marginLeft="45dp"-->
-            <!--android:src="@drawable/weather_icons"-->
-            <!--android:clickable="true"/>-->
-
-            <!--<ImageView-->
-            <!--android:layout_width="55dp"-->
-            <!--android:layout_height="55dp"-->
-            <!--android:id="@+id/dayPlaylist"-->
-            <!--android:layout_marginLeft="45dp"-->
-            <!--android:src="@drawable/calendar"-->
-            <!--android:clickable="true"/>-->
-
-        </RadioGroup>
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
     </RelativeLayout>

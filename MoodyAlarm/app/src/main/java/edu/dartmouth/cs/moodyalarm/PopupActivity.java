@@ -455,6 +455,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             }
 
 
+
             Log.d("track uri is ", uri);
             alarm.start_alert(this, uri);
 

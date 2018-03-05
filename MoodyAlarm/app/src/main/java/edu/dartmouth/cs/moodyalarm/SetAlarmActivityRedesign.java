@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -65,18 +66,23 @@ import java.util.Map;
 public class SetAlarmActivityRedesign extends Fragment{
 
     public View view;
-    public String[] DEFAULT_PLAYLISTS;
-    private final int NUMBER_DEFAULT_PLAYLISTS = 9;
-    private GridView gridview;
-    RecyclerView horizontal_recycler_view;
-    LinearLayoutManager horizontalLayoutManager;
 
-    public ArrayList<SpotifyPlaylist> spotifyEntries;
-
-    public String newUrl;
     public String setting;
     public TextView alarm;
     public int timesIndex = 0;
+    public long id;
+
+    public static SetAlarmActivityRedesign newInstance(Long id) {
+        Bundle args = new Bundle();
+        args.putLong("id", id);
+
+
+        SetAlarmActivityRedesign fragment = new SetAlarmActivityRedesign();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
 
 
 
@@ -87,6 +93,13 @@ public class SetAlarmActivityRedesign extends Fragment{
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.set_alarm_redesign, container, false);
         MainActivity.fab.setVisibility(View.INVISIBLE);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            id = args.getLong("id");
+        } else{
+            id = -1;
+        }
         LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
         final LinearLayout alarmContainer = view.findViewById(R.id.alarm_container);
         alarm = view.findViewById(R.id.alarm);
@@ -101,7 +114,34 @@ public class SetAlarmActivityRedesign extends Fragment{
             @Override
             public boolean onLongClick(View v) {
                 if(!alarm.getText().equals("Scroll to set time")) {
-                    new writeSchema().execute();
+                    AlarmEntry entry = new AlarmEntry();
+                    String[] arr = alarm.getText().toString().split(":");
+
+                    int hour = Integer.parseInt(arr[0]);
+
+                    String [] minArr = arr[1].split(" ");
+
+                    int minute = Integer.parseInt(minArr[0]);
+                    entry.setHour(hour);
+                    entry.setMinute(minute);
+                    String time = hour + ":" + minute;
+                    entry.setOnOff(1);
+                    entry.setRepeat(0);
+                    entry.setSetting("weather");
+                    entry.setId(id);
+                    AlarmDetailsDisplay alarmDetails;
+                    if(id == -1) {
+                        alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, true);
+                    } else{
+                        alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
+                    }
+
+                    FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                            .beginTransaction();
+
+
+                    ft.replace(R.id.content_frame, alarmDetails)
+                            .commit();
                 }
 //                Toast.makeText(getActivity(), "Alarm saved!",
 //                        Toast.LENGTH_LONG).show();
@@ -304,42 +344,9 @@ public class SetAlarmActivityRedesign extends Fragment{
     }
 
 
-    private class writeSchema extends AsyncTask<Void, Void, Void> {
 
-        // ui calling possible
-        protected void onPreExecute() {
 
-        }
 
-        // run threads
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            AlarmEntry entry = new AlarmEntry();
-            String[] arr = alarm.getText().toString().split(":");
-
-            int hour = Integer.parseInt(arr[0]);
-
-            String [] minArr = arr[1].split(" ");
-
-            int minute = Integer.parseInt(minArr[0]);
-            entry.setHour(hour);
-            entry.setMinute(minute);
-            entry.setOnOff(1);
-            entry.setRepeat(0);
-            entry.setSetting("weather");
-
-            entry.setId((MainActivity.dataStorage.insertAlarmEntry(entry).getId()));
-            Log.d("writeSchema", "do in background");
-
-            entry.setSchedule(getActivity().getApplicationContext());
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
-
-    }
 
 
 }
