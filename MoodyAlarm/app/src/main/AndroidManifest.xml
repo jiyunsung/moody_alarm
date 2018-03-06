@@ -22,7 +22,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
             android:theme="@style/AppTheme">
 
              <intent-filter>
@@ -45,7 +44,7 @@
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".SetAlarmActivity" />
-        <activity android:name=".PlaylistDisplay" />
+        <activity android:name=".PlaylistDisplay"  android:theme="@style/AppTheme" />
         <activity
             android:name=".PopupActivity"
             android:launchMode="singleInstance" />
