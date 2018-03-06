@@ -264,8 +264,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                     .setDuration(0)
                                     .start();
                             float y = e.getRawY();
-                            int i = 0;
-                            for (i = 0; i < times.length; i++) {
+                            for (int i = 0; i < times.length; i++) {
                                 if (y >= (40 * i + 300) && y < (i * 40 + 400)) {
                                     String[] arr = times[i].split(":");
 

@@ -190,93 +190,93 @@
                 android:background="@color/transparentPurple"
                 android:layout_marginTop="260dp"></View>
 
-            <!--<CheckBox-->
-            <!--android:id="@+id/checkbox_repeat"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text = " Repeat"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_marginTop="270dp"/>-->
+            <CheckBox
+            android:id="@+id/checkbox_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = " Repeat"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="270dp"/>
 
 
-            <!--<LinearLayout-->
-            <!--android:id="@+id/weekday"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_marginTop="285dp"-->
-            <!--android:gravity="center_horizontal">-->
+            <LinearLayout
+            android:id="@+id/weekday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="285dp"
+            android:gravity="center_horizontal">
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonSun"-->
-            <!--android:text="SUN"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonSun"
+            android:text="SUN"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonM"-->
-            <!--android:text="MON"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonM"
+            android:text="MON"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonTue"-->
-            <!--android:text="TUE"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonTue"
+            android:text="TUE"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonW"-->
-            <!--android:text="WED"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonW"
+            android:text="WED"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonThur"-->
-            <!--android:text="THU"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonThur"
+            android:text="THU"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonF"-->
-            <!--android:text="FRI"-->
-            <!--android:gravity="center"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonF"
+            android:text="FRI"
+            android:gravity="center"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--<Button-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:id="@+id/buttonSat"-->
-            <!--android:text="SAT"-->
-            <!--android:textColor="@color/darkPurple"-->
-            <!--android:background="@android:color/transparent"-->
-            <!--android:clickable="true"/>-->
+            <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonSat"
+            android:text="SAT"
+            android:textColor="@color/darkPurple"
+            android:background="@android:color/transparent"
+            android:clickable="true"/>
 
-            <!--</LinearLayout>-->
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/challenges"
