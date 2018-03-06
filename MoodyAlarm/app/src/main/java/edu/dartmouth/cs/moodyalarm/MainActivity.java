@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.snooze_settings:
                 fragment = new SnoozeSettings();
                 fab.setVisibility(View.INVISIBLE);
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("main").commit();
         }
 
         //replacing the fragment

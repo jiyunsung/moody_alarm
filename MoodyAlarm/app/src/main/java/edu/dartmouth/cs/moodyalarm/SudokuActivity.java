@@ -259,7 +259,8 @@ public class SudokuActivity extends AppCompatActivity {
                 newView.addTextChangedListener(new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
-                        map.put(i, s.toString());
+                        if (!s.equals(""))
+                            map.put(i, s.toString());
 
 //                        new SudokuGenerator().checkConflict();
                     }

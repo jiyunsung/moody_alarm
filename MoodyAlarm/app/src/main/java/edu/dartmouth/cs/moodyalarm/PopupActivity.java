@@ -7,12 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,8 +17,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,14 +32,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.spotify.sdk.android.player.Spotify;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,11 +56,9 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     private Weather weather;
     private String uri="";
-    private String setting = "";
     private Context context;
-    private AlarmEntry a;
+    private AlarmEntry alarmEntry;
     SharedPreferences prefs;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +73,14 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
         Intent intent = getIntent();
         Long id = intent.getLongExtra("pos", 1);
-        a = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
-        setting = a.getSetting();
+        alarmEntry = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
+        //setting = alarmEntry.getSetting();
         context = this;
 
-
-
-        Log.d("popup oncreate", "setting retrieved is " + setting);
-
-
-
-            automaticBind();
-            doBindService();
-            startService(new Intent(PopupActivity.this, LocationService.class));
-
+        Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
+        automaticBind();
+        doBindService();
+        startService(new Intent(PopupActivity.this, LocationService.class));
     }
 
     @Override
@@ -148,7 +133,6 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         else
             return false;
     }
-
 
 
     private class IncomingMessageHandler extends Handler {
@@ -283,7 +267,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                             id=7;
                         }
 
-                        if(setting.equals("day")){
+                        if(alarmEntry.getSetting().equals("day")){
                             Calendar calendar = Calendar.getInstance();
                             int day = calendar.get(Calendar.DAY_OF_WEEK);
                             getPlaylistByDay(day, context,response);
@@ -375,8 +359,8 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             loc.setText(location);
 
 
-            int hour = a.getHour();
-            int minute = a.getMinute();
+            int hour = alarmEntry.getHour();
+            int minute = alarmEntry.getMinute();
             String ampm = "";
             if(hour >= 12){
                 ampm = "PM";
@@ -405,7 +389,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             LinearLayout weekdays = (LinearLayout) findViewById(R.id.weekday);
             CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
-            if (a.getRepeated() == 1) {
+            if (alarmEntry.getRepeated() == 1) {
                 weekdays.setVisibility(View.VISIBLE);
                 checkBox.setChecked(true);
             } else {
@@ -413,7 +397,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                 checkBox.setChecked(false);
             }
 
-            Boolean[] daysOfWeek = a.getDaysofweek();
+            Boolean[] daysOfWeek = alarmEntry.getDaysofweek();
 
             Button buttonSun = (Button) findViewById(R.id.buttonSun);
             if(daysOfWeek[0]){
@@ -469,8 +453,9 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     public void onSnooze(View view) {
         alarm.stop_alert(this);
-        Integer restoredLength = prefs.getInt("Length", 10);
-        a.setSnooze(this, restoredLength);
+        Integer restoredLength = prefs.getInt("Length", 11);
+        alarmEntry.setSnooze(this, restoredLength);
+        finish();
     }
 
     public void onDismiss(View view) {
@@ -478,19 +463,19 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         Integer restoredActivity = prefs.getInt("Activity", 3);
         if (restoredActivity == 1) {
             Intent intent = new Intent(this, MathActivity.class);
-            intent.putExtra("alarm", a);
+            intent.putExtra("alarm", alarmEntry);
             startActivity(intent);
         } else if (restoredActivity == 0) {
             Intent intent = new Intent(this, VoiceRecognitionActivity.class);
-            intent.putExtra("alarm", a);
+            intent.putExtra("alarm", alarmEntry);
             startActivity(intent);
         } else if (restoredActivity == 2) {
             Intent intent = new Intent(this, SudokuActivity.class);
-            intent.putExtra("alarm", a);
+            intent.putExtra("alarm", alarmEntry);
             startActivity(intent);
         } else {
             Intent intent = new Intent(this, PuzzleActivity.class);
-            intent.putExtra("alarm", a);
+            intent.putExtra("alarm", alarmEntry);
             startActivity(intent);
         }
 

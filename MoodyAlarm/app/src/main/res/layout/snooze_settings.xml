@@ -90,6 +90,8 @@
         android:layout_height="wrap_content"
         android:onClick="onSave"
         android:layout_gravity="center_horizontal|bottom"
-        android:text = "Save"/>
+        android:text = "Save"
+        android:textColor="@color/sand"
+        android:background="#50000000"/>
 
 </LinearLayout>

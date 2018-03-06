@@ -42,9 +42,7 @@ public class SnoozeSettings extends Fragment {
 
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
 
-        String text = snooze_length.getSelectedItem().toString();
-
-        Integer restoredLength = prefs.getInt("Length", 10);
+        Integer restoredLength = prefs.getInt("Length", 11);
         if (restoredLength != 0) {
             snooze_length.setSelection(restoredLength - 1);
         }
@@ -77,12 +75,13 @@ public class SnoozeSettings extends Fragment {
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
 
-                getActivity().getFragmentManager().popBackStack();
+                getFragmentManager().popBackStack();
             }
         });
 
         return view;
     }
+
 
 
     @Override

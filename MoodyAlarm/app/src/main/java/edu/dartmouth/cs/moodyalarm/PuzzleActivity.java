@@ -235,7 +235,7 @@ public class PuzzleActivity extends AppCompatActivity {
         } else {
             if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)])) {
                 Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
-                PopupActivity.alarm.stop_alert(getApplicationContext());
+                PopupActivity.alarm.stop_alert(this);
                 finish();
             }else {
                 Toast.makeText(PuzzleActivity.this, "try again!", Toast.LENGTH_SHORT).show();

@@ -78,8 +78,8 @@ public class AlarmEntry implements Serializable {
     public void setDaysOfWeek2(ArrayList<Boolean> daysofweek) {
         this.daysofweek = daysofweek;
     }
+    public String getSetting() { return this.setting; }
 
-    public String getSetting() { return setting; }
     public void setSetting(String s) {this.setting = s;}
     public void setVibrate(int v) {this.vibrate = v; }
 
@@ -102,7 +102,7 @@ public class AlarmEntry implements Serializable {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.putExtra("alarm", this.id);
+        intent.putExtra("alarm id", this.id);
         Log.d("setSchedule", "setting is " + this.setting);
         Log.d("setSchedule", "id is " + this.id);
 
@@ -194,7 +194,7 @@ public class AlarmEntry implements Serializable {
     public void setSnooze(Context context, int snooze_length) {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.putExtra("alarm", this.id);
+        intent.putExtra("alarm id", this.id);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());

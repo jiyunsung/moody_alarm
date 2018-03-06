@@ -299,7 +299,7 @@
                 android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
-                android:src="@drawable/deepfocus"
+                android:src="@drawable/voicerecognition"
                 android:clickable="true"/>
 
             <ImageView
@@ -309,7 +309,7 @@
                 android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
-                android:src="@drawable/deepfocus"
+                android:src="@drawable/sudoku"
                 android:clickable="true"/>
 
             <ImageView
@@ -319,7 +319,7 @@
                 android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
-                android:src="@drawable/deepfocus"
+                android:src="@drawable/puzzle"
                 android:clickable="true"/>
 
             <ImageView
@@ -329,7 +329,7 @@
                 android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
-                android:src="@drawable/deepfocus"
+                android:src="@drawable/math"
                 android:clickable="true"/>
         </LinearLayout>
 
