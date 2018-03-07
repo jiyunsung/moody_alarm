@@ -121,8 +121,6 @@ public class SnoozeSettings extends Fragment {
                 editor.putBoolean(MATH_ON, mathSwtich.isChecked());
                 editor.putInt(MATH_DIFF, mathDifficulty.getProgress());
 
-//                editor.putBoolean("Image", defaultIm.isChecked());
-
                 // Commit the edits
                 editor.apply();
                 // show 'Saved' toast
