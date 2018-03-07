@@ -9,8 +9,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Shader;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -85,9 +91,16 @@ public class SetAlarmActivityRedesign extends Fragment{
     }
 
 
-
-
-    Button btn;
+    public static int manipulateColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r,255),
+                Math.min(g,255),
+                Math.min(b,255));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,14 +115,75 @@ public class SetAlarmActivityRedesign extends Fragment{
         } else{
             id = -1;
         }
-        LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
+        final LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
         final LinearLayout alarmContainer = view.findViewById(R.id.alarm_container);
         alarm = view.findViewById(R.id.alarm);
+
         final String [] times = {"00:00","00:30", "1:00", "1:30" ,"2:00", "2:30", "3:00", "3:30","4:00","4:30",
                 "5:00", "5:30", "6:00", "6:30", "7:00","7:30", "8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30",
                 "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00",
                 "16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00", "22:30","23:00","23:30","24:00"};
 
+        final ArrayList<ArrayList<String>> colors = new ArrayList<>();
+
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));//12
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#002d3d")));//1
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#002d3d")));
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#2d2f5c")));//2
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#383952")));
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#605675")));//3
+        colors.add(new ArrayList<>(Arrays.asList("#1d1d2a","#8E7497")));//
+        colors.add(new ArrayList<>(Arrays.asList("#1d1d2a","#a36681")));//4
+        colors.add(new ArrayList<>(Arrays.asList("#1d1d2a","#a36681")));//
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#D76D77")));//5
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#e97c87")));//
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#e97c87")));//6
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#8386b9")));//
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#5e7eb5")));//7
+        colors.add(new ArrayList<>(Arrays.asList("#322352","#5aa1ce")));//
+        colors.add(new ArrayList<>(Arrays.asList("#2c2a6a","#5aa1ce")));//8
+        colors.add(new ArrayList<>(Arrays.asList("#2c457d","#5aa1ce")));//
+        colors.add(new ArrayList<>(Arrays.asList("#266192","#7ab9e1")));//9
+        colors.add(new ArrayList<>(Arrays.asList("#2d74ae","#97c9e7")));//
+        colors.add(new ArrayList<>(Arrays.asList("#4491cf","#a2c8e7")));//10
+        colors.add(new ArrayList<>(Arrays.asList("#71c0da","#cae8f1")));//
+        colors.add(new ArrayList<>(Arrays.asList("#71c0da","#EAECC6")));//11
+        colors.add(new ArrayList<>(Arrays.asList("#71c0da","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//12
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//1
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//2
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//3
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//4
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//5
+        colors.add(new ArrayList<>(Arrays.asList("#94d9f0","#EAECC6")));//
+        colors.add(new ArrayList<>(Arrays.asList("#89bfd1","#EAECC6")));//6
+        colors.add(new ArrayList<>(Arrays.asList("#bec0a5","#f5f5a8")));//6
+        colors.add(new ArrayList<>(Arrays.asList("#fda085","#fedd67")));//7
+        colors.add(new ArrayList<>(Arrays.asList("#DF8694","#FDA085")));//
+        colors.add(new ArrayList<>(Arrays.asList("#B1759A","#FDA085")));//8
+        colors.add(new ArrayList<>(Arrays.asList("#7D6891","#B1759A")));//8
+        colors.add(new ArrayList<>(Arrays.asList("#4E5A79","#7D6891")));//9
+        colors.add(new ArrayList<>(Arrays.asList("#4E5A79","#7D6891")));//9
+        colors.add(new ArrayList<>(Arrays.asList("#4E5A79","#7D6891")));//10
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#605675")));
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#383952")));
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));//12
+        colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));
+
+
+        final GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener(){
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Log.d("TEST", "onDoubleTap");
+                return super.onDoubleTap(e);
+            }
+        });
 
         alarm.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -154,12 +228,55 @@ public class SetAlarmActivityRedesign extends Fragment{
         });
 
         screenContainer.setOnTouchListener(new View.OnTouchListener() {
+            private float x1, x2;
             public boolean onTouch(View v, MotionEvent e){
 
                 switch (e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         Log.d("screenContainer", "action down");
+                        int h = v.getHeight();
+                        x1 = e.getX();
+
                         return true;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        x2 = e.getX();
+                        float deltaX = Math.abs(x2-x1);
+                        if(deltaX >300){
+                            AlarmEntry entry = new AlarmEntry();
+                            String[] arr = alarm.getText().toString().split(":");
+
+                            int hour = Integer.parseInt(arr[0]);
+
+                            String [] minArr = arr[1].split(" ");
+
+                            int minute = Integer.parseInt(minArr[0]);
+                            entry.setHour(hour);
+                            entry.setMinute(minute);
+                            String time = hour + ":" + minute;
+                            entry.setOnOff(1);
+                            entry.setRepeat(0);
+                            entry.setSetting("weather");
+                            entry.setVibrate(1);
+                            entry.setId(id);
+                            AlarmDetailsDisplay alarmDetails;
+                            if(id == -1) {
+                                alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, true);
+                            } else{
+                                alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
+                            }
+
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                                    .beginTransaction();
+
+
+                            ft.replace(R.id.content_frame, alarmDetails).addToBackStack("main")
+                                    .commit();
+                            return false;
+
+                        }
+                        break;
 
                     case MotionEvent.ACTION_UP:
 
@@ -256,28 +373,35 @@ public class SetAlarmActivityRedesign extends Fragment{
                         dY = v.getY() - e.getRawY();
                         break;
 
-                    case MotionEvent.ACTION_MOVE:
-                        if((e.getRawY()) <2300 && (e.getRawY()) >= 300) {
+                        case MotionEvent.ACTION_MOVE:
 
-                            v.animate()
-                                    .y(e.getRawY() + dY)
-                                    .setDuration(0)
-                                    .start();
-                            float y = e.getRawY();
-                            for (int i = 0; i < times.length; i++) {
-                                if (y >= (40 * i + 300) && y < (i * 40 + 400)) {
-                                    String[] arr = times[i].split(":");
+                                if ((e.getRawY() + dY) < 1780 && (e.getRawY() + dY) >= 25) {
 
-                                    int hour = Integer.parseInt(arr[0]);
-                                    if (hour < 12)
-                                        alarm.setText(times[i] + " AM");
-                                    else
-                                        alarm.setText(times[i] + " PM");
-                                    timesIndex = i;
-                                }
-                            }
-                            Log.d("ACTION MOVE", "y is " + y);
+                                    v.animate()
+                                            .y(e.getRawY() + dY)
+                                            .setDuration(0)
+                                            .start();
+                                    float y = e.getRawY()+ dY;
+                                    int i = 0;
+                                    for (i = 0; i < times.length; i++) {
+                                        if (y >= (33 * i + 25) && y < (i * 33 + 58)) {
+                                            String[] arr = times[i].split(":");
 
+                                            GradientDrawable gd = new GradientDrawable(
+                                                    GradientDrawable.Orientation.TOP_BOTTOM,
+                                                    new int[] {Color.parseColor(colors.get(i).get(0)),Color.parseColor(colors.get(i).get(1))});
+                                            gd.setCornerRadius(0f);
+                                            screenContainer.setBackground(gd);
+
+                                            int hour = Integer.parseInt(arr[0]);
+                                            if (hour < 12)
+                                                alarm.setText(times[i] + " AM");
+                                            else
+                                                alarm.setText(times[i] + " PM");
+                                            timesIndex = i;
+                                        }
+                                    }
+                                    Log.d("ACTION MOVE", "y is " + y);
                         }
                         break;
                     default:
