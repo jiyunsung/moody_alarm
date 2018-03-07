@@ -26,6 +26,9 @@ public class AlarmEntry implements Serializable {
     private String setting;
     private Integer vibrate;
 
+    // number of times user clicked snooze. this doesn't have to be saved in the database because it needs to be reinitialized when the user turns off the app.
+    private int snooze = 0;
+
     public AlarmEntry(){
     }
 
@@ -38,6 +41,7 @@ public class AlarmEntry implements Serializable {
         this.daysofweek = list;
         this.setting = s;
         this.vibrate = v;
+        this.snooze = 0;
     }
 
     public long getId() { return id; }
@@ -61,6 +65,7 @@ public class AlarmEntry implements Serializable {
         return this.daysofweek;
     }
     public int getVibrate() { return this.vibrate; }
+    public int getSnooze() { return this.snooze; }
 
     public void setId(long id) {
         this.id = id;
@@ -192,6 +197,7 @@ public class AlarmEntry implements Serializable {
     }
 
     public void setSnooze(Context context, int snooze_length) {
+        this.snooze += 1;
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
         intent.putExtra("alarm id", this.id);

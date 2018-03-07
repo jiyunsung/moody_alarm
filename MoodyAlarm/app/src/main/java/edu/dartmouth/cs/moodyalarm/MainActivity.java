@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int SNOOZE_REQUESTCODE = 2398203;
-    public static final String PREFS_NAME = "SnoozeSettings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

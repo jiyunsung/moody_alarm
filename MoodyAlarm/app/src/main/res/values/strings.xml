@@ -38,6 +38,7 @@
     </string-array>
 
     <string-array name="limit_array">
+        <item>No limit on snoozes</item>
         <item>1 time</item>
         <item>2 times</item>
         <item>3 times</item>
@@ -53,6 +54,8 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="triple"><u>No triple on the grid?</u></string>
 
 
 </resources>

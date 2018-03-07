@@ -121,7 +121,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:layout_toEndOf="@id/voiceDiff"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:id="@+id/voiceBar"/>
 
     </RelativeLayout>
 
@@ -170,7 +171,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:layout_toEndOf="@id/sudokuDiff"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:id="@+id/sudokuBar"/>
 
     </RelativeLayout>
 
@@ -219,7 +221,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:layout_toEndOf="@id/puzzleDiff"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:id="@+id/puzzleBar"/>
 
     </RelativeLayout>
 
@@ -268,7 +271,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="45dp"
             android:layout_toEndOf="@id/mathDiff"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp"
+            android:id="@+id/mathBar"/>
 
     </RelativeLayout>
 

@@ -25,6 +25,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,8 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 public class PopupActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -59,12 +62,18 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     private Context context;
     private AlarmEntry alarmEntry;
     SharedPreferences prefs;
+    private ArrayList<String> challenges;
+
+    private ImageView voiceX;
+    private ImageView sudokuX;
+    private ImageView puzzleX;
+    private ImageView mathX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
-        prefs = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+        prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         Log.d("popup oncreate", "day is " + day);
@@ -76,6 +85,16 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         alarmEntry = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
         //setting = alarmEntry.getSetting();
         context = this;
+
+        challenges = new ArrayList<String>();
+        if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
+            challenges.add(SnoozeSettings.VOICE_ON);
+        if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
+            challenges.add(SnoozeSettings.SUDOKU_ON);
+        if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
+            challenges.add(SnoozeSettings.PUZZLE_ON);
+        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
+            challenges.add(SnoozeSettings.MATH_DIFF);
 
         Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
         automaticBind();
@@ -358,20 +377,22 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             TextView loc = findViewById(R.id.location);
             loc.setText(location);
 
+            // display current time
+            Calendar rightNow = Calendar.getInstance();
+            int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+            int currentMinute = rightNow.get(Calendar.MINUTE);
 
-            int hour = alarmEntry.getHour();
-            int minute = alarmEntry.getMinute();
             String ampm = "";
-            if(hour >= 12){
+            if(currentHour >= 12){
                 ampm = "PM";
             } else{
                 ampm = "AM";
             }
             String time= "";
-            if (minute < 10){
-                time = hour+":" + "0"+minute;
+            if (currentMinute < 10){
+                time = currentHour+":" + "0"+currentMinute;
             } else{
-                time = hour+":" + minute;
+                time = currentHour+":" + currentMinute;
             }
 
             TextView timeDisplay = findViewById(R.id.labelExpanded);
@@ -388,13 +409,13 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             day.setText(MyDate);
 
             LinearLayout weekdays = (LinearLayout) findViewById(R.id.weekday);
-            CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
+            TextView repeat = (TextView) findViewById(R.id.NoRepeatText);
             if (alarmEntry.getRepeated() == 1) {
                 weekdays.setVisibility(View.VISIBLE);
-                checkBox.setChecked(true);
+                repeat.setVisibility(View.INVISIBLE);
             } else {
                 weekdays.setVisibility(View.INVISIBLE);
-                checkBox.setChecked(false);
+                repeat.setVisibility(View.VISIBLE);
             }
 
             Boolean[] daysOfWeek = alarmEntry.getDaysofweek();
@@ -441,7 +462,19 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                 buttonSat.setTextColor(Color.parseColor("#ffffff"));
             }
 
+            voiceX = findViewById(R.id.voiceX);
+            sudokuX = findViewById(R.id.sudokuX);
+            puzzleX = findViewById(R.id.puzzleX);
+            mathX = findViewById(R.id.mathX);
 
+            if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
+                voiceX.setVisibility(View.INVISIBLE);
+            if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
+                sudokuX.setVisibility(View.INVISIBLE);
+            if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
+                puzzleX.setVisibility(View.INVISIBLE);
+            if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
+                mathX.setVisibility(View.INVISIBLE);
 
             Log.d("track uri is ", uri);
             alarm.start_alert(this, uri);
@@ -452,33 +485,90 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
 
     public void onSnooze(View view) {
-        alarm.stop_alert(this);
-        Integer restoredLength = prefs.getInt("Length", 11);
-        alarmEntry.setSnooze(this, restoredLength);
-        finish();
+
+        Integer maxSnooze = prefs.getInt(SnoozeSettings.SNOOZE_MAX, 0); // if this returns 0, that means the user doesn't want a limit on the number of snoozes
+
+        if (maxSnooze == 0 || alarmEntry.getSnooze() < maxSnooze) {
+            alarm.stop_alert(this);
+            Integer snoozeLength = prefs.getInt(SnoozeSettings.SNOOZE_LENGTH, 9);
+            alarmEntry.setSnooze(this, snoozeLength);
+            finish();
+        } else {
+            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm. ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onDismiss(View view) {
+        Log.d("challenges", challenges.toString());
 
-        Integer restoredActivity = prefs.getInt("Activity", 3);
-        if (restoredActivity == 1) {
-            Intent intent = new Intent(this, MathActivity.class);
-            intent.putExtra("alarm", alarmEntry);
-            startActivity(intent);
-        } else if (restoredActivity == 0) {
-            Intent intent = new Intent(this, VoiceRecognitionActivity.class);
-            intent.putExtra("alarm", alarmEntry);
-            startActivity(intent);
-        } else if (restoredActivity == 2) {
-            Intent intent = new Intent(this, SudokuActivity.class);
-            intent.putExtra("alarm", alarmEntry);
-            startActivity(intent);
+        // at least one challenge enabled
+        if (challenges.size() > 0) {
+            // choose a random activity among the enabled ones
+            Random rand = new Random();
+            int choice = rand.nextInt(challenges.size());
+            String challenge = challenges.get(choice);
+            Intent challengeIntent;
+            if (challenge.equals(SnoozeSettings.VOICE_ON))
+                challengeIntent = new Intent(this, VoiceRecognitionActivity.class);
+            else if (challenge.equals(SnoozeSettings.SUDOKU_ON))
+                challengeIntent = new Intent(this, SudokuActivity.class);
+            else if (challenge.equals(SnoozeSettings.PUZZLE_ON))
+                challengeIntent = new Intent(this, PuzzleActivity.class);
+            else
+                challengeIntent = new Intent(this, MathActivity.class);
+
+            challengeIntent.putExtra("alarm", alarmEntry);
+            startActivity(challengeIntent);
+
         } else {
-            Intent intent = new Intent(this, PuzzleActivity.class);
-            intent.putExtra("alarm", alarmEntry);
-            startActivity(intent);
+            alarm.stop_alert(context);
+            Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+    public void onVoiceX(View view) {
+        challenges.add(SnoozeSettings.VOICE_ON);
+        view.setVisibility(View.INVISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+
+    public void onSudokuX(View view) {
+        challenges.add(SnoozeSettings.SUDOKU_ON);
+        view.setVisibility(View.INVISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+
+    public void onMathX(View view) {
+        challenges.add(SnoozeSettings.MATH_ON);
+        view.setVisibility(View.INVISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+
+    public void onPuzzleX(View view) {
+        challenges.add(SnoozeSettings.PUZZLE_ON);
+        view.setVisibility(View.INVISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+
+    public void onVoiceO(View view) {
+        challenges.remove(SnoozeSettings.VOICE_ON);
+        voiceX.setVisibility(View.VISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+    public void onSudokuO(View view){
+        challenges.remove(SnoozeSettings.SUDOKU_ON);
+        sudokuX.setVisibility(View.VISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+    public void onMathO(View view){
+        challenges.remove(SnoozeSettings.MATH_ON);
+        mathX.setVisibility(View.VISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
+    public void onPuzzleO(View view){
+        challenges.remove(SnoozeSettings.PUZZLE_ON);
+        puzzleX.setVisibility(View.VISIBLE);
+        Log.d("challenges", challenges.toString());
+    }
 }

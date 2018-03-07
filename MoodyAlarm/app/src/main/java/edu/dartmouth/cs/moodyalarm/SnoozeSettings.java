@@ -39,7 +39,8 @@ public class SnoozeSettings extends Fragment {
     private Switch mathSwtich;
     private SeekBar mathDifficulty;
 
-
+    // Shared preferences strings
+    public static final String PREFS_NAME = "SnoozeSettings";
     public static final String SNOOZE_LENGTH = "snooze_length";
     public static final String SNOOZE_MAX = "snooze_max";
     public static final String VOICE_ON = "voice_on";
@@ -61,24 +62,24 @@ public class SnoozeSettings extends Fragment {
         snooze_max = (Spinner) view.findViewById(R.id.max_snooze);
 
         voiceSwtich = (Switch) view.findViewById(R.id.voiceSwtich);
-        voiceDifficulty = (SeekBar) view.findViewById(R.id.voiceDiff);
+        voiceDifficulty = (SeekBar) view.findViewById(R.id.voiceBar);
         sudokuSwtich = (Switch) view.findViewById(R.id.sudokuSwtich);
-        sudokuDifficulty = (SeekBar) view.findViewById(R.id.sudokuDiff);
+        sudokuDifficulty = (SeekBar) view.findViewById(R.id.sudokuBar);
         puzzleSwtich = (Switch) view.findViewById(R.id.puzzleSwtich);
-        puzzleDifficulty = (SeekBar) view.findViewById(R.id.puzzleDiff);
+        puzzleDifficulty = (SeekBar) view.findViewById(R.id.puzzleBar);
         mathSwtich = (Switch) view.findViewById(R.id.mathSwtich);
-        mathDifficulty = (SeekBar) view.findViewById(R.id.mathDiff);
+        mathDifficulty = (SeekBar) view.findViewById(R.id.mathBar);
 
 //        defaultIm = (RadioButton) view.findViewById(R.id.defaultImages);
 //        customIm = (RadioButton) view.findViewById(R.id.customImages);
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_NAME, 0);
 
-        Integer snoozeLength = prefs.getInt(SNOOZE_LENGTH, 11);
+        Integer snoozeLength = prefs.getInt(SNOOZE_LENGTH, 9);
         if (snoozeLength != 0) {
             snooze_length.setSelection(snoozeLength - 1);
         }
-        Integer snoozeMax = prefs.getInt(SNOOZE_MAX, 3);
+        Integer snoozeMax = prefs.getInt(SNOOZE_MAX, 0);
         if (snoozeMax != 0) {
             snooze_max.setSelection(snoozeMax);
         }
@@ -105,12 +106,22 @@ public class SnoozeSettings extends Fragment {
         save = (Button)view.findViewById(R.id.saveSnooze);
         save.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
-                SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
+                SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
 
                 editor.putInt(SNOOZE_LENGTH, snooze_length.getSelectedItemPosition());
-                editor.putInt(SNOOZE_MAX, snooze_length.getSelectedItemPosition());
-                editor.putBoolean("Image", defaultIm.isChecked());
+                editor.putInt(SNOOZE_MAX, snooze_max.getSelectedItemPosition());
+
+                editor.putBoolean(VOICE_ON, voiceSwtich.isChecked());
+                editor.putInt(VOICE_DIFF, voiceDifficulty.getProgress());
+                editor.putBoolean(SUDOKU_ON, sudokuSwtich.isChecked());
+                editor.putInt(SUDOKU_DIFF, sudokuDifficulty.getProgress());
+                editor.putBoolean(PUZZLE_ON, puzzleSwtich.isChecked());
+                editor.putInt(PUZZLE_DIFF, puzzleDifficulty.getProgress());
+                editor.putBoolean(MATH_ON, mathSwtich.isChecked());
+                editor.putInt(MATH_DIFF, mathDifficulty.getProgress());
+
+//                editor.putBoolean("Image", defaultIm.isChecked());
 
                 // Commit the edits
                 editor.apply();
