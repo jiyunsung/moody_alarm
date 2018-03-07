@@ -24,7 +24,7 @@
         android:layout_below="@+id/song_name"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="80dp"
-        android:textColor="@color/transparentPurple" />
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/album_photo"

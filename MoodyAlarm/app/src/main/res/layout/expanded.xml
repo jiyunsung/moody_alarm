@@ -200,26 +200,13 @@
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
             >
-
-            <ImageView
-            android:layout_width="45dp"
-            android:id="@+id/playlistImg"
-            android:layout_height="45dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/deepfocus"
-            android:clickable="true"/>
-
-
-            <Button
-                android:id="@+id/defaultPlaylist"
-                android:layout_width="70dp"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:text="Playlist by: "
                 android:layout_marginTop="10dp"
-                android:textColor="@color/darkPurple"
-                android:background="@android:color/transparent"
-                android:text="DEFAULT" />
+                android:layout_marginLeft="30dp"
+                android:textColor="@color/darkPurple"/>
 
             <Button
                 android:id="@+id/weatherPlaylist"
