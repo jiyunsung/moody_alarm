@@ -96,7 +96,7 @@ public class AlarmEntry implements Serializable {
         int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat;
 
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pi);

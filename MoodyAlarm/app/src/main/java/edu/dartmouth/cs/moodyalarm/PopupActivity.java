@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PopupActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -330,7 +331,9 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             JSONArray arr = jsonObject.getJSONArray("items");
 
-            JSONObject item = arr.getJSONObject(0);
+            int randomNum = ThreadLocalRandom.current().nextInt(0, arr.length() + 1);
+
+            JSONObject item = arr.getJSONObject(randomNum);
             JSONObject track = item.getJSONObject("track");
             JSONObject album = track.getJSONObject("album");
             JSONArray images = album.getJSONArray("images");
@@ -362,6 +365,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             JSONObject mainInfo = weatherObject.getJSONObject("main");
             String temp = mainInfo.getString("temp");
+
 
             String location = weatherObject.getString("name");
 

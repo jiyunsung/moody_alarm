@@ -358,6 +358,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
 
         @Override
         public void onItemDismiss(int position) {
+            entries.get(position).cancelSchedule(context);
             MainActivity.dataStorage.removeEntry(entries.get(position).getId());
             entries.remove(position);
 

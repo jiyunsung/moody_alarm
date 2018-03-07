@@ -3,7 +3,8 @@
     android:id="@+id/scene_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="@drawable/main_background_color">
     <RelativeLayout
         android:id="@+id/list_container"
         android:layout_width="335dp"

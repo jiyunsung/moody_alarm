@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background_img"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:id="@+id/linear_layout"
     android:clickable="true"
     android:animateLayoutChanges="true">
@@ -18,18 +17,12 @@
 
     <!--</ListView>-->
 
-    <LinearLayout
-        android:id="@+id/alarm_container"
-        android:layout_width="500dp"
-        android:layout_height="50dp"
-        android:background="#10ffffff"
-        android:gravity="center">
+
 
     <TextView
         android:id="@+id/alarm"
-        android:layout_width="wrap_content"
+        android:layout_width="500dp"
         android:layout_height="50dp"
-        android:text="12:00 PM"
         android:fontFamily="sans-serif-thin"
         android:textSize="40dp"
         android:gravity="center"
@@ -39,7 +32,7 @@
 
         />
 
-    </LinearLayout>
+
 
 
 </LinearLayout>

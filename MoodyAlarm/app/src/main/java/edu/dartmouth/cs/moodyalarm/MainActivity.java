@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     private final int NUMBER_DEFAULT_PLAYLISTS = 9;
 
     public static Player mPlayer;
+    public static String userId = "";
 
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
@@ -154,9 +155,7 @@ public class MainActivity extends AppCompatActivity
 
 //        mIsBound = false; // by default set this to unbound
 //        automaticBind();
-        if (!checkPermission()){
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
-        }
+
     }
 
 
@@ -210,6 +209,7 @@ public class MainActivity extends AppCompatActivity
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 Log.d("onActivityResult: ", "access token is: " + response.getAccessToken());
                 accessToken = response.getAccessToken();
+                fetchUserId();
                 Config playerConfig = new Config(this, accessToken, CLIENT_ID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity
                         Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                     }
                 });
-                new RetrieveDataAsyncTask().execute();
+                //new RetrieveDataAsyncTask().execute();
 
             }
         }
@@ -336,13 +336,60 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public void fetchUserId(){
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        String url = "https://api.spotify.com/v1/me";
+        final ArrayList<String> imageUrls = new ArrayList<String>();
+        Log.d("fetch user id", "in fetch user id access token is "+ MainActivity.accessToken);
 
+        StringRequest jsObjRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("fetchUser id user Response", response);
+                        try {
+
+                            JSONObject jsonObject = new JSONObject(response);
+                            userId = jsonObject.getString("id");
+                            Log.d("fetch user id", "userId is " + userId);
+                            new RetrieveDataAsyncTask().execute();
+
+                        } catch (JSONException e) {
+                            Log.d("json error", e.toString());
+                        }
+
+
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer " + MainActivity.accessToken);
+                params.put("Accept", "application/json");
+
+                return params;
+            }
+        };
+        queue.add(jsObjRequest);
+    }
     private class RetrieveDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
         ArrayList<SpotifyPlaylist> playlists_default;
         ArrayList<SpotifyPlaylist> playlists_user;
         // ui calling possible
         protected void onPreExecute() {
+            if (!checkPermission()){
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+            }
             Log.d("onPreExecute", "retreivedataasync task");
         }
 
@@ -528,14 +575,21 @@ public class MainActivity extends AppCompatActivity
                                 JSONObject owner = item.getJSONObject("owner");
                                 String userId = owner.getString("id");
                                 Log.d("fetch user playlists", "user id is "+ userId + "for playlist " + item.getString("name"));
-                                JSONArray images = item.getJSONArray("images");
-                                JSONObject image = images.getJSONObject(0);
-                                String url = image.getString("url");
-                                Log.d("fetch user playlists", "url is " + url);
 
                                 SpotifyPlaylist entry = new SpotifyPlaylist();
                                 entry.setPlaylistId(id);
-                                entry.setImageUrl(url);
+                                JSONArray images = item.getJSONArray("images");
+
+
+                                if (images.length() > 0) {
+                                    JSONObject image = images.getJSONObject(0);
+                                    String url = image.getString("url");
+                                    Log.d("fetch user playlists", "url is " + url);
+
+
+                                    entry.setImageUrl(url);
+                                }
+
                                 entry.setUserId(userId);
                                 playlists.add(entry);
                             }

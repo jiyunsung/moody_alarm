@@ -71,8 +71,27 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        TextView timeDisplay  = view.findViewById(R.id.labelExpanded);
-        timeDisplay.setText(time);
+        int hour = entry.getHour();
+
+        int minute = entry.getMinute();
+
+        String min = "";
+        if ((entry.getMinute() < 10)){
+            min = "0"+Integer.toString(minute);
+
+        } else{
+            min = Integer.toString(minute);
+
+        }
+
+
+        String t = entry.getHour() + ":" + min;
+        Log.d("alarm details", "before string t is " + t);
+        TextView timeDisplay = view.findViewById(R.id.labelExpanded);
+        timeDisplay.setText(t);
+        final String time = timeDisplay.getText().toString();
+        Log.d("alarm details", "after string time is " + time);
+        Log.d("onResume", "time is " + time);
     }
 
     @Override
@@ -187,7 +206,7 @@ public class AlarmDetailsDisplay extends Fragment {
 
         int minute = entry.getMinute();
         Log.d("alarmdetails display", "minute is " + minute);
-        String time = "";
+
         String min = "";
         if ((entry.getMinute() < 10)){
             min = "0"+Integer.toString(minute);
@@ -195,14 +214,16 @@ public class AlarmDetailsDisplay extends Fragment {
             min = Integer.toString(minute);
         }
 
+        final String time = entry.getHour() + ":" + min;
         timeDisplay.setText(entry.getHour() + ":" + min);
 
         timeDisplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), entry);
+                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), entry,time );
 
 
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();
+
 
             }
         });
@@ -481,7 +502,10 @@ public class AlarmDetailsDisplay extends Fragment {
                 } else{
                     new updateSchema().execute();
                 }
-                getFragmentManager().popBackStack();
+                Fragment fragment = new AlarmsFragment();
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+
             }
         });
         //buttonSat.setChecked(daysList[6]);
