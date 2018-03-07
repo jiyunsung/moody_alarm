@@ -20,11 +20,8 @@ public class AlarmReceiver extends BroadcastReceiver
         intent.getAction();
         Log.d("Alarm receiver", "received intent");
 
-        long alarmId = intent.getLongExtra("alarm id", -1);
+        long alarmId = intent.getLongExtra("alarm", -1);
         Log.d("id", Long.toString(alarmId));
-        Long id = intent.getLongExtra("alarm", 1);
-        startPopup(context, alarmId);
-    }
 //        long alarmId = intent.getLongExtra("alarm", -1);
 //        AlarmEntry entry = MainActivity.dataStorage.fetchEntryByIndexAlarm(alarmId);
 //        if (entry.getRepeated() == 0 ) { // no repeats : this is the last time the alarm is going off, so this should be off
@@ -32,7 +29,7 @@ public class AlarmReceiver extends BroadcastReceiver
 //            MainActivity.dataStorage.updateAlarmEntry(entry);
 //        }
 
-       // String setting = "";
+        String setting = "";
 ////        setting = intent.getStringExtra("setting");
 ////        if (!setting.isEmpty()) {
 ////            Log.d("Alarm receiver", "on receive setting is " + setting);
@@ -40,7 +37,7 @@ public class AlarmReceiver extends BroadcastReceiver
 ////            Log.d("Alarm receiver", "on receive setting is null");
 ////        }
 //
-
+        Long id  = intent.getLongExtra("alarm", 1);
 //
 //        Log.d("alarmReceiver ", "on receive id is " + id);
         //AlarmEntry a = MainActivity.dataStorage.fetchEntryByIndexAlarm(1);
@@ -49,10 +46,10 @@ public class AlarmReceiver extends BroadcastReceiver
 //        } else{
 //            setting = "weather";
 //        }
-//            setting = a.getSetting();
+////        setting = a.getSetting();
 //        Log.d("alarmReceiver ", "alarm setting is " + setting);
 
-
+        startPopup(context, id);
 //        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
 //        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 //        if (alarmUri == null)
@@ -61,6 +58,7 @@ public class AlarmReceiver extends BroadcastReceiver
 //        }
 //        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
 //        ringtone.play();
+    }
 
     // start the Alarm Popup
     private void startPopup(Context context, Long id) {
@@ -68,19 +66,22 @@ public class AlarmReceiver extends BroadcastReceiver
         //Intent emaIntent = new Intent(context, VoiceRecognitionActivity.class); //The activity you  want to start.
         //Intent emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
         //Log.d("Alarm receiver", "received intent");
-
+        Random random = new Random();
+        int value = random.nextInt(1);
         Intent emaIntent = new Intent(context, PopupActivity.class);
         emaIntent.putExtra("pos", id);
-        emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(emaIntent);
-    }
 
-    //Random random = new Random();
-    //   int value = random.nextInt(1);
+
+
 //        if (value == 1) {
 //            emaIntent = new Intent(context, PopupActivity.class); //The activity you  want to start.
 //        } else {
 //            emaIntent = new Intent(context, VoiceRecognitionActivity.class);
 //        }
 
+
+
+        emaIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(emaIntent);
+    }
 }

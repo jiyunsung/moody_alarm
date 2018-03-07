@@ -5,11 +5,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,6 +19,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +29,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,17 +36,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.spotify.sdk.android.player.Spotify;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
 public class PopupActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -59,21 +62,15 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
     private Weather weather;
     private String uri="";
+    private String setting = "";
     private Context context;
-    private AlarmEntry alarmEntry;
-    SharedPreferences prefs;
-    private ArrayList<String> challenges;
+    private AlarmEntry a;
 
-    private ImageView voiceX;
-    private ImageView sudokuX;
-    private ImageView puzzleX;
-    private ImageView mathX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
-        prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         Log.d("popup oncreate", "day is " + day);
@@ -82,24 +79,20 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
         Intent intent = getIntent();
         Long id = intent.getLongExtra("pos", 1);
-        alarmEntry = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
-        //setting = alarmEntry.getSetting();
+        a = MainActivity.dataStorage.fetchEntryByIndexAlarm(id);
+        setting = a.getSetting();
         context = this;
 
-        challenges = new ArrayList<String>();
-        if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
-            challenges.add(SnoozeSettings.VOICE_ON);
-        if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
-            challenges.add(SnoozeSettings.SUDOKU_ON);
-        if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
-            challenges.add(SnoozeSettings.PUZZLE_ON);
-        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
-            challenges.add(SnoozeSettings.MATH_DIFF);
 
-        Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
-        automaticBind();
-        doBindService();
-        startService(new Intent(PopupActivity.this, LocationService.class));
+
+        Log.d("popup oncreate", "setting retrieved is " + setting);
+
+
+
+            automaticBind();
+            doBindService();
+            startService(new Intent(PopupActivity.this, LocationService.class));
+
     }
 
     @Override
@@ -152,6 +145,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         else
             return false;
     }
+
 
 
     private class IncomingMessageHandler extends Handler {
@@ -286,7 +280,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                             id=7;
                         }
 
-                        if(alarmEntry.getSetting().equals("day")){
+                        if(setting.equals("day")){
                             Calendar calendar = Calendar.getInstance();
                             int day = calendar.get(Calendar.DAY_OF_WEEK);
                             getPlaylistByDay(day, context,response);
@@ -377,22 +371,20 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             TextView loc = findViewById(R.id.location);
             loc.setText(location);
 
-            // display current time
-            Calendar rightNow = Calendar.getInstance();
-            int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
-            int currentMinute = rightNow.get(Calendar.MINUTE);
 
+            int hour = a.getHour();
+            int minute = a.getMinute();
             String ampm = "";
-            if(currentHour >= 12){
+            if(hour >= 12){
                 ampm = "PM";
             } else{
                 ampm = "AM";
             }
             String time= "";
-            if (currentMinute < 10){
-                time = currentHour+":" + "0"+currentMinute;
+            if (minute < 10){
+                time = hour+":" + "0"+minute;
             } else{
-                time = currentHour+":" + currentMinute;
+                time = hour+":" + minute;
             }
 
             TextView timeDisplay = findViewById(R.id.labelExpanded);
@@ -409,16 +401,16 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             day.setText(MyDate);
 
             LinearLayout weekdays = (LinearLayout) findViewById(R.id.weekday);
-            TextView repeat = (TextView) findViewById(R.id.NoRepeatText);
-            if (alarmEntry.getRepeated() == 1) {
+            CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox_repeat);
+            if (a.getRepeated() == 1) {
                 weekdays.setVisibility(View.VISIBLE);
-                repeat.setVisibility(View.INVISIBLE);
+                checkBox.setChecked(true);
             } else {
                 weekdays.setVisibility(View.INVISIBLE);
-                repeat.setVisibility(View.VISIBLE);
+                checkBox.setChecked(false);
             }
 
-            Boolean[] daysOfWeek = alarmEntry.getDaysofweek();
+            Boolean[] daysOfWeek = a.getDaysofweek();
 
             Button buttonSun = (Button) findViewById(R.id.buttonSun);
             if(daysOfWeek[0]){
@@ -462,19 +454,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                 buttonSat.setTextColor(Color.parseColor("#ffffff"));
             }
 
-            voiceX = findViewById(R.id.voiceX);
-            sudokuX = findViewById(R.id.sudokuX);
-            puzzleX = findViewById(R.id.puzzleX);
-            mathX = findViewById(R.id.mathX);
 
-            if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
-                voiceX.setVisibility(View.INVISIBLE);
-            if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
-                sudokuX.setVisibility(View.INVISIBLE);
-            if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
-                puzzleX.setVisibility(View.INVISIBLE);
-            if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
-                mathX.setVisibility(View.INVISIBLE);
 
             Log.d("track uri is ", uri);
             alarm.start_alert(this, uri);
@@ -485,90 +465,13 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
 
     public void onSnooze(View view) {
-
-        Integer maxSnooze = prefs.getInt(SnoozeSettings.SNOOZE_MAX, 0); // if this returns 0, that means the user doesn't want a limit on the number of snoozes
-
-        if (maxSnooze == 0 || alarmEntry.getSnooze() < maxSnooze) {
-            alarm.stop_alert(this);
-            Integer snoozeLength = prefs.getInt(SnoozeSettings.SNOOZE_LENGTH, 9);
-            alarmEntry.setSnooze(this, snoozeLength);
-            finish();
-        } else {
-            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm. ", Toast.LENGTH_SHORT).show();
-        }
+        alarm.stop_alert(this);
+        a.setSnooze(this);
     }
+
 
     public void onDismiss(View view) {
-        Log.d("challenges", challenges.toString());
-
-        // at least one challenge enabled
-        if (challenges.size() > 0) {
-            // choose a random activity among the enabled ones
-            Random rand = new Random();
-            int choice = rand.nextInt(challenges.size());
-            String challenge = challenges.get(choice);
-            Intent challengeIntent;
-            if (challenge.equals(SnoozeSettings.VOICE_ON))
-                challengeIntent = new Intent(this, VoiceRecognitionActivity.class);
-            else if (challenge.equals(SnoozeSettings.SUDOKU_ON))
-                challengeIntent = new Intent(this, SudokuActivity.class);
-            else if (challenge.equals(SnoozeSettings.PUZZLE_ON))
-                challengeIntent = new Intent(this, PuzzleActivity.class);
-            else
-                challengeIntent = new Intent(this, MathActivity.class);
-
-            challengeIntent.putExtra("alarm", alarmEntry);
-            startActivity(challengeIntent);
-
-        } else {
-            alarm.stop_alert(context);
-            Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
-        }
 
     }
 
-    public void onVoiceX(View view) {
-        challenges.add(SnoozeSettings.VOICE_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-
-    public void onSudokuX(View view) {
-        challenges.add(SnoozeSettings.SUDOKU_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-
-    public void onMathX(View view) {
-        challenges.add(SnoozeSettings.MATH_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-
-    public void onPuzzleX(View view) {
-        challenges.add(SnoozeSettings.PUZZLE_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-
-    public void onVoiceO(View view) {
-        challenges.remove(SnoozeSettings.VOICE_ON);
-        voiceX.setVisibility(View.VISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-    public void onSudokuO(View view){
-        challenges.remove(SnoozeSettings.SUDOKU_ON);
-        sudokuX.setVisibility(View.VISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-    public void onMathO(View view){
-        challenges.remove(SnoozeSettings.MATH_ON);
-        mathX.setVisibility(View.VISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
-    public void onPuzzleO(View view){
-        challenges.remove(SnoozeSettings.PUZZLE_ON);
-        puzzleX.setVisibility(View.VISIBLE);
-        Log.d("challenges", challenges.toString());
-    }
 }

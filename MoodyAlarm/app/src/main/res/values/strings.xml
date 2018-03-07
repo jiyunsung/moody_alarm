@@ -8,10 +8,9 @@
     <string name="alarm_transition_name">Expand</string>
 
     <string-array name="activity_type_array">
-        <item>Voice Recognition</item>
-        <item>Simple Arithmetics</item>
-        <item>Sudoku</item>
-        <item>Set Puzzle</item>
+        <item>Activity One</item>
+        <item>Activity Two</item>
+        <item>Activity Three</item>
     </string-array>
 
     <string-array name="time_array">
@@ -37,25 +36,9 @@
         <item>20 min</item>
     </string-array>
 
-    <string-array name="limit_array">
-        <item>No limit on snoozes</item>
-        <item>1 time</item>
-        <item>2 times</item>
-        <item>3 times</item>
-        <item>4 times</item>
-        <item>5 times</item>
-        <item>6 times</item>
-        <item>7 times</item>
-        <item>8 times</item>
-        <item>9 times</item>
-        <item>10 times</item>
-    </string-array>
-
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-
-    <string name="triple"><u>No triple on the grid?</u></string>
 
 
 </resources>
