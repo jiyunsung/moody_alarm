@@ -42,13 +42,14 @@ public class AlarmDetailsDisplay extends Fragment {
     public Boolean isNew;
     public Context context;
 
-    private static final String TIME = "12:00";
+    private static final String TIME = "none";
 
 
     public static AlarmDetailsDisplay newInstance(String time, AlarmEntry e, Boolean isNew) {
         Bundle args = new Bundle();
         args.putString(TIME, time);
-
+        Log.d("newInstance alarmdet", "time is " + time)
+;
         args.putSerializable("alarm", e);
         args.putBoolean("isNew", isNew);
         AlarmDetailsDisplay fragment = new AlarmDetailsDisplay();
@@ -71,8 +72,27 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        TextView timeDisplay  = view.findViewById(R.id.labelExpanded);
-        timeDisplay.setText(time);
+        int hour = entry.getHour();
+
+        int minute = entry.getMinute();
+
+        String min = "";
+        if ((entry.getMinute() < 10)){
+            min = "0"+Integer.toString(minute);
+
+        } else{
+            min = Integer.toString(minute);
+
+        }
+
+
+        String t = entry.getHour() + ":" + min;
+        Log.d("alarm details", "before string t is " + t);
+        TextView timeDisplay = view.findViewById(R.id.labelExpanded);
+        timeDisplay.setText(t);
+        final String time = timeDisplay.getText().toString();
+        Log.d("alarm details", "after string time is " + time);
+        Log.d("onResume", "time is " + time);
     }
 
     @Override
@@ -182,22 +202,30 @@ public class AlarmDetailsDisplay extends Fragment {
 
         int minute = entry.getMinute();
         Log.d("alarmdetails display", "minute is " + minute);
-        String time = "";
+
         String min = "";
         if ((entry.getMinute() < 10)){
             min = "0"+Integer.toString(minute);
+            Log.d("alarm details", "min less than ten " + min);
         } else{
             min = Integer.toString(minute);
+            Log.d("alarm details", "min greater than ten " + min);
         }
 
-        timeDisplay.setText(entry.getHour() + ":" + min);
+        Log.d("alarm details", "before setting text min is " + min);
+        String t = entry.getHour() + ":" + min;
+        Log.d("alarm details", "before string t is " + t);
+        timeDisplay.setText(t);
+        final String time = timeDisplay.getText().toString();
+        Log.d("alarm details", "after string time is " + time);
+
 
         timeDisplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId());
+                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), time);
 
 
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();
 
             }
         });

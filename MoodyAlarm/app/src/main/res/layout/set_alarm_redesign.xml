@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:id="@+id/linear_layout"
     android:clickable="true"
     android:animateLayoutChanges="true">
@@ -17,12 +17,6 @@
 
     <!--</ListView>-->
 
-    <LinearLayout
-        android:id="@+id/alarm_container"
-        android:layout_width="500dp"
-        android:layout_height="match_parent"
-        android:background="#10ffffff"
-        android:gravity="center">
 
     <TextView
         android:id="@+id/alarm"
@@ -38,7 +32,23 @@
 
         />
 
-    </LinearLayout>
+    <!--<TextView-->
+        <!--android:id="@+id/instructions"-->
+        <!--android:layout_width="500dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:text="Scroll to set alarm"-->
+        <!--android:fontFamily="sans-serif-thin"-->
+        <!--android:textSize="40dp"-->
+        <!--android:layout_marginTop="200dp"-->
+        <!--android:gravity="center"-->
+        <!--android:background="#25000000"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:clickable="true"-->
+
+        <!--/>-->
+
+
+
 
 
 </LinearLayout>

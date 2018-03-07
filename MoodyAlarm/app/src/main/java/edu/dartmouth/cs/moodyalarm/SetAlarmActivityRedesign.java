@@ -79,15 +79,19 @@ public class SetAlarmActivityRedesign extends Fragment{
     public TextView alarm;
     public int timesIndex = 0;
     public long id;
+    public String time;
+    public boolean isNew;
 
 
-    public static SetAlarmActivityRedesign newInstance(Long id) {
+    public static SetAlarmActivityRedesign newInstance(Long id, String time) {
         Bundle args = new Bundle();
         args.putLong("id", id);
+        args.putString("time", time);
 
 
         SetAlarmActivityRedesign fragment = new SetAlarmActivityRedesign();
         fragment.setArguments(args);
+
 
         return fragment;
     }
@@ -106,6 +110,8 @@ public class SetAlarmActivityRedesign extends Fragment{
                 Math.min(b,255));
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -114,20 +120,11 @@ public class SetAlarmActivityRedesign extends Fragment{
 
 
         Bundle args = getArguments();
-        if (args != null) {
-            id = args.getLong("id");
-        } else{
-            id = -1;
-        }
-        final LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
-        final LinearLayout alarmContainer = view.findViewById(R.id.alarm_container);
         alarm = view.findViewById(R.id.alarm);
-
         final String [] times = {"00:00","00:30", "1:00", "1:30" ,"2:00", "2:30", "3:00", "3:30","4:00","4:30",
                 "5:00", "5:30", "6:00", "6:30", "7:00","7:30", "8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30",
                 "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00",
                 "16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00", "22:30","23:00","23:30","24:00"};
-
         final ArrayList<ArrayList<String>> colors = new ArrayList<>();
 
         colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));//12
@@ -179,6 +176,61 @@ public class SetAlarmActivityRedesign extends Fragment{
         colors.add(new ArrayList<>(Arrays.asList("#141E30","#383952")));
         colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));//12
         colors.add(new ArrayList<>(Arrays.asList("#141E30","#141E30")));
+
+
+        final LinearLayout screenContainer = view.findViewById(R.id.linear_layout);
+        //final LinearLayout alarmContainer = view.findViewById(R.id.alarm_container);
+
+        //final TextView instructions = view.findViewById(R.id.instructions);
+
+
+        if (args != null) {
+            id = args.getLong("id");
+            time = args.getString("time");
+            if (!time.equals("none")) {
+                isNew = false;
+
+                alarm.setText(time);
+                Log.d("setalarm activity", "time arg passed in is " + time);
+                String [] timeArr = time.split(":");
+                int hour = Integer.parseInt(timeArr[0]);
+                int min = Integer.parseInt(timeArr[1]);
+                int i = hour * 2;
+                if (min >= 30){
+                    i +=1;
+
+                }
+                GradientDrawable gd = new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[] {Color.parseColor(colors.get(i).get(0)),Color.parseColor(colors.get(i).get(1))});
+                gd.setCornerRadius(0f);
+                screenContainer.setBackground(gd);
+                float y = (float)((float)i/48.0) * 2300 - 15 * i;
+                Log.d("setalarm activity", "before alarm y is " + alarm.getY()+ "and now setting it to "  + y);
+                alarm.setY(y);
+
+
+
+            }
+
+        } else{
+            id = -1;
+            isNew = true;
+            Log.d("setalarm activity", "new alarm");
+            GradientDrawable gd = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[] {Color.parseColor(colors.get(12).get(0)),Color.parseColor(colors.get(12).get(1))});
+            gd.setCornerRadius(0f);
+            screenContainer.setBackground(gd);
+
+            alarm.setText(times[12]);
+            float y = (float)((float)12/48.0) * 2300;
+
+            alarm.setY(y);
+
+        }
+
+
 
 
 
@@ -236,11 +288,14 @@ public class SetAlarmActivityRedesign extends Fragment{
 
         screenContainer.setOnTouchListener(new View.OnTouchListener() {
             private float x1, x2;
+            private float dY;
             public boolean onTouch(View v, MotionEvent e){
 
                 switch (e.getAction()) {
 
                     case MotionEvent.ACTION_DOWN:
+                        dY = v.getY() - e.getRawY();
+
                         x1 = e.getX();
                         Log.d("screenContainer", "action down");
                         int h = v.getHeight();
@@ -291,10 +346,10 @@ public class SetAlarmActivityRedesign extends Fragment{
 
                         long eventDuration = e.getEventTime() - e.getDownTime();
                         Log.d("screenContainer", "action up duration is " + eventDuration + "and e raw y is " + e.getRawY() +
-                        "and alarm container y is " + alarmContainer.getY());
+                        "and alarm y is " + alarm.getY());
 
                         if (eventDuration < 150) {
-                            if (e.getRawY() < alarm.getY()+250) {
+                            if ((e.getRawY()) < alarm.getY()+250) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -319,7 +374,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 } else{
                                     alarm.setText(time + " PM");
                                 }
-                            } else if (e.getRawY() > alarm.getY()) {
+                            } else if ((e.getRawY()) > alarm.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -346,7 +401,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 }
                             }
                         }else {
-                            if (e.getRawY() < alarm.getY()) {
+                            if ((e.getRawY()) < alarm.getY() + 250) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -371,7 +426,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 } else{
                                     alarm.setText(time + " PM");
                                 }
-                            } else if (e.getRawY() > alarm.getY()) {
+                            } else if ((e.getRawY()) > alarm.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);

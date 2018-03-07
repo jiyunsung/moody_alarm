@@ -47,6 +47,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PopupActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -324,7 +326,14 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             JSONArray arr = jsonObject.getJSONArray("items");
 
-            JSONObject item = arr.getJSONObject(0);
+
+
+            // nextInt is normally exclusive of the top value,
+            // so add 1 to make it inclusive
+            int randomNum = ThreadLocalRandom.current().nextInt(0, arr.length());
+            Log.d("displayPop up", "random num is " + randomNum);
+
+            JSONObject item = arr.getJSONObject(randomNum);
             JSONObject track = item.getJSONObject("track");
             JSONObject album = track.getJSONObject("album");
             JSONArray images = album.getJSONArray("images");
