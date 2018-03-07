@@ -477,7 +477,11 @@ public class AlarmDetailsDisplay extends Fragment {
                 } else{
                     new updateSchema().execute();
                 }
-                getFragmentManager().popBackStack();
+                Fragment fragment = new AlarmsFragment();
+
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+
             }
         });
         //buttonSat.setChecked(daysList[6]);

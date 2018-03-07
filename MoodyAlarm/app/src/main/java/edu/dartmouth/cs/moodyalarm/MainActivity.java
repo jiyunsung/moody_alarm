@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity
         //replacing the fragment
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
+            ft.replace(R.id.content_frame, fragment).addToBackStack("main");
             ft.commit();
         }
 

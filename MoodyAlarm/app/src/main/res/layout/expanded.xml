@@ -82,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text = " Repeat"
+            android:textColor="@color/sand"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="70dp"/>
             <CheckBox
@@ -90,6 +91,7 @@
                 android:layout_height="wrap_content"
                 android:text = "Vibrate"
                 android:layout_marginLeft="135dp"
+                android:textColor="@color/sand"
                 android:layout_marginTop="71dp"/>
         </LinearLayout>
 

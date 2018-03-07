@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,6 +49,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 
+import junit.framework.Test;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,6 +75,7 @@ public class SetAlarmActivityRedesign extends Fragment{
     public int timesIndex = 0;
     public long id;
 
+
     public static SetAlarmActivityRedesign newInstance(Long id) {
         Bundle args = new Bundle();
         args.putLong("id", id);
@@ -94,6 +98,7 @@ public class SetAlarmActivityRedesign extends Fragment{
         View view = inflater.inflate(R.layout.set_alarm_redesign, container, false);
         MainActivity.fab.setVisibility(View.INVISIBLE);
 
+
         Bundle args = getArguments();
         if (args != null) {
             id = args.getLong("id");
@@ -108,6 +113,13 @@ public class SetAlarmActivityRedesign extends Fragment{
                 "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00",
                 "16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00", "22:30","23:00","23:30","24:00"};
 
+        final GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener(){
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Log.d("TEST", "onDoubleTap");
+                return super.onDoubleTap(e);
+            }
+        });
 
         alarm.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -150,22 +162,66 @@ public class SetAlarmActivityRedesign extends Fragment{
             }
         });
 
+
+
         screenContainer.setOnTouchListener(new View.OnTouchListener() {
+            private float x1, x2;
             public boolean onTouch(View v, MotionEvent e){
 
                 switch (e.getAction()) {
+
                     case MotionEvent.ACTION_DOWN:
+                        x1 = e.getX();
                         Log.d("screenContainer", "action down");
                         return true;
 
+                    case MotionEvent.ACTION_MOVE:
+                        x2 = e.getX();
+                        float deltaX = Math.abs(x2-x1);
+                        if(deltaX >300){
+                            AlarmEntry entry = new AlarmEntry();
+                            String[] arr = alarm.getText().toString().split(":");
+
+                            int hour = Integer.parseInt(arr[0]);
+
+                            String [] minArr = arr[1].split(" ");
+
+                            int minute = Integer.parseInt(minArr[0]);
+                            entry.setHour(hour);
+                            entry.setMinute(minute);
+                            String time = hour + ":" + minute;
+                            entry.setOnOff(1);
+                            entry.setRepeat(0);
+                            entry.setSetting("weather");
+                            entry.setVibrate(1);
+                            entry.setId(id);
+                            AlarmDetailsDisplay alarmDetails;
+                            if(id == -1) {
+                                alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, true);
+                            } else{
+                                alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
+                            }
+
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                                    .beginTransaction();
+
+
+                            ft.replace(R.id.content_frame, alarmDetails).addToBackStack("main")
+                                    .commit();
+                            return false;
+
+                        }
+                        break;
+
                     case MotionEvent.ACTION_UP:
+
 
                         long eventDuration = e.getEventTime() - e.getDownTime();
                         Log.d("screenContainer", "action up duration is " + eventDuration + "and e raw y is " + e.getRawY() +
                         "and alarm container y is " + alarmContainer.getY());
 
-                        if (eventDuration < 100) {
-                            if (e.getRawY() < alarmContainer.getY()+250) {
+                        if (eventDuration < 150) {
+                            if (e.getRawY() < alarm.getY()+250) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -190,7 +246,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 } else{
                                     alarm.setText(time + " PM");
                                 }
-                            } else if (e.getRawY() > alarmContainer.getY()) {
+                            } else if (e.getRawY() > alarm.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -217,7 +273,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 }
                             }
                         }else {
-                            if (e.getRawY() < alarmContainer.getY()+250) {
+                            if (e.getRawY() < alarm.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -242,7 +298,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 } else{
                                     alarm.setText(time + " PM");
                                 }
-                            } else if (e.getRawY() > alarmContainer.getY()) {
+                            } else if (e.getRawY() > alarm.getY()) {
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
@@ -277,49 +333,55 @@ public class SetAlarmActivityRedesign extends Fragment{
 
         });
 
-        alarmContainer.setOnTouchListener(new View.OnTouchListener() {
+        alarm.setOnTouchListener(new View.OnTouchListener() {
             float dX, dY;
+            float x1,x2;
 
 
             // Defines the one method for the interface, which is called when the View is long-clicked
             public boolean onTouch(View v, MotionEvent e) {
-                switch (e.getAction()) {
 
-                    case MotionEvent.ACTION_DOWN:
-                        alarm.setText("12:00 PM");
-                        dY = v.getY() - e.getRawY();
-                        break;
+                    switch (e.getAction()) {
 
-                    case MotionEvent.ACTION_MOVE:
-                        if((e.getRawY()) <2300 && (e.getRawY()) >= 300) {
+                        case MotionEvent.ACTION_DOWN:
+                            dY = v.getY() - e.getRawY();
 
-                            v.animate()
-                                    .y(e.getRawY() + dY)
-                                    .setDuration(0)
-                                    .start();
-                            float y = e.getRawY();
-                            int i = 0;
-                            for (i = 0; i < times.length; i++) {
-                                if (y >= (40 * i + 300) && y < (i * 40 + 400)) {
-                                    String[] arr = times[i].split(":");
+                            break;
 
-                                    int hour = Integer.parseInt(arr[0]);
-                                    if (hour < 12)
-                                        alarm.setText(times[i] + " AM");
-                                    else
-                                        alarm.setText(times[i] + " PM");
-                                    timesIndex = i;
+                        case MotionEvent.ACTION_MOVE:
+
+                                if ((e.getRawY() + dY) < 1800 && (e.getRawY() + dY) >= 25) {
+
+                                    v.animate()
+                                            .y(e.getRawY() + dY)
+                                            .setDuration(0)
+                                            .start();
+                                    float y = e.getRawY()+ dY;
+                                    int i = 0;
+                                    for (i = 0; i < times.length; i++) {
+                                        if (y >= (35 * i + 25) && y < (i * 35 + 60)) {
+                                            String[] arr = times[i].split(":");
+
+                                            int hour = Integer.parseInt(arr[0]);
+                                            if (hour < 12)
+                                                alarm.setText(times[i] + " AM");
+                                            else
+                                                alarm.setText(times[i] + " PM");
+                                            timesIndex = i;
+                                        }
+                                    }
+                                    Log.d("ACTION MOVE", "y is " + y);
+
                                 }
-                            }
-                            Log.d("ACTION MOVE", "y is " + y);
 
-                        }
-                        break;
-                    default:
-                        return false;
+
+                            break;
+                        default:
+                            return false;
+                    }
+                    return true;
                 }
-                return true;
-            }
+
         });
 
         //listView.setOnItemClickListener(updateAlarm);
@@ -343,6 +405,5 @@ public class SetAlarmActivityRedesign extends Fragment{
 
 
     }
-
 
 }
