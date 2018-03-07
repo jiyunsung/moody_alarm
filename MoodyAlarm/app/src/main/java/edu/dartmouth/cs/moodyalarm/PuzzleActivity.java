@@ -179,6 +179,8 @@ public class PuzzleActivity extends AppCompatActivity {
         public String[] color = {"#FF0000", "#FFFF00", "#0000FF"};
         public String[] background_color = {"#000000", "#808080", "#FFFFFF"};
         private int[] grid;
+        private int number_of_sets = 0;
+        private ArrayList<Integer> found = new ArrayList<Integer>();
 
         private PuzzleGenerator puzzleGenerator() {
             this.grid = generateGrid();
@@ -202,6 +204,15 @@ public class PuzzleActivity extends AppCompatActivity {
 
             }
 
+            for (int a = 0; a < 7; a++) {
+                for (int b = a + 1; b < 8; b++) {
+                    for (int c = b + 1; c < 9; c++) {
+                        if (isValid(this.grid[a], this.grid[b], this.grid[c])) {
+                            number_of_sets += 1;
+                        }
+                    }
+                }
+            }
             return grid;
         }
 
@@ -216,21 +227,6 @@ public class PuzzleActivity extends AppCompatActivity {
                 return false;
         }
 
-        public boolean noTriple(){
-
-            // get all possible combinations
-            for (int a = 0; a < 7; a++) {
-                for (int b = a + 1; b < 8; b++) {
-                    for (int c = b + 1; c < 9; c++){
-                        if (isValid(this.grid[a], this.grid[b], this.grid[c]))
-                            return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
         private int[] convertTernary(int x){
             int[] ternary = new int[3];
             ternary[0] = x / 9;
@@ -238,24 +234,53 @@ public class PuzzleActivity extends AppCompatActivity {
             ternary[2] = (x % 9) % 3;
             return ternary;
         }
-    }
 
+        // takes in the positions of the three shapes and saves it to the found_set as unique integers
+        private int get_unique_key(int a, int b, int c) {
+            int key;
+            if (a < b) {
+                if (b < c) {
+                    key = (a * 9 ^ 2 + b * 9 + c);
+                } else if (c < a){
+                    key = (c * 9 ^ 2 + a * 9 + b);
+                } else {
+                    key = (a * 9 ^ 2 + b * 9 + c);
+                }
+            } else {
+                if (a < c) {
+                    key = (b * 9 ^ 2 + a * 9 + c);
+                } else if (c < b) {
+                    key = (c * 9 ^ 2 + b * 9 + a);
+                } else {
+                    key = (b * 9 ^ 2 + c * 9 + a);
+                }
+            }
+            return key;
+        }
+    }
     public void onPuzzleSubmit(View view) {
         if (clicked.size() != 3) {
             Toast.makeText(PuzzleActivity.this, "select exactly three blocks!", Toast.LENGTH_SHORT).show();
         } else {
-            if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)])) {
+            int key = adapter.puzzle.get_unique_key(clicked.get(0), clicked.get(1), clicked.get(2));
+            if (adapter.puzzle.found.contains(key)) {
+                Toast.makeText(PuzzleActivity.this, "You found this already", Toast.LENGTH_SHORT).show();
+            } else if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)])) {
+                adapter.puzzle.found.add(key);
                 Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
-                PopupActivity.alarm.stop_alert(this);
-                finish();
-            }else {
+
+                if (adapter.puzzle.found.size() / (double) adapter.puzzle.number_of_sets > difficulty) {
+                    PopupActivity.alarm.stop_alert(this);
+                    finish();
+                }
+            } else {
                 Toast.makeText(PuzzleActivity.this, "try again!", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public void onResubmit(View view) {
-        if (adapter.puzzle.noTriple()) {
+        if (adapter.puzzle.number_of_sets == 0) {
             Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
             PopupActivity.alarm.stop_alert(this);
             finish();
@@ -265,6 +290,5 @@ public class PuzzleActivity extends AppCompatActivity {
             adapter = new PuzzleAdapter(this);
             gridview.setAdapter(adapter);
         }
-
     }
 }
