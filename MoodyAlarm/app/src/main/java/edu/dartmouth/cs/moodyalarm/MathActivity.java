@@ -1,7 +1,6 @@
 package edu.dartmouth.cs.moodyalarm;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -113,10 +112,9 @@ public class MathActivity extends AppCompatActivity {
 
     public class EquationGenerator {
 
-        SharedPreferences prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
-        private double difficulty = prefs.getInt(SnoozeSettings.MATH_DIFF, 100) / 100.0;
+        private double difficulty = 0.6;
+        private int[] numbers = new int[ (int) (difficulty / 3 + 3) ];
         private Random rand = new Random();
-        private int[] numbers = new int[ (int) (rand.nextInt(5) * difficulty + 3) ];
         private String[] operations = new String[] {"+", "-", "*"};
         private int[] operators = new int[numbers.length - 1];
 
@@ -165,8 +163,6 @@ public class MathActivity extends AppCompatActivity {
 
         if (answer == submitted) {
             Toast.makeText(this, "correct!", Toast.LENGTH_SHORT).show();
-            PopupActivity.alarm.stop_alert(getApplicationContext());
-            finish();
         } else {
             Toast.makeText(this, "try again!", Toast.LENGTH_SHORT).show();
         }

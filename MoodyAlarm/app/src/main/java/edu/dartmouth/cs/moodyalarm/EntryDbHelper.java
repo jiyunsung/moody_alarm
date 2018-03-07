@@ -96,7 +96,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + " INTEGER NOT NULL, "
             + KEY_DAYSOFWEEK
             + " BLOB, "
-            +  KEY_SETTING
+            +   KEY_SETTING
             + " STRING, "
             + KEY_VIBRATE
             + " INTEGER NOT NULL "
@@ -529,8 +529,8 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         entry.setHour(cursor.getInt(2));
         entry.setMinute(cursor.getInt(3));
         entry.setRepeat(cursor.getInt(4));
-        entry.setSetting(cursor.getString(cursor.getColumnIndex(KEY_SETTING)));
-        entry.setVibrate(cursor.getInt(cursor.getColumnIndex(KEY_VIBRATE)));
+        entry.setSetting(cursor.getString(cursor.getColumnIndex("mSetting")));
+        entry.setVibrate(cursor.getInt(cursor.getColumnIndex("mVibrate")));
 
 
         // get location list

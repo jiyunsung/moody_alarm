@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity
     public static FloatingActionButton fab;
 
     private static final int PERMISSION_REQUEST_CODE = 1;
-    public static final int SNOOZE_REQUESTCODE = 2398203;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,7 +320,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.snooze_settings:
                 fragment = new SnoozeSettings();
                 fab.setVisibility(View.INVISIBLE);
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("main").commit();
         }
 
         //replacing the fragment

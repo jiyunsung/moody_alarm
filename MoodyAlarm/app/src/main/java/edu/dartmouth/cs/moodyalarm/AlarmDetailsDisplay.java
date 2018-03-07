@@ -86,15 +86,10 @@ public class AlarmDetailsDisplay extends Fragment {
         entry = (AlarmEntry) args.getSerializable("alarm");
 
         isNew = args.getBoolean("isNew");
-        //setting = entry.getSetting();
-
         if (isNew){
             setting = "weather";
-            entry.setSetting(setting);
-            Log.d("NEW", "ALARM");
         } else{
             setting = entry.getSetting();
-            Log.d("OLD", "ALARM");
         }
 
 
@@ -156,11 +151,11 @@ public class AlarmDetailsDisplay extends Fragment {
             }
         });
 
-        //if(entry.getSetting().equals("weather")) {
+        if(entry.getSetting().equals("weather")) {
 
 
 
-        if(setting.equals("weather")) {
+//        if(setting.equals("weather")) {
 
             weather.setPaintFlags(weather.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             weather.setTextColor(Color.parseColor("#ffffff"));
@@ -199,7 +194,7 @@ public class AlarmDetailsDisplay extends Fragment {
 
         timeDisplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), entry);
+                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId());
 
 
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
@@ -212,6 +207,7 @@ public class AlarmDetailsDisplay extends Fragment {
 
 //        ImageView weather = view.findViewById(R.id.weatherPlaylist);
 //        ImageView day = view.findViewById(R.id.dayPlaylist);
+
 
 //        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 //        fab.setVisibility(view.INVISIBLE);

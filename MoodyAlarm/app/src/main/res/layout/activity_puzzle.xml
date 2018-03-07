@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_centerVertical="true"
-    android:background="@drawable/background_darkened">
+    android:layout_centerVertical="true">
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/gridview"
@@ -20,26 +19,15 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="570dp"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/submit">
-
+        android:layout_marginTop="550dp"
+        android:layout_centerHorizontal="true">
         <Button
-            android:layout_width="130dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Submit Triple"
+            android:text="Submit"
             android:onClick="onPuzzleSubmit"/>
-    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/triple"
-        android:textStyle="italic"
-        android:layout_below="@id/submit"
-        android:layout_alignParentRight="true"
-        android:textColor="#ff0000"
-        android:onClick="onResubmit"/>
+    </LinearLayout>
 
 </RelativeLayout>
