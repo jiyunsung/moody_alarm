@@ -301,6 +301,7 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                 }
                 holder.Row2.setText(days);
             } else if (entry.getRepeated() == 0) {
+                // TODO : save calendar and display the date set
                 holder.Row2.setText("Today");
             }
 

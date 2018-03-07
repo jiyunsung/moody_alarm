@@ -173,13 +173,8 @@ public class SetAlarmActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             alarmEntry.setHour(alarmTimePicker.getCurrentHour());
             alarmEntry.setMinute(alarmTimePicker.getCurrentMinute());
-
-
             alarmEntry.setSetting("weather");
-
             alarmEntry.setDaysofweek(daysList);
-
-
 
             alarmEntry.setId((MainActivity.dataStorage.insertAlarmEntry(alarmEntry).getId()));
             Log.d("writeSchema", "do in background");

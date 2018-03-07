@@ -259,7 +259,8 @@ public class SudokuActivity extends AppCompatActivity {
                 newView.addTextChangedListener(new TextWatcher() {
 
                     public void afterTextChanged(Editable s) {
-                        map.put(i, s.toString());
+                        if (!s.equals(""))
+                            map.put(i, s.toString());
 
 //                        new SudokuGenerator().checkConflict();
                     }
@@ -353,6 +354,8 @@ public class SudokuActivity extends AppCompatActivity {
 
         if (adapter.isCorrect()) {
             Toast.makeText(this, "correct!", Toast.LENGTH_SHORT).show();
+            PopupActivity.alarm.stop_alert(getApplicationContext());
+            finish();
         } else {
             Toast.makeText(this, "try again!", Toast.LENGTH_SHORT).show();
         }

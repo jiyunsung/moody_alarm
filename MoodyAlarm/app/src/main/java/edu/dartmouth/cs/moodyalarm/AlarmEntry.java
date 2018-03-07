@@ -26,6 +26,9 @@ public class AlarmEntry implements Serializable {
     private String setting;
     private Integer vibrate;
 
+    // number of times user clicked snooze. this doesn't have to be saved in the database because it needs to be reinitialized when the user turns off the app.
+    private int snooze = 0;
+
     public AlarmEntry(){
     }
 
@@ -38,6 +41,7 @@ public class AlarmEntry implements Serializable {
         this.daysofweek = list;
         this.setting = s;
         this.vibrate = v;
+        this.snooze = 0;
     }
 
     public long getId() { return id; }
@@ -61,6 +65,7 @@ public class AlarmEntry implements Serializable {
         return this.daysofweek;
     }
     public int getVibrate() { return this.vibrate; }
+    public int getSnooze() { return this.snooze; }
 
     public void setId(long id) {
         this.id = id;
@@ -78,8 +83,8 @@ public class AlarmEntry implements Serializable {
     public void setDaysOfWeek2(ArrayList<Boolean> daysofweek) {
         this.daysofweek = daysofweek;
     }
+    public String getSetting() { return this.setting; }
 
-    public String getSetting() { return setting; }
     public void setSetting(String s) {this.setting = s;}
     public void setVibrate(int v) {this.vibrate = v; }
 
@@ -102,7 +107,7 @@ public class AlarmEntry implements Serializable {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.putExtra("alarm", this.id);
+        intent.putExtra("alarm id", this.id);
         Log.d("setSchedule", "setting is " + this.setting);
         Log.d("setSchedule", "id is " + this.id);
 
@@ -147,7 +152,7 @@ public class AlarmEntry implements Serializable {
                     calendar.add(Calendar.DATE, 1);
                 }
 
-                // the request code distinguish different stress meter schedule instances
+                // the request code distinguish different schedule instances
                 int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
                 PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
@@ -189,18 +194,26 @@ public class AlarmEntry implements Serializable {
                 }
             }
         }
-
-
-
     }
 
-    public void setSnooze(Context context) {
+    public void setSnooze(Context context, int snooze_length) {
+        this.snooze += 1;
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-        intent.putExtra("alarm", this.id);
+        intent.putExtra("alarm id", this.id);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.MINUTE, snooze_length);
+
+        // the request code distinguish snooze
+        int requestCode = MainActivity.SNOOZE_REQUESTCODE;
+
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
     }
 
 

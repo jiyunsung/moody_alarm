@@ -46,7 +46,6 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     private Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecognitionActivity";
 
-    public static Alarmhandler alarm = new Alarmhandler();
     private QuoteReader quotes;
 
     private TextView instruction;
@@ -60,7 +59,7 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
 
         quotes = new QuoteReader();
         answer = quotes.choose();
-        alarm.start_alert(getApplicationContext(), "Default");
+
         targetText = (TextView) findViewById(R.id.Target);
         targetText.setText(answer[0]);
         returnedText = (TextView) findViewById(R.id.textView1);
@@ -195,11 +194,12 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
             text += result + "\n";
             Log.d("result", result);
             if (result.replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().equals(answer[0].replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase())){
-                alarm.stop_alert(getApplicationContext());
+                PopupActivity.alarm.stop_alert(getApplicationContext());
                 Log.d("tag", "succeeded");
             }
         }
         returnedText.setText(text);
+        finish();
 
     }
 

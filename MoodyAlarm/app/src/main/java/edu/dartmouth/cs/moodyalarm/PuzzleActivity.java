@@ -1,6 +1,7 @@
 package edu.dartmouth.cs.moodyalarm;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -31,6 +32,8 @@ public class PuzzleActivity extends AppCompatActivity {
 
     private PuzzleAdapter adapter;
     private ArrayList<Integer> clicked;
+    private GridView gridview;
+    private double difficulty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,12 @@ public class PuzzleActivity extends AppCompatActivity {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         clicked = new ArrayList<Integer>();
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview = (GridView) findViewById(R.id.gridview);
         adapter = new PuzzleAdapter(this);
-
         gridview.setAdapter(adapter);
+
+        SharedPreferences prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
+        difficulty = prefs.getInt(SnoozeSettings.PUZZLE_DIFF, 30) / 100.0;
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -76,7 +81,6 @@ public class PuzzleActivity extends AppCompatActivity {
 
     public class PuzzleAdapter extends BaseAdapter {
         private Context mContext;
-        private Integer cell = R.drawable.cell_shape;
         private PuzzleGenerator puzzle = new PuzzleGenerator().puzzleGenerator();
         private int[] shapes = puzzle.grid;
 
@@ -145,12 +149,6 @@ public class PuzzleActivity extends AppCompatActivity {
             }
             return imageView;
         }
-
-        // references to our images
-        private Integer[] mThumbIds = {
-                R.drawable.circle, R.drawable.triangle,
-                R.drawable.square
-        };
     }
 
     // custom imageView class to make images square
@@ -216,7 +214,21 @@ public class PuzzleActivity extends AppCompatActivity {
                 return true;
             else
                 return false;
+        }
 
+        public boolean noTriple(){
+
+            // get all possible combinations
+            for (int a = 0; a < 7; a++) {
+                for (int b = a + 1; b < 8; b++) {
+                    for (int c = b + 1; c < 9; c++){
+                        if (isValid(this.grid[a], this.grid[b], this.grid[c]))
+                            return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private int[] convertTernary(int x){
@@ -226,17 +238,32 @@ public class PuzzleActivity extends AppCompatActivity {
             ternary[2] = (x % 9) % 3;
             return ternary;
         }
-
     }
 
     public void onPuzzleSubmit(View view) {
         if (clicked.size() != 3) {
             Toast.makeText(PuzzleActivity.this, "select exactly three blocks!", Toast.LENGTH_SHORT).show();
         } else {
-            if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)]))
+            if (adapter.puzzle.isValid(adapter.puzzle.grid[clicked.get(0)], adapter.puzzle.grid[clicked.get(1)], adapter.puzzle.grid[clicked.get(2)])) {
                 Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
-            else
+                PopupActivity.alarm.stop_alert(this);
+                finish();
+            }else {
                 Toast.makeText(PuzzleActivity.this, "try again!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void onResubmit(View view) {
+        if (adapter.puzzle.noTriple()) {
+            Toast.makeText(PuzzleActivity.this, "correct!", Toast.LENGTH_SHORT).show();
+            PopupActivity.alarm.stop_alert(this);
+            finish();
+        } else {
+            Toast.makeText(PuzzleActivity.this, "try again!", Toast.LENGTH_SHORT).show();
+            clicked.clear();
+            adapter = new PuzzleAdapter(this);
+            gridview.setAdapter(adapter);
         }
 
     }

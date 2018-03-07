@@ -9,8 +9,8 @@
     android:background="@drawable/background_img">
     <RelativeLayout
         android:id="@+id/list_container"
-        android:layout_width="350dp"
-        android:layout_height="450dp"
+        android:layout_width="400dp"
+        android:layout_height="410dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
@@ -18,7 +18,7 @@
         <android.support.v7.widget.CardView
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/card_view_expanded"
-            android:layout_width="350dp"
+            android:layout_width="360dp"
             android:layout_height="450dp"
             card_view:cardCornerRadius="4dp"
             card_view:cardBackgroundColor="#25000000"
@@ -31,31 +31,31 @@
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal">
 
-            <TextView
-                android:id="@+id/labelExpanded"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginTop="9dp"
-                android:text="12:00"
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:fontFamily="sans-serif-thin"
-                android:textColor="@color/sand"
-                android:textSize="45dp"
-                ></TextView>
-            <TextView
-                android:id="@+id/ampm"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginTop="5dp"
-                android:text="AM"
-                android:padding="5dp"
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:fontFamily="sans-serif-thin"
-                android:textColor="@color/sand"
-                android:textSize="25dp"
-                ></TextView>
+                <TextView
+                    android:id="@+id/labelExpanded"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="9dp"
+                    android:text="12:00"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom"
+                    android:fontFamily="sans-serif-thin"
+                    android:textColor="@color/sand"
+                    android:textSize="45dp"
+                    ></TextView>
+                <TextView
+                    android:id="@+id/ampm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="5dp"
+                    android:text="AM"
+                    android:padding="5dp"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom"
+                    android:fontFamily="sans-serif-thin"
+                    android:textColor="@color/sand"
+                    android:textSize="25dp"
+                    ></TextView>
 
 
             </LinearLayout>
@@ -109,19 +109,19 @@
                             android:orientation="vertical"
                             android:layout_marginTop="3dp"
                             android:gravity="center">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/weather_description"
-                        android:text="Light snow"
-                        android:textSize="14dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/second_description"
-                        android:layout_marginTop="3dp"
-                        android:text="mist"
-                        android:textSize="14dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/weather_description"
+                                android:text="Light snow"
+                                android:textSize="14dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/second_description"
+                                android:layout_marginTop="3dp"
+                                android:text="mist"
+                                android:textSize="14dp"/>
                         </LinearLayout>
 
                         <ImageView
@@ -149,20 +149,19 @@
                 </LinearLayout>
 
                 <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:gravity="center"
-                android:layout_marginLeft="60dp">
+                    android:layout_marginLeft="70dp">
 
-                <ImageView
-                android:id="@+id/playlist_img"
-                android:layout_width="102dp"
-                android:layout_height="102dp"
-                android:layout_gravity="center"
-                android:src="@android:drawable/ic_dialog_info" />
+                    <ImageView
+                        android:id="@+id/playlist_img"
+                        android:layout_width="102dp"
+                        android:layout_height="102dp"
+                        android:src="@android:drawable/ic_dialog_info" />
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="20dp"
                         android:id="@+id/song_name"
                         android:text="Hello"
@@ -170,7 +169,7 @@
                         android:layout_marginTop="7dp"
                         android:textSize="15dp"/>
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="15dp"
                         android:id="@+id/song_artist"
                         android:text="Adele"
@@ -181,126 +180,141 @@
 
             </LinearLayout>
 
-
-
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/transparentPurple"
                 android:layout_marginTop="260dp"></View>
 
-            <CheckBox
-                android:id="@+id/checkbox_repeat"
+            <TextView
+                android:id="@+id/NoRepeatText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text = " Repeat"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="270dp"/>
-
+                android:layout_marginTop="270dp"
+                android:textSize="15dp"
+                android:gravity="center_horizontal"
+                android:text="No Repeats"
+                android:layout_marginLeft="30dp"
+                android:textColor="@color/darkPurple"/>
 
             <LinearLayout
                 android:id="@+id/weekday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="285dp"
-                android:gravity="center_horizontal">
+                android:layout_marginTop="260dp"
+                android:gravity="center_horizontal"
+                >
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonSun"
-                    android:text="SUN"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonSun"
+                android:text="SUN"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonM"
-                    android:text="MON"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonM"
+                android:text="MON"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonTue"
-                    android:text="TUE"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonTue"
+                android:text="TUE"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonW"
-                    android:text="WED"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonW"
+                android:text="WED"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonThur"
-                    android:text="THU"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonThur"
+                android:text="THU"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonF"
-                    android:text="FRI"
-                    android:gravity="center"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonF"
+                android:text="FRI"
+                android:gravity="center"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
                 <Button
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/buttonSat"
-                    android:text="SAT"
-                    android:textColor="@color/darkPurple"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"/>
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:id="@+id/buttonSat"
+                android:text="SAT"
+                android:textColor="@color/darkPurple"
+                android:background="@android:color/transparent"
+                android:clickable="true"/>
 
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/challenges"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:orientation="horizontal"
-                android:layout_marginTop="320dp"
-                android:gravity="center_horizontal">
+                android:layout_marginTop="290dp"
+                android:layout_gravity="center_horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Challenges:"
-                    android:layout_marginTop="15dp"/>
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="40dp"
+                    android:id="@+id/challengesText"/>
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:id="@+id/voice"
-                android:gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
-                android:src="@drawable/deepfocus"
-                android:clickable="true"/>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/voice"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/challengesText"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/voicerecognition"
+                    android:onClick="onVoiceO"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/voiceX"
+                    android:gravity="center"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/challengesText"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/red_x"
+                    android:clickable="true"
+                    android:onClick="onVoiceX"/>
 
                 <ImageView
                     android:layout_width="30dp"
@@ -308,9 +322,22 @@
                     android:id="@+id/sudoku"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/deepfocus"
-                    android:clickable="true"/>
+                    android:layout_toRightOf="@id/voice"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/sudoku"
+                    android:onClick="onSudokuO"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/sudokuX"
+                    android:gravity="center"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/voice"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/red_x"
+                    android:clickable="true"
+                    android:onClick="onSudokuX"/>
 
                 <ImageView
                     android:layout_width="30dp"
@@ -318,9 +345,21 @@
                     android:id="@+id/puzzle"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/deepfocus"
-                    android:clickable="true"/>
+                    android:layout_toRightOf="@id/sudoku"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/puzzle"
+                    android:onClick="onPuzzleO"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/puzzleX"
+                    android:gravity="center"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/sudoku"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/red_x"
+                    android:onClick="onPuzzleX"/>
 
                 <ImageView
                     android:layout_width="30dp"
@@ -328,39 +367,52 @@
                     android:id="@+id/math"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/deepfocus"
-                    android:clickable="true"/>
+                    android:layout_toRightOf="@id/puzzle"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/math"
+                    android:onClick="onMathO"/>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/mathX"
+                    android:gravity="center"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/puzzle"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/red_x"
+                    android:onClick="onMathX"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="340dp"
+                android:layout_gravity="center_horizontal"
+                >
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Snooze"
+                    android:textColor="@color/white"
+                    android:id="@+id/snooze"
+                    android:background="@drawable/button_border"
+                    android:onClick="onSnooze"/>
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:text="Dismiss"
+                    android:textColor="@color/white"
+                    android:id="@+id/dismiss"
+                    android:background="@drawable/button_border"
+                    android:onClick="onDismiss"/>
+
             </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="375dp"
-            android:layout_marginLeft="60dp"
-            >
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:text="Snooze"
-                android:textColor="@color/white"
-                android:id="@+id/snooze"
-                android:background="@drawable/button_border"
-                android:onClick="onSnooze"/>
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="30dp"
-                android:text="Dismiss"
-                android:textColor="@color/white"
-                android:id="@+id/dismiss"
-                android:background="@drawable/button_border"
-                android:onClick="onDismiss"/>
-
-        </LinearLayout>
 
 
         </android.support.v7.widget.CardView>

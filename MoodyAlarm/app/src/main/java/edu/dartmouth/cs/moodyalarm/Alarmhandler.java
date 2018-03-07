@@ -28,30 +28,33 @@ public class Alarmhandler {
 
 
     public void start_alert(Context context, String uri){
-//        mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
-//        mediaPlayer.start();
 
-        if (uri.equals("Default")) {
-            mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
-            mediaPlayer.start();
-        } else {
-            Log.d("alarmhandler", "start alert access token is: " + MainActivity.accessToken);
-            MainActivity.mPlayer.playUri(null, uri, 0, 0);
-
-        }
+        MainActivity.mPlayer.playUri(null, uri, 0, 0);
+//        if (uri.equals("Default")) {
+//            mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
+//            mediaPlayer.start();
+//        } else {
+//            Log.d("alarmhandler", "start alert access token is: " + MainActivity.accessToken);
+//            MainActivity.mPlayer.playUri(null, uri, 0, 0);
+//        }
 
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(2000);
+//        long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
+//        while (vibrator.hasVibrator()) {
+//            vibrator.vibrate(pattern, -1);
+//        }
+
     }
 
 
     public void stop_alert(Context context){
-        if (mediaPlayer != null){
-            mediaPlayer.release();
-        }
+//        if (mediaPlayer != null){
+//            mediaPlayer.release();
+//        }
 
         //Spotify.destroyPlayer(MainActivity.class);
-//        MainActivity.mPlayer.pause(null);
+        MainActivity.mPlayer.pause(null);
         if (vibrator.hasVibrator()) {
             vibrator.cancel();
         }
