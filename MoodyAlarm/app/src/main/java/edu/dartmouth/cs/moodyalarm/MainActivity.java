@@ -67,10 +67,7 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback, ConnectionStateCallback{
 
-    // TODO: Replace with your client ID
     private static final String CLIENT_ID = "d7732baf6fed4aa887a95397bcd83152";
-
-    // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "http://localhost:5000/api/v1/invalid";
 
     public static final String WEATHER_API_KEY = "APPID=d5233bd27811890e0b347bc47782312c";
@@ -83,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
     private static final int REQUEST_CODE = 1337;
-
 
     public static String accessToken = "";
     public Boolean finishedDefaultDataRetrieval = false;
@@ -102,6 +98,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            // Activity was brought to front and not created,
+            // Thus finishing this will get us to the last viewed activity
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
         dataStorage = new EntryDbHelper(this);
         dataStorage.open();
@@ -126,36 +128,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-//                Intent setAlarm = new Intent(getApplicationContext(), SetAlarmActivity.class);
-//                setAlarm.putExtra(AlarmsFragment.NEWALARM, true);
-//                startActivity(setAlarm);
+
                 Fragment fragment = new SetAlarmActivityRedesign();
-
-
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("main").commit();
-
-
 
             }
         });
 
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-
         displaySelectedScreen(R.id.alarms, true);
-
-
         //this.deleteDatabase(EntryDbHelper.DATABASE_NAME);
-
-//        mIsBound = false; // by default set this to unbound
-//        automaticBind();
-
     }
 
 
@@ -829,8 +810,7 @@ public class MainActivity extends AppCompatActivity
 
             if (finishedDefaultDataRetrieval){
                 Log.d("savesong async task", "finished data retrieval");
-//
-//
+
             }
 
         }
@@ -865,17 +845,9 @@ public class MainActivity extends AppCompatActivity
 
             Log.d("savesongsasynctask", "user onpostexecute ");
 
-
-
         }
 
     }
-
-
-
-
-
-
 
     //******** Check run time permission for locationManager. This is for v23+  ********
     private boolean checkPermission() {
@@ -885,128 +857,6 @@ public class MainActivity extends AppCompatActivity
         else
             return false;
     }
-//
-//
-//
-//    private class IncomingMessageHandler extends Handler {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            switch (msg.what) {
-//                case LocationService.MSG_LOCATION:
-//                    Log.d(TAG, "received MSG_EXERCISE_ENTRY");
-//                    Location l  = msg.getData().getParcelable("location");
-//                    if(l!= null) {
-//                        if(mIsBound){
-//                            try {
-//                                doUnbindService();
-//                                stopService(new Intent(MainActivity.this, LocationService.class));
-//                            } catch (Throwable t) {
-//                                Log.e(TAG, "Failed to unbind from the service", t);
-//                            }
-//
-//                        }
-//                        Log.d(TAG, "location lat is " + l.getLatitude() + "and long is " + l.getLongitude());
-//                        //updateMap(entry);
-//                        fetchWeather(l);
-//                    }
-//
-//                    break;
-//
-//                default:
-//                    super.handleMessage(msg);
-//            }
-//        }
-//    }
-//
-//    private void automaticBind() {
-//        if (LocationService.isRunning()) {
-//            Log.d(TAG, "C:MyService.isRunning: doBindService()");
-//            doBindService();
-//        }
-//    }
-//
-//    private void doBindService() {
-//
-//
-//        //http://stackoverflow.com/questions/1916253/bind-service-to-activity-in-android
-//
-//        Log.d(TAG, "MainActivity in doBindService");
-//        bindService(new Intent(this, LocationService.class), mConnection,Context.BIND_AUTO_CREATE);//http://stackoverflow.com/questions/14746245/use-0-or-bind-auto-create-for-bindservices-flag
-//        mIsBound = true;
-//
-//    }
-//
-//    private void doUnbindService() {
-//        Log.d(TAG, "C:doUnBindService()");
-//        if (mIsBound) {
-//            // If we have received the service, and hence registered with it,
-//            // then now is the time to unregister.
-//            if (mServiceMessenger != null) {
-//                try {
-//                    Message msg = Message.obtain(null,LocationService.MSG_UNREGISTER_CLIENT);
-//                    Log.d(TAG, "C: TX MSG_UNREGISTER_CLIENT");
-//                    msg.replyTo = mMessenger;
-//                    mServiceMessenger.send(msg);
-//                } catch (RemoteException e) {
-//                    // There is nothing special we need to do if the service has
-//                    // crashed.
-//                }
-//            }
-//            // Detach our existing connection.
-//            unbindService(mConnection);
-//            mIsBound = false;
-//
-//        }
-//    }
-//
-//
-//    public void onServiceConnected(ComponentName name, IBinder service) {
-//        Log.d(TAG, "C:onServiceConnected()");
-//        mServiceMessenger = new Messenger(service);
-//
-//        try {
-//            Message msg = Message.obtain(null, LocationService.MSG_REGISTER_CLIENT);
-//            msg.replyTo = mMessenger; //u tell the server the return Messenger: by sending through this Messenger the msg will get to this client.
-//
-//            mServiceMessenger.send(msg);
-//        } catch (RemoteException e) {
-//            // In this case the service has crashed before we could even do
-//            // anything with it
-//        }
-//    }
-//
-//
-//    @Override
-//    public void onServiceDisconnected(ComponentName name) {
-//        //Log.d(TAG, "C:onServiceDisconnected()");
-//        // This is called when the connection with the service has been
-//        // unexpectedly disconnected - process crashed.
-//        mServiceMessenger = null;
-//
-//    }
-//
-//    public void fetchWeather (Location loc){
-//        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-//        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + loc.getLatitude() + "&lon=" + loc.getLongitude()+"&"+ WEATHER_API_KEY;
-//        //String url = "http://api.openweathermap.org/data/2.5/weather?q=London&"+WEATHER_API_KEY;
-//        StringRequest jsObjRequest = new StringRequest
-//                (Request.Method.GET, url, new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // response
-//                        Log.d("fetchWeather Response", response);
-//
-//                    }
-//                },
-//                        new Response.ErrorListener() {
-//                            @Override
-//                            public void onErrorResponse(VolleyError error) {
-//                                // TODO Auto-generated method stub
-//                                Log.d("ERROR", "error => " + error.toString());
-//                            }
-//                        }
-//                );
-//        queue.add(jsObjRequest);
-//    }
+
 
 }

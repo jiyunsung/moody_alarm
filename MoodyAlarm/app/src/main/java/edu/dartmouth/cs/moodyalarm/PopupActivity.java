@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -69,16 +71,24 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     private ImageView sudokuX;
     private ImageView puzzleX;
     private ImageView mathX;
+    private boolean connected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("pop up activity", "oncreate called");
         setContentView(R.layout.activity_popup);
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
         prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-        Log.d("popup oncreate", "day is " + day);
-        Log.d("popup oncreate", "pos is " + AlarmSettings.position);
+        Log.d("popup onresume", "day is " + day);
+        Log.d("popup onresume", "pos is " + AlarmSettings.position);
         mIsBound = false; // by default set this to unbound
 
         Intent intent = getIntent();
@@ -87,15 +97,27 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         //setting = alarmEntry.getSetting();
         context = this;
 
+        connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
         challenges = new ArrayList<String>();
-        if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
+
+        challenges = new ArrayList<String>();
+        if (connected & prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
             challenges.add(SnoozeSettings.VOICE_ON);
         if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
             challenges.add(SnoozeSettings.SUDOKU_ON);
         if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
             challenges.add(SnoozeSettings.PUZZLE_ON);
-//        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
-//            challenges.add(SnoozeSettings.MATH_DIFF);
+        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
+            challenges.add(SnoozeSettings.MATH_ON);
 
         Button dismiss = findViewById(R.id.dismiss);
         dismiss.setOnClickListener(new View.OnClickListener(){
@@ -128,10 +150,10 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                         challengeIntent.putExtra("alarm", alarmEntry);
                         startActivity(challengeIntent);
                     }
-//                    else {
-//                        Log.d("pop up activity", "challenge is math");
-//                        challengeIntent = new Intent(PopupActivity.this, MathActivity.class);
-//                    }
+                    else {
+                        Log.d("pop up activity", "challenge is math");
+                        challengeIntent = new Intent(PopupActivity.this, MathActivity.class);
+                    }
 
 
 
@@ -148,7 +170,6 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         doBindService();
         startService(new Intent(PopupActivity.this, LocationService.class));
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -333,13 +354,17 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                             id=7;
                         }
 
-                        if(alarmEntry.getSetting().equals("day")){
-                            Calendar calendar = Calendar.getInstance();
-                            int day = calendar.get(Calendar.DAY_OF_WEEK);
-                            getPlaylistByDay(day, context,response);
+                        if (alarmEntry.getSetting() != null) {
+                            if (alarmEntry.getSetting().equals("day")) {
+                                Calendar calendar = Calendar.getInstance();
+                                int day = calendar.get(Calendar.DAY_OF_WEEK);
+                                getPlaylistByDay(day, context, response);
 
-                        } else {
-                            getPlaylistByWeather(id, getApplicationContext(),response);
+                            } else {
+                                getPlaylistByWeather(id, getApplicationContext(), response);
+                            }
+                        } else{
+                            getPlaylistByWeather(id, getApplicationContext(), response);
                         }
 
                     } catch(JSONException e){Log.d("error", e.toString());}
@@ -429,6 +454,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             // display current time
             Calendar rightNow = Calendar.getInstance();
+            rightNow.setTimeInMillis(System.currentTimeMillis());
             int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
             int currentMinute = rightNow.get(Calendar.MINUTE);
 
@@ -544,7 +570,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             alarmEntry.setSnooze(this, snoozeLength);
             finish();
         } else {
-            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -573,14 +599,17 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         } else {
             alarm.stop_alert(context);
             Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
     }
 
     public void onVoiceX(View view) {
-        challenges.add(SnoozeSettings.VOICE_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
+        if (connected) {
+            challenges.add(SnoozeSettings.VOICE_ON);
+            view.setVisibility(View.INVISIBLE);
+            Log.d("challenges", challenges.toString());
+        }
     }
 
     public void onSudokuX(View view) {

@@ -62,7 +62,7 @@ public class AlarmDetailsDisplay extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.expanded, container, false);
-        context = getActivity();
+        context = getContext();
         super.onCreate(savedInstanceState);
 
         return view;
@@ -71,17 +71,13 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int hour = entry.getHour();
-
         int minute = entry.getMinute();
 
         String min = "";
         if ((entry.getMinute() < 10)){
             min = "0"+Integer.toString(minute);
-
         } else{
             min = Integer.toString(minute);
-
         }
 
 
@@ -135,7 +131,7 @@ public class AlarmDetailsDisplay extends Fragment {
             onOff.setChecked(false);
 
         weekdays = (LinearLayout) view.findViewById(R.id.weekday);
-        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox_repeat);
+        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox_repeat);
         if (entry.getRepeated() == 1) {
             weekdays.setVisibility(View.VISIBLE);
             checkBox.setChecked(true);
@@ -146,7 +142,7 @@ public class AlarmDetailsDisplay extends Fragment {
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     entry.setRepeat(1);
                     weekdays.setVisibility(View.VISIBLE);
@@ -174,10 +170,6 @@ public class AlarmDetailsDisplay extends Fragment {
                 }
             }
         });
-
-        //if(entry.getSetting().equals("weather")) {
-
-
 
         if(setting.equals("weather")) {
 
@@ -256,7 +248,6 @@ public class AlarmDetailsDisplay extends Fragment {
                 weather.setTextColor(Color.parseColor("#ffffff"));
                 setting="weather";
                 entry.setSetting("weather");
-
 
 
                 Button day = v.findViewById(R.id.dayPlaylist);
@@ -533,8 +524,10 @@ public class AlarmDetailsDisplay extends Fragment {
         // run threads
         @Override
         protected Void doInBackground(Void... arg0) {
+
             entry.setId((MainActivity.dataStorage.insertAlarmEntry(entry).getId()));
             Log.d("writeSchema", " alarm details display do in background setting schedule");
+
 
             entry.setSchedule(context);
             return null;

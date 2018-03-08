@@ -54,8 +54,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -188,9 +190,6 @@ public class SetAlarmActivityRedesign extends Fragment{
                 float y = (float)((float)i/48.0) * 2300 - 15 * i;
                 Log.d("setalarm activity", "before alarm y is " + alarm.getY()+ "and now setting it to "  + y);
                 alarm.setY(y);
-
-
-
             }
 
         } else{
@@ -247,11 +246,16 @@ public class SetAlarmActivityRedesign extends Fragment{
                             entry.setRepeat(0);
                             entry.setSetting("weather");
                             entry.setVibrate(1);
-                            entry.setId(id);
+
+                            Calendar today = Calendar.getInstance();
+                            SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy EEE");
+                            entry.setDate(format.format(today.getTime()));
+
                             AlarmDetailsDisplay alarmDetails;
                             if(id == -1) {
                                 alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, true);
                             } else{
+                                entry.setId(id);
                                 alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
                             }
 

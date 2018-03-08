@@ -48,6 +48,11 @@ public class SudokuActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(SudokuActivity.this, "Complete Sudoku please!", Toast.LENGTH_SHORT).show();
+    }
+
     public class SudokuGenerator {
 
         private ArrayList<ArrayList<Integer>> Available = new ArrayList<ArrayList<Integer>>();

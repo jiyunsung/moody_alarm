@@ -24,7 +24,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String DATABASE_NAME = "database";
     private static final Integer DATABASE_VERSION = 1;
     private SQLiteDatabase database;
-    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK, KEY_SETTING, KEY_VIBRATE};
+    private String[] allAlarmColumns = { KEY_ROWID_ALARM, KEY_ONOFF, KEY_HOUR, KEY_MINUTE, KEY_REPEAT, KEY_DAYSOFWEEK, KEY_SETTING, KEY_VIBRATE, KEY_DATE};
 
     public final static String TABLE_ENTRIES_ALARM = "AlarmsTable";
     public final static String KEY_ROWID_ALARM = "_id";
@@ -35,7 +35,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     public final static String KEY_DAYSOFWEEK = "mDaysOfWeek";
     public final static String KEY_SETTING = "mSetting";
     public final static String KEY_VIBRATE = "mVibrate";
-
+    public final static String KEY_DATE = "mDate";
 
     private String[] allSpotifyColumnsDefault = {KEY_ROWID_SPOTIFY_DEFAULT, KEY_PLAYLISTID_DEFAULT,
             KEY_IMAGEURL_DEFAULT, KEY_TRACKINFO_DEFAULT, KEY_USERID_DEFAULT, KEY_PLAYLISTNAME_DEFAULT};
@@ -97,9 +97,11 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             + KEY_DAYSOFWEEK
             + " BLOB, "
             +  KEY_SETTING
-            + " STRING, "
+            + " STRING NOT NULL, "
             + KEY_VIBRATE
-            + " INTEGER NOT NULL "
+            + " INTEGER NOT NULL, "
+            + KEY_DATE
+            + " STRING NOT NULL"
             + ");";
 
     public static final String CREATE_TABLE_ENTRIES_SPOTIFY_DEFAULT = "CREATE TABLE IF NOT EXISTS "
@@ -206,6 +208,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_REPEAT, entry.getRepeated());
         values.put(KEY_SETTING, entry.getSetting());
         values.put(KEY_VIBRATE, entry.getVibrate());
+        values.put(KEY_DATE, entry.getDate());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
@@ -319,6 +322,7 @@ public class EntryDbHelper extends SQLiteOpenHelper {
         values.put(KEY_REPEAT, entry.getRepeated());
         values.put(KEY_SETTING, entry.getSetting());
         values.put(KEY_VIBRATE, entry.getVibrate());
+        values.put(KEY_DATE, entry.getDate());
 
         ArrayList<Boolean> daysOfWeek = entry.getDaysOfWeek2(); // convert into byte array format
         Gson gson = new Gson();
@@ -524,13 +528,14 @@ public class EntryDbHelper extends SQLiteOpenHelper {
     private AlarmEntry cursorToEntryAlarm(Cursor cursor) {
 
         AlarmEntry entry = new AlarmEntry();
-        entry.setId(cursor.getLong(0));//Returns the value of the requested column as a long.
-        entry.setOnOff(cursor.getInt(1));
-        entry.setHour(cursor.getInt(2));
-        entry.setMinute(cursor.getInt(3));
-        entry.setRepeat(cursor.getInt(4));
+        entry.setId(cursor.getLong(cursor.getColumnIndex(KEY_ROWID_ALARM)));//Returns the value of the requested column as a long.
+        entry.setOnOff(cursor.getInt(cursor.getColumnIndex(KEY_ONOFF)));
+        entry.setHour(cursor.getInt(cursor.getColumnIndex(KEY_HOUR)));
+        entry.setMinute(cursor.getInt(cursor.getColumnIndex(KEY_MINUTE)));
+        entry.setRepeat(cursor.getInt(cursor.getColumnIndex(KEY_REPEAT)));
         entry.setSetting(cursor.getString(cursor.getColumnIndex(KEY_SETTING)));
         entry.setVibrate(cursor.getInt(cursor.getColumnIndex(KEY_VIBRATE)));
+        entry.setDate(cursor.getString(cursor.getColumnIndex(KEY_DATE)));
 
 
         // get location list
@@ -688,13 +693,9 @@ public class EntryDbHelper extends SQLiteOpenHelper {
             entry.setSpotifyPlaylist(playlist);
             if(playlist != null)
                 Log.d("cursorToentryWeather", "playlist not null url is" + playlist.getImageUrl());
-
         }
-
         return entry;
     }
-
-
 }
 
 

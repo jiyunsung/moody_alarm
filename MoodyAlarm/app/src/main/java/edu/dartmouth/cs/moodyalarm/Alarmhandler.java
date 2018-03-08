@@ -30,7 +30,7 @@ public class Alarmhandler {
     public void start_alert(Context context, String uri){
         Log.d("start_alert", "uri is " + uri);
 
-        //MainActivity.mPlayer.playUri(null, uri, 0, 0);
+        MainActivity.mPlayer.playUri(null, uri, 0, 0);
 //        if (uri.equals("Default")) {
 //            mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_RINGTONE_URI);
 //            mediaPlayer.start();

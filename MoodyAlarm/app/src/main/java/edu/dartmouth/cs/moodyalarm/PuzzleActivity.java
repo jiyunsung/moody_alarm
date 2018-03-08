@@ -72,11 +72,15 @@ public class PuzzleActivity extends AppCompatActivity {
                     else
                         parent.getChildAt(position).setBackgroundResource(R.drawable.cell_white_highlighted);
                 } else {
-
                     Toast.makeText(PuzzleActivity.this, "only select up to three!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(PuzzleActivity.this, "Solve the puzzle please!", Toast.LENGTH_SHORT).show();
     }
 
     public class PuzzleAdapter extends BaseAdapter {
