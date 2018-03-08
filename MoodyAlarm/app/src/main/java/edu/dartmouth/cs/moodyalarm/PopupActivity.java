@@ -155,12 +155,10 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                         challengeIntent = new Intent(PopupActivity.this, MathActivity.class);
                     }
 
-
-
-
                 } else {
                     alarm.stop_alert(context);
                     Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
         });
@@ -574,40 +572,6 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         }
     }
 
-    public void onDismiss(View view) {
-        Log.d("challenges", challenges.toString());
-
-        if (alarmEntry.getRepeated() == 0) { // no repeats : this is the last time the alarm is going off, so this should be off
-            alarmEntry.setOnOff(0);
-            MainActivity.dataStorage.updateAlarmEntry(alarmEntry);
-        }
-
-        // at least one challenge enabled
-        if (challenges.size() > 0) {
-            // choose a random activity among the enabled ones
-            Random rand = new Random();
-            int choice = rand.nextInt(challenges.size());
-            String challenge = challenges.get(choice);
-            Intent challengeIntent;
-            if (challenge.equals(SnoozeSettings.VOICE_ON))
-                challengeIntent = new Intent(this, VoiceRecognitionActivity.class);
-            else if (challenge.equals(SnoozeSettings.SUDOKU_ON))
-                challengeIntent = new Intent(this, SudokuActivity.class);
-            else if (challenge.equals(SnoozeSettings.PUZZLE_ON))
-                challengeIntent = new Intent(this, PuzzleActivity.class);
-            else
-                challengeIntent = new Intent(this, MathActivity.class);
-
-            challengeIntent.putExtra("alarm", alarmEntry);
-            startActivity(challengeIntent);
-
-        } else {
-            alarm.stop_alert(context);
-            Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-    }
 
     public void onVoiceX(View view) {
         if (connected) {

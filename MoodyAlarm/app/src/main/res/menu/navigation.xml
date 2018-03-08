@@ -20,7 +20,7 @@
     <item
         android:id="@+id/snooze_settings"
         android:orderInCategory="100"
-        android:title="Snooze Settings"
+        android:title="Snooze/Challenge Settings"
         android:textColor="@color/sand"
         app:showAsAction="never" />
 </menu>
