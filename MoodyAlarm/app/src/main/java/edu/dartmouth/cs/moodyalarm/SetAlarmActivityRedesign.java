@@ -202,8 +202,8 @@ public class SetAlarmActivityRedesign extends Fragment{
             gd.setCornerRadius(0f);
             screenContainer.setBackground(gd);
 
-            alarm.setText(times[12]);
-            float y = (float)((float)12/48.0) * 2300;
+            alarm.setText(times[12] + " AM");
+            float y = (float)((float)12/48.0) * 2300 - 15 * 12;
 
             alarm.setY(y);
 
@@ -224,7 +224,6 @@ public class SetAlarmActivityRedesign extends Fragment{
                         Log.d("screenContainer", "action down");
                         int h = v.getHeight();
 
-                        Log.d("screenContainer", "action down");
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
@@ -296,16 +295,18 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
+                                if (hour < 24) {
 
-                                String [] minArr = arr[1].split(" ");
+                                    String[] minArr = arr[1].split(" ");
 
-                                int minute = Integer.parseInt(minArr[0]);
-                                minute++;
-                                if (minute == 60) {
-                                    minute = 60 - minute;
-                                    hour++;
+                                    int minute = Integer.parseInt(minArr[0]);
+                                    minute++;
+                                    if (minute == 60) {
+                                        minute = 60 - minute;
+                                        hour++;
+                                    }
+                                    alarm.setText(formatTime(hour, minute));
                                 }
-                                alarm.setText(formatTime(hour, minute));
                             }
                         }else {
                             if (e.getRawY() < alarm.getY()+250) {
@@ -327,21 +328,21 @@ public class SetAlarmActivityRedesign extends Fragment{
                                 String[] arr = alarm.getText().toString().split(":");
 
                                 int hour = Integer.parseInt(arr[0]);
+                                if (hour < 24) {
 
-                                String [] minArr = arr[1].split(" ");
+                                    String[] minArr = arr[1].split(" ");
 
-                                int minute = Integer.parseInt(minArr[0]);
-                                minute = minute + 5;
-                                if (minute >= 60) {
-                                    minute = 60 - minute;
-                                    hour++;
+                                    int minute = Integer.parseInt(minArr[0]);
+                                    minute = minute + 5;
+                                    if (minute >= 60) {
+                                        minute = 60 - minute;
+                                        hour++;
+                                    }
+                                    alarm.setText(formatTime(hour, minute));
                                 }
-                                alarm.setText(formatTime(hour, minute));
                             }
                         }
                 }
-
-
                 return true;
             }
 
