@@ -71,17 +71,13 @@ public class AlarmDetailsDisplay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int hour = entry.getHour();
-
         int minute = entry.getMinute();
 
         String min = "";
         if ((entry.getMinute() < 10)){
             min = "0"+Integer.toString(minute);
-
         } else{
             min = Integer.toString(minute);
-
         }
 
 

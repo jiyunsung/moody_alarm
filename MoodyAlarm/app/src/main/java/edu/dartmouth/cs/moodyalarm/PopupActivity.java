@@ -383,6 +383,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
 
             // display current time
             Calendar rightNow = Calendar.getInstance();
+            rightNow.setTimeInMillis(System.currentTimeMillis());
             int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
             int currentMinute = rightNow.get(Calendar.MINUTE);
 

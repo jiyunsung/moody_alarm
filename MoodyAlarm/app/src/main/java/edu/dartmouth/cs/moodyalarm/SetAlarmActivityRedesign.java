@@ -190,9 +190,6 @@ public class SetAlarmActivityRedesign extends Fragment{
                 float y = (float)((float)i/48.0) * 2300 - 15 * i;
                 Log.d("setalarm activity", "before alarm y is " + alarm.getY()+ "and now setting it to "  + y);
                 alarm.setY(y);
-
-
-
             }
 
         } else{
@@ -249,7 +246,6 @@ public class SetAlarmActivityRedesign extends Fragment{
                             entry.setRepeat(0);
                             entry.setSetting("weather");
                             entry.setVibrate(1);
-                            entry.setId(id);
 
                             Calendar today = Calendar.getInstance();
                             SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy EEE");
@@ -259,6 +255,7 @@ public class SetAlarmActivityRedesign extends Fragment{
                             if(id == -1) {
                                 alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, true);
                             } else{
+                                entry.setId(id);
                                 alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);
                             }
 
