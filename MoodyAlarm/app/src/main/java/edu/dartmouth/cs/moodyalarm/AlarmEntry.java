@@ -101,16 +101,6 @@ public class AlarmEntry implements Serializable {
 
         if (this.repeat == 0) { // canceling non-repeating alarm
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, this.hour);
-            calendar.set(Calendar.MINUTE, this.minute);
-            calendar.set(Calendar.SECOND, 0);
-
-            if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                calendar.add(Calendar.DATE, 1);
-            }
-
             // the request code distinguish different stress meter schedule instances
             int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
@@ -124,21 +114,9 @@ public class AlarmEntry implements Serializable {
         }  else if (this.repeat == 1) {
 
             int i = 0;
-            int dow; // day of week integer
             for (boolean day : this.daysofweek) {
 
                 if (day) { // if this day of week is set to repeat
-                    if (i == 0)
-                        dow = 7; // since Sunday in Android coding is 7, From Monday to Saturday it is 1-6 respectively
-                    else
-                        dow = i;
-
-                    Calendar date = Calendar.getInstance();
-                    int diff = dow - date.get(Calendar.DAY_OF_WEEK);
-                    if (diff < 0)
-                        diff += 7;
-
-                    date.add(Calendar.DAY_OF_MONTH, diff);
 
                     // the request code distinguish different stress meter schedule instances
                     int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
@@ -172,14 +150,20 @@ public class AlarmEntry implements Serializable {
 
             if (this.repeat == 0) { // alarm is on but does not repeat
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                calendar.set(Calendar.HOUR_OF_DAY, this.hour);
-                calendar.set(Calendar.MINUTE, this.minute);
-                calendar.set(Calendar.SECOND, 0);
-
-                if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                    calendar.add(Calendar.DATE, 1);
+                Calendar calendar;
+                if (this.hour != 24) { // edge case 24:00
+                    calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    calendar.set(Calendar.HOUR_OF_DAY, this.hour);
+                    calendar.set(Calendar.MINUTE, this.minute);
+                    calendar.set(Calendar.SECOND, 0);
+                } else { // 00:00 of next day
+                    calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
                 }
 
                 // the request code distinguish different stress meter schedule instances
@@ -189,6 +173,7 @@ public class AlarmEntry implements Serializable {
                         PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+
 
             //set weekly repeating alarm, and pass the pending intent,
             //so that the broadcast is sent every time the alarm
@@ -205,11 +190,21 @@ public class AlarmEntry implements Serializable {
                         else
                             dow = i;
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTimeInMillis(System.currentTimeMillis());
-                        calendar.set(Calendar.HOUR_OF_DAY, this.hour);
-                        calendar.set(Calendar.MINUTE, this.minute);
-                        calendar.set(Calendar.SECOND, 0);
+                        Calendar calendar;
+                        if (this.hour != 24) {
+                            calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(System.currentTimeMillis());
+                            calendar.set(Calendar.HOUR_OF_DAY, this.hour);
+                            calendar.set(Calendar.MINUTE, this.minute);
+                            calendar.set(Calendar.SECOND, 0);
+                        } else {
+                            calendar = Calendar.getInstance();
+                            calendar.setTimeInMillis(System.currentTimeMillis());
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
 
                         int diff = dow - calendar.get(Calendar.DAY_OF_WEEK);
                         if (diff < 0) {

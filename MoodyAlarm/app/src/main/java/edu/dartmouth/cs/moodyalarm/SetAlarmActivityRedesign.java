@@ -417,7 +417,6 @@ public class SetAlarmActivityRedesign extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
     }
 
     private String formatTime(int hour, int minute) {
