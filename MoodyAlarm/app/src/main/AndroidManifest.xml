@@ -43,7 +43,6 @@
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".SetAlarmActivity" />
         <activity android:name=".PlaylistDisplay"  android:theme="@style/AppTheme" />
         <activity
             android:name=".PopupActivity"

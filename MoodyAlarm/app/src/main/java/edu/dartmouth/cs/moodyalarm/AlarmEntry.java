@@ -91,15 +91,61 @@ public class AlarmEntry implements Serializable {
     public void cancelSchedule(Context context) {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(Long.toString(System.currentTimeMillis()));
-
-        // the request code distinguish different stress meter schedule instances
-        int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat;
-
-        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
-
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pi);
+
+        Log.d("alarmEntry set schedule", "alarm is on");
+
+        if (this.repeat == 0) { // canceling non-repeating alarm
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, this.hour);
+            calendar.set(Calendar.MINUTE, this.minute);
+
+            if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+                calendar.add(Calendar.DATE, 1);
+            }
+
+            // the request code distinguish different stress meter schedule instances
+            int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
+
+            PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+
+            alarmManager.cancel(pi);
+
+            //cancel weekly repeating alarm, and pass the pending intent
+        }  else if (this.repeat == 1) {
+
+            int i = 0;
+            int dow; // day of week integer
+            for (boolean day : this.daysofweek) {
+
+                if (day) { // if this day of week is set to repeat
+                    if (i == 0)
+                        dow = 7; // since Sunday in Android coding is 7, From Monday to Saturday it is 1-6 respectively
+                    else
+                        dow = i;
+
+                    Calendar date = Calendar.getInstance();
+                    int diff = dow - date.get(Calendar.DAY_OF_WEEK);
+                    if (diff < 0)
+                        diff += 7;
+
+                    date.add(Calendar.DAY_OF_MONTH, diff);
+
+                    // the request code distinguish different stress meter schedule instances
+                    int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
+
+                    PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+
+                    alarmManager.cancel(pi);
+                }
+
+                i++;
+            }
+        }
     }
 
     // a method to set schedule based on the alarm entry
@@ -111,11 +157,11 @@ public class AlarmEntry implements Serializable {
         Log.d("setSchedule", "setting is " + this.setting);
         Log.d("setSchedule", "id is " + this.id);
 
-
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // check if alarm is on
-        if (this.onOff == 1) { // alarm on
+        if (true) { // alarm on
+            // if (this.onOff == 1) { // alarm on
 
             Log.d("alarmEntry set schedule", "alarm is on");
 
@@ -134,34 +180,14 @@ public class AlarmEntry implements Serializable {
                 int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
                 PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+                        PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
-            }
-            //set repeating alarm, and pass the pending intent,
-            //so that the broadcast is sent everytime the alarm
+
+            //set weekly repeating alarm, and pass the pending intent,
+            //so that the broadcast is sent every time the alarm
             // is triggered
-            else if (this.repeat == 2) { // daily repeats
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                calendar.set(Calendar.HOUR_OF_DAY, this.hour);
-                calendar.set(Calendar.MINUTE, this.minute);
-
-                if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                    calendar.add(Calendar.DATE, 1);
-                }
-
-                // the request code distinguish different schedule instances
-                int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
-
-                PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
-
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        AlarmManager.INTERVAL_DAY, pi);
-
-            } else if (this.repeat == 1) { // weekly
+            }  else if (this.repeat == 1) {
 
                 int i = 0;
                 int dow; // day of week integer
@@ -184,7 +210,7 @@ public class AlarmEntry implements Serializable {
                         int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
 
                         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+                                PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, date.getTimeInMillis(),
                                 AlarmManager.INTERVAL_DAY * 7, pi);
@@ -210,7 +236,7 @@ public class AlarmEntry implements Serializable {
         int requestCode = MainActivity.SNOOZE_REQUESTCODE;
 
         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+                PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);

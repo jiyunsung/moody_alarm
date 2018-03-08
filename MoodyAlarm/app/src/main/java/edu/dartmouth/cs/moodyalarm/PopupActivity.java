@@ -498,7 +498,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             alarmEntry.setSnooze(this, snoozeLength);
             finish();
         } else {
-            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "You reached your maximum number of snoozes! Please dismiss the alarm.", Toast.LENGTH_LONG).show();
         }
     }
 
