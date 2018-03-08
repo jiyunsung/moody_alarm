@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -69,6 +71,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     private ImageView sudokuX;
     private ImageView puzzleX;
     private ImageView mathX;
+    private boolean connected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +90,18 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         //setting = alarmEntry.getSetting();
         context = this;
 
+        connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
         challenges = new ArrayList<String>();
-        if (prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
+        if (connected & prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
             challenges.add(SnoozeSettings.VOICE_ON);
         if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
             challenges.add(SnoozeSettings.SUDOKU_ON);
@@ -534,9 +547,11 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     }
 
     public void onVoiceX(View view) {
-        challenges.add(SnoozeSettings.VOICE_ON);
-        view.setVisibility(View.INVISIBLE);
-        Log.d("challenges", challenges.toString());
+        if (connected) {
+            challenges.add(SnoozeSettings.VOICE_ON);
+            view.setVisibility(View.INVISIBLE);
+            Log.d("challenges", challenges.toString());
+        }
     }
 
     public void onSudokuX(View view) {
