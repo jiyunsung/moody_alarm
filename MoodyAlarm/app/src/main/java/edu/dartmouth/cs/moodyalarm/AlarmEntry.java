@@ -166,8 +166,7 @@ public class AlarmEntry implements Serializable {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // check if alarm is on
-        if (true) { // alarm on
-            // if (this.onOff == 1) { // alarm on
+        if (this.onOff == 1) { // alarm on
 
             Log.d("alarmEntry set schedule", "alarm is on");
 
@@ -207,12 +206,17 @@ public class AlarmEntry implements Serializable {
                         else
                             dow = i;
 
-                        Calendar date = Calendar.getInstance();
-                        int diff = dow - date.get(Calendar.DAY_OF_WEEK);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(System.currentTimeMillis());
+                        calendar.set(Calendar.HOUR_OF_DAY, this.hour);
+                        calendar.set(Calendar.MINUTE, this.minute);
+                        calendar.set(Calendar.SECOND, 0);
+
+                        int diff = dow - calendar.get(Calendar.DAY_OF_WEEK);
                         if (diff < 0) {
                             diff += 7;
                         }
-                        date.add(Calendar.DAY_OF_MONTH, diff);
+                        calendar.add(Calendar.DAY_OF_MONTH, diff);
 
                         // the request code distinguish different stress meter schedule instances
                         int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
@@ -220,7 +224,7 @@ public class AlarmEntry implements Serializable {
                         PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
                                 PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
-                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, date.getTimeInMillis(),
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                                 AlarmManager.INTERVAL_DAY * 7, pi);
                     }
 
@@ -248,7 +252,7 @@ public class AlarmEntry implements Serializable {
                 PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
     }
 
 

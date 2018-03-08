@@ -577,6 +577,11 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     public void onDismiss(View view) {
         Log.d("challenges", challenges.toString());
 
+        if (alarmEntry.getRepeated() == 0) { // no repeats : this is the last time the alarm is going off, so this should be off
+            alarmEntry.setOnOff(0);
+            MainActivity.dataStorage.updateAlarmEntry(alarmEntry);
+        }
+
         // at least one challenge enabled
         if (challenges.size() > 0) {
             // choose a random activity among the enabled ones

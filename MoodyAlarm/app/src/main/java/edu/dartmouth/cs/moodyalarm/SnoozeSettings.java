@@ -100,7 +100,7 @@ public class SnoozeSettings extends Fragment {
 
         Boolean mathOn = prefs.getBoolean(MATH_ON, true);
         mathSwtich.setChecked(mathOn);
-        Integer mathDiff = prefs.getInt(MATH_DIFF, 60);
+        Integer mathDiff = prefs.getInt(MATH_DIFF, 40);
         mathDifficulty.setProgress(mathDiff);
 
         save = (Button)view.findViewById(R.id.saveSnooze);

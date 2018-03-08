@@ -23,7 +23,6 @@ import java.util.Calendar;
 
 public class Alarmhandler {
 
-    private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
 
 
