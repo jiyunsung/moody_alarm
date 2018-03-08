@@ -105,6 +105,11 @@ public class VoiceRecognitionActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        Toast.makeText(VoiceRecognitionActivity.this, "Please read the quote out loud!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {

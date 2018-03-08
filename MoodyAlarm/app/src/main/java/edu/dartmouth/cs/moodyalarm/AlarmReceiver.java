@@ -17,7 +17,6 @@ public class AlarmReceiver extends BroadcastReceiver
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-        intent.getAction();
         Log.d("Alarm receiver", "received intent");
 
         long alarmId = intent.getLongExtra("alarm id", -1);

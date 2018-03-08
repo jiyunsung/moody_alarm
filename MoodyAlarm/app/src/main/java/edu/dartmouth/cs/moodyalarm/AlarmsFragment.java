@@ -49,7 +49,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.zip.Inflater;
 
@@ -249,11 +251,11 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                         Log.d("alarmsfragment", "onoff checked changed");
                         if (isChecked) {
                             element.setOnOff(1);
-                            element.setSchedule(getActivity());
+                            element.setSchedule(getContext());
                             Log.d("TAG", "Set ON!!!");
                         } else {
                             element.setOnOff(0);
-                            element.cancelSchedule(getActivity());
+                            element.cancelSchedule(getContext());
                             Log.d("TAG", "SET OFF!");
                         }
 
@@ -299,10 +301,19 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
                     }
                     i++;
                 }
-                holder.Row2.setText(days);
+                if (days.equals(""))
+                    holder.Row2.setText("No Repeat");
+                else
+                    holder.Row2.setText(days);
             } else if (entry.getRepeated() == 0) {
                 // TODO : save calendar and display the date set
-                holder.Row2.setText("Today");
+
+                Calendar today = Calendar.getInstance();
+                SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy EEE");
+                if (entry.getDate().equals(format.format(today.getTime())))
+                    holder.Row2.setText("Today");
+                else
+                    holder.Row2.setText(entry.getDate());
             }
 
             ViewCompat.setTransitionName(holder.card_view, String.valueOf(position) + "_image");
@@ -323,9 +334,9 @@ public class AlarmsFragment extends Fragment implements OnStartDragListener {
             holder.card_view.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
                     if(entry.getDaysofweek() != null){
-                        Log.d("alarms fragment", "getDaysof week not null");
+                        Log.d("alarms fragment", "getDays of week not null");
                     } else{
-                        Log.d("alarms fragment", "getDaysof week  null");
+                        Log.d("alarms fragment", "getDays of week  null");
                     }
 
                     AlarmDetailsDisplay alarmDetails = new AlarmDetailsDisplay().newInstance(time, entry, false);

@@ -53,6 +53,12 @@ public class MathActivity extends AppCompatActivity {
         writer.animateText(eq);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(MathActivity.this, "Solve the equation please!", Toast.LENGTH_SHORT).show();
+    }
+
     public static class Typewriter extends AppCompatTextView {
 
         private CharSequence mText;

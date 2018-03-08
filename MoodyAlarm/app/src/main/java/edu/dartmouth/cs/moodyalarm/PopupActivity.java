@@ -95,7 +95,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
             challenges.add(SnoozeSettings.PUZZLE_ON);
         if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
-            challenges.add(SnoozeSettings.MATH_DIFF);
+            challenges.add(SnoozeSettings.MATH_ON);
 
         Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
         automaticBind();
@@ -527,6 +527,7 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         } else {
             alarm.stop_alert(context);
             Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
     }

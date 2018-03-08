@@ -25,6 +25,7 @@ public class AlarmEntry implements Serializable {
     private ArrayList<Boolean> daysofweek; // only works with weekly alarms. otherwise just list of falses. length of 7.
     private String setting;
     private Integer vibrate;
+    private String date;
 
     // number of times user clicked snooze. this doesn't have to be saved in the database because it needs to be reinitialized when the user turns off the app.
     private int snooze = 0;
@@ -32,7 +33,7 @@ public class AlarmEntry implements Serializable {
     public AlarmEntry(){
     }
 
-    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list, String s, Integer v) {
+    public AlarmEntry(long id, Integer onOff, Integer hour, Integer minute, Integer repeat, ArrayList<Boolean> list, String s, Integer v, String d) {
         this.id = id;
         this.onOff = onOff; // 1 if on
         this.hour = hour;
@@ -42,6 +43,7 @@ public class AlarmEntry implements Serializable {
         this.setting = s;
         this.vibrate = v;
         this.snooze = 0;
+        this.date = d;
     }
 
     public long getId() { return id; }
@@ -66,6 +68,7 @@ public class AlarmEntry implements Serializable {
     }
     public int getVibrate() { return this.vibrate; }
     public int getSnooze() { return this.snooze; }
+    public String getDate() { return this.date; }
 
     public void setId(long id) {
         this.id = id;
@@ -87,10 +90,11 @@ public class AlarmEntry implements Serializable {
 
     public void setSetting(String s) {this.setting = s;}
     public void setVibrate(int v) {this.vibrate = v; }
+    public void setDate(String d) { this.date = d; }
 
     public void cancelSchedule(Context context) {
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.setAction(Long.toString(System.currentTimeMillis()));
+        intent.putExtra("alarm id", this.id);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Log.d("alarmEntry set schedule", "alarm is on");
@@ -101,6 +105,7 @@ public class AlarmEntry implements Serializable {
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, this.hour);
             calendar.set(Calendar.MINUTE, this.minute);
+            calendar.set(Calendar.SECOND, 0);
 
             if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
                 calendar.add(Calendar.DATE, 1);
@@ -110,9 +115,10 @@ public class AlarmEntry implements Serializable {
             int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
             PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+                    PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
 
             alarmManager.cancel(pi);
+            pi.cancel();
 
             //cancel weekly repeating alarm, and pass the pending intent
         }  else if (this.repeat == 1) {
@@ -138,9 +144,10 @@ public class AlarmEntry implements Serializable {
                     int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10 + i;
 
                     PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+                            PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
 
                     alarmManager.cancel(pi);
+                    pi.cancel();
                 }
 
                 i++;
@@ -152,7 +159,6 @@ public class AlarmEntry implements Serializable {
     public void setSchedule(Context context) {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.setAction(Long.toString(System.currentTimeMillis()));
         intent.putExtra("alarm id", this.id);
         Log.d("setSchedule", "setting is " + this.setting);
         Log.d("setSchedule", "id is " + this.id);
@@ -171,6 +177,7 @@ public class AlarmEntry implements Serializable {
                 calendar.setTimeInMillis(System.currentTimeMillis());
                 calendar.set(Calendar.HOUR_OF_DAY, this.hour);
                 calendar.set(Calendar.MINUTE, this.minute);
+                calendar.set(Calendar.SECOND, 0);
 
                 if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
                     calendar.add(Calendar.DATE, 1);
@@ -225,12 +232,12 @@ public class AlarmEntry implements Serializable {
     public void setSnooze(Context context, int snooze_length) {
         this.snooze += 1;
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.setAction(Long.toString(System.currentTimeMillis()));
         intent.putExtra("alarm id", this.id);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.add(Calendar.MINUTE, snooze_length);
+        calendar.set(Calendar.SECOND, 0);
 
         // the request code distinguish snooze
         int requestCode = MainActivity.SNOOZE_REQUESTCODE;
