@@ -121,6 +121,7 @@ public class AlarmEntry implements Serializable {
 
             if (this.repeat == 0) { // alarm is on but does not repeat
 
+                Log.d("Alarm entry", "set schedule repeat is 0");
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(System.currentTimeMillis());
                 calendar.set(Calendar.HOUR_OF_DAY, this.hour);
@@ -133,10 +134,10 @@ public class AlarmEntry implements Serializable {
                 // the request code distinguish different stress meter schedule instances
                 int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
-                PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT); //set pending intent to call AlarmReceiver.
+                PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent,
+                        0); //set pending intent to call AlarmReceiver.
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
             }
             //set repeating alarm, and pass the pending intent,
             //so that the broadcast is sent everytime the alarm

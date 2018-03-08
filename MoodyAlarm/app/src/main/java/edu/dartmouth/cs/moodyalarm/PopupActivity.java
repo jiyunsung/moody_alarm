@@ -94,8 +94,54 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             challenges.add(SnoozeSettings.SUDOKU_ON);
         if (prefs.getBoolean(SnoozeSettings.PUZZLE_ON, true))
             challenges.add(SnoozeSettings.PUZZLE_ON);
-        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
-            challenges.add(SnoozeSettings.MATH_DIFF);
+//        if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
+//            challenges.add(SnoozeSettings.MATH_DIFF);
+
+        Button dismiss = findViewById(R.id.dismiss);
+        dismiss.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v){
+                Log.d("pop up activity", "dismiss pressed");
+                if (challenges.size() > 0) {
+
+                    // choose a random activity among the enabled ones
+                    Random rand = new Random();
+                    int choice = rand.nextInt(challenges.size());
+                    String challenge = challenges.get(choice);
+                    Intent challengeIntent;
+                    if (challenge.equals(SnoozeSettings.VOICE_ON)) {
+                        Log.d("pop up activity", "challenge is voice");
+                        challengeIntent = new Intent(PopupActivity.this, VoiceRecognitionActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+                    else if (challenge.equals(SnoozeSettings.SUDOKU_ON)) {
+                        Log.d("pop up activity", "challenge is sudoku");
+                        challengeIntent = new Intent(PopupActivity.this, SudokuActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+                    else if (challenge.equals(SnoozeSettings.PUZZLE_ON)) {
+                        Log.d("pop up activity", "challenge is puzzle");
+                        challengeIntent = new Intent(PopupActivity.this, PuzzleActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+//                    else {
+//                        Log.d("pop up activity", "challenge is math");
+//                        challengeIntent = new Intent(PopupActivity.this, MathActivity.class);
+//                    }
+
+
+
+
+                } else {
+                    alarm.stop_alert(context);
+                    Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
         automaticBind();
