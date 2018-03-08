@@ -108,6 +108,7 @@ public class AlarmDetailsDisplay extends Fragment {
             entry.setSetting(setting);
             Log.d("NEW", "ALARM");
         } else{
+            entry.cancelSchedule(context);
             setting = entry.getSetting();
             Log.d("OLD", "ALARM");
         }
@@ -207,16 +208,14 @@ public class AlarmDetailsDisplay extends Fragment {
         }
 
         final String time = entry.getHour() + ":" + min;
-        timeDisplay.setText(entry.getHour() + ":" + min);
+        timeDisplay.setText(time);
 
         timeDisplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), entry,time );
-
-
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();
-
-
+                if (!isNew) {
+                    Fragment fragment = new SetAlarmActivityRedesign().newInstance(entry.getId(), entry, time);
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack("details").commit();
+                }
             }
         });
 
