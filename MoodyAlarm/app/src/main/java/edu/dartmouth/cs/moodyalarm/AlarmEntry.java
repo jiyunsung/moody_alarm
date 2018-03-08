@@ -166,8 +166,7 @@ public class AlarmEntry implements Serializable {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // check if alarm is on
-        if (true) { // alarm on
-            // if (this.onOff == 1) { // alarm on
+        if (this.onOff == 1) { // alarm on
 
             Log.d("alarmEntry set schedule", "alarm is on");
 
@@ -189,7 +188,7 @@ public class AlarmEntry implements Serializable {
                 PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
                         PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
 
             //set weekly repeating alarm, and pass the pending intent,
             //so that the broadcast is sent every time the alarm
@@ -251,7 +250,7 @@ public class AlarmEntry implements Serializable {
                 PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
     }
 
 
