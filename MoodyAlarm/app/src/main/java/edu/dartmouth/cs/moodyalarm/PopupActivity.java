@@ -76,12 +76,19 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("pop up activity", "oncreate called");
         setContentView(R.layout.activity_popup);
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
         prefs = getSharedPreferences(SnoozeSettings.PREFS_NAME, 0);
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-        Log.d("popup oncreate", "day is " + day);
-        Log.d("popup oncreate", "pos is " + AlarmSettings.position);
+        Log.d("popup onresume", "day is " + day);
+        Log.d("popup onresume", "pos is " + AlarmSettings.position);
         mIsBound = false; // by default set this to unbound
 
         Intent intent = getIntent();
@@ -101,6 +108,8 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
             connected = false;
 
         challenges = new ArrayList<String>();
+
+        challenges = new ArrayList<String>();
         if (connected & prefs.getBoolean(SnoozeSettings.VOICE_ON, true))
             challenges.add(SnoozeSettings.VOICE_ON);
         if (prefs.getBoolean(SnoozeSettings.SUDOKU_ON, true))
@@ -110,12 +119,57 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
         if (prefs.getBoolean(SnoozeSettings.MATH_ON, true))
             challenges.add(SnoozeSettings.MATH_ON);
 
+        Button dismiss = findViewById(R.id.dismiss);
+        dismiss.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v){
+                Log.d("pop up activity", "dismiss pressed");
+                if (challenges.size() > 0) {
+
+                    // choose a random activity among the enabled ones
+                    Random rand = new Random();
+                    int choice = rand.nextInt(challenges.size());
+                    String challenge = challenges.get(choice);
+                    Intent challengeIntent;
+                    if (challenge.equals(SnoozeSettings.VOICE_ON)) {
+                        Log.d("pop up activity", "challenge is voice");
+                        challengeIntent = new Intent(PopupActivity.this, VoiceRecognitionActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+                    else if (challenge.equals(SnoozeSettings.SUDOKU_ON)) {
+                        Log.d("pop up activity", "challenge is sudoku");
+                        challengeIntent = new Intent(PopupActivity.this, SudokuActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+                    else if (challenge.equals(SnoozeSettings.PUZZLE_ON)) {
+                        Log.d("pop up activity", "challenge is puzzle");
+                        challengeIntent = new Intent(PopupActivity.this, PuzzleActivity.class);
+                        challengeIntent.putExtra("alarm", alarmEntry);
+                        startActivity(challengeIntent);
+                    }
+                    else {
+                        Log.d("pop up activity", "challenge is math");
+                        challengeIntent = new Intent(PopupActivity.this, MathActivity.class);
+                    }
+
+
+
+
+                } else {
+                    alarm.stop_alert(context);
+                    Toast.makeText(context, "Alarm dismissed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         Log.d("popup oncreate", "setting retrieved is " + alarmEntry.getSetting());
         automaticBind();
         doBindService();
         startService(new Intent(PopupActivity.this, LocationService.class));
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -300,13 +354,17 @@ public class PopupActivity extends AppCompatActivity implements ServiceConnectio
                             id=7;
                         }
 
-                        if(alarmEntry.getSetting().equals("day")){
-                            Calendar calendar = Calendar.getInstance();
-                            int day = calendar.get(Calendar.DAY_OF_WEEK);
-                            getPlaylistByDay(day, context,response);
+                        if (alarmEntry.getSetting() != null) {
+                            if (alarmEntry.getSetting().equals("day")) {
+                                Calendar calendar = Calendar.getInstance();
+                                int day = calendar.get(Calendar.DAY_OF_WEEK);
+                                getPlaylistByDay(day, context, response);
 
-                        } else {
-                            getPlaylistByWeather(id, getApplicationContext(),response);
+                            } else {
+                                getPlaylistByWeather(id, getApplicationContext(), response);
+                            }
+                        } else{
+                            getPlaylistByWeather(id, getApplicationContext(), response);
                         }
 
                     } catch(JSONException e){Log.d("error", e.toString());}

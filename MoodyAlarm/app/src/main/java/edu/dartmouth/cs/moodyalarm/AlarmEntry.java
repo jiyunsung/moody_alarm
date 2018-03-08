@@ -170,14 +170,11 @@ public class AlarmEntry implements Serializable {
                 int requestCode = this.hour * 10000 + this.minute * 100 + this.repeat * 10;
 
                 PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT); //set pending intent to call AlarmReceiver.
+                        0); //set pending intent to call AlarmReceiver.
+                Log.d("alarmEntry set schedule", "repeat is 0 and calender in millis is " + calendar.getTimeInMillis());
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
 
-
-            //set weekly repeating alarm, and pass the pending intent,
-            //so that the broadcast is sent every time the alarm
-            // is triggered
             }  else if (this.repeat == 1) {
 
                 int i = 0;
@@ -227,6 +224,7 @@ public class AlarmEntry implements Serializable {
             }
         }
     }
+
 
     public void setSnooze(Context context, int snooze_length) {
         this.snooze += 1;

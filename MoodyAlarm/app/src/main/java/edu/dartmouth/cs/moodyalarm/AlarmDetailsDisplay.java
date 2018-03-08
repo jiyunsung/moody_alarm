@@ -523,8 +523,10 @@ public class AlarmDetailsDisplay extends Fragment {
         // run threads
         @Override
         protected Void doInBackground(Void... arg0) {
-            entry.setId(MainActivity.dataStorage.insertAlarmEntry(entry).getId());
-            Log.d("writeSchema", "do in background");
+
+            entry.setId((MainActivity.dataStorage.insertAlarmEntry(entry).getId()));
+            Log.d("writeSchema", " alarm details display do in background setting schedule");
+
 
             entry.setSchedule(context);
             return null;
